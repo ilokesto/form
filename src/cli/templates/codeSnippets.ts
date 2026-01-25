@@ -5,8 +5,7 @@ import { CreateForm } from '@ilokesto/sicilian';
 export const {
   initValue,
   register,
-  getValues,
-  getErrors,
+  useFields,
   setValues,
   setErrors,
   handleSubmit,

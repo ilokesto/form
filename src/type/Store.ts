@@ -27,14 +27,20 @@ export type InitObject<T extends InitState> = {
 export type SicilianEvent = { target: { name: string; value: string, type?: string, checked?: boolean, files?: FileList | null } };
 
 
+type RegisterOptions<T extends InitState> = {
+  validate?: RegisterErrorObj<T>
+  type?: Exclude<ValidInputTypes, "radio">
+}
+
+type RegisterRadioOptions<T extends InitState> = {
+  validate?: RegisterErrorObj<T>
+  type: "radio"
+  value: string
+}
+
 export type TRegister<T extends InitState> = {
-  // radio 타입일 경우 - ExtractKeys<T> 버전
-  <K extends ExtractKeys<T>>(params: { name: K; validate?: RegisterErrorObj<T>; type: 'radio'; value: string}): IRegister<T>,
-  // radio 타입이 아닌 경우 - ExtractKeys<T> 버전
-  <K extends ExtractKeys<T>>(params: { name: K; validate?: RegisterErrorObj<T>; type?: Exclude<ValidInputTypes, 'radio'> }): IRegister<T>,
-  
-  // radio 타입일 경우 - string 버전
-  (params: { name: string; validate?: RegisterErrorObj<T>; type: 'radio'; value: string }): IRegister<T>,
-  // radio 타입이 아닌 경우 - string 버전
-  (params: { name: string; validate?: RegisterErrorObj<T>; type?: Exclude<ValidInputTypes, 'radio'> }): IRegister<T>;
+  <K extends ExtractKeys<T>>(name: K, options?: RegisterOptions<T>): IRegister<T>
+  <K extends ExtractKeys<T>>(name: K, options: RegisterRadioOptions<T>): IRegister<T>
+  (name: string, options?: RegisterOptions<T>): IRegister<T>
+  (name: string, options: RegisterRadioOptions<T>): IRegister<T>
 }

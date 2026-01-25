@@ -148,7 +148,8 @@ export class CreateForm<T extends InitState> {
     }
   }
 
-  public useRegister : TRegister<T> = ({ name, validate, type = "text", value }: {name: ExtractKeys<T> | string, validate?: RegisterErrorObj<T>, type?: ValidInputTypes, value?: string}): IRegister<T> => {
+  public useRegister : TRegister<T> = (name: ExtractKeys<T> | string, options?: { validate?: RegisterErrorObj<T>; type?: ValidInputTypes; value?: string }): IRegister<T> => {
+    const { validate, type = "text", value } = options ?? {}
     this.FieldMetaStore.ensureField(name)
     const currentValue = SyncState.doSync(this.ValueStore, name) as T[ExtractKeys<T>] | undefined
     const storeDefaultValue = this.getDefaultValue(type)
