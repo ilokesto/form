@@ -1,4 +1,4 @@
-import type { InitState, SicilianEvent, StoreValue } from ".";
+import type { InitState, SicilianEvent, StoreValue } from "./Base";
 
 export interface IValidate {
   doValidate: (e: SicilianEvent) => void;

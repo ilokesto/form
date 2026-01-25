@@ -1,4 +1,4 @@
-import type { ExtractKeys, InitState, StoreValue } from ".";
+import type { ExtractKeys, InitState, StoreValue } from "./Base";
 
 export type State<T extends InitState, BasicReturnType> = {
   (): T & { [x: string]: BasicReturnType | undefined };

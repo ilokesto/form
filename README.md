@@ -81,13 +81,13 @@ export default function MySimpleForm() {
     <form onSubmit={handleSubmit(onSubmit)}>
       <div>
         <label htmlFor="name">name:</label>
-        <input id="name" {...register({ name: 'name', type: 'text' })} />
+        <input id="name" {...register('name', { type: 'text' })} />
         {nameField.error}
       </div>
 
       <div>
         <label htmlFor="email">email:</label>
-        <input id="email" {...register({ name: 'email', type: 'email' })} />
+        <input id="email" {...register('email', { type: 'email' })} />
         {emailField.error}
       </div>
 

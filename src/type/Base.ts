@@ -1,5 +1,11 @@
 export type ExtractKeys<T> = Extract<keyof T, string>
 
+export type StoreValue = string | boolean | FileList
+
+export type InitState = {
+  [x: string]: StoreValue;
+}
+
 export type ValidInputTypes =
   | "button"
   | "checkbox"
@@ -23,3 +29,13 @@ export type ValidInputTypes =
   | "time"
   | "url"
   | "week"
+
+export type SicilianEvent = {
+  target: {
+    name: string
+    value: string
+    type?: string
+    checked?: boolean
+    files?: FileList | null
+  }
+}
