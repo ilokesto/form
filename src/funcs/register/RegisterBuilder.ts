@@ -39,6 +39,11 @@ export class RegisterBuilder<T extends InitState> {
     if (!this.setStore) throw new Error("setStore is required")
     if (!this.getStore) throw new Error("getStore is required")
     if (this.value === undefined) this.value = "" as T[ExtractKeys<T>]
+
+    const currentValue = this.getStore()[this.name as ExtractKeys<T>]
+    if (currentValue === undefined) {
+      this.setStore({ [this.name]: this.value } as unknown as Partial<T> & { [x: string]: string | boolean | FileList })
+    }
     
     return new Register(
       this.RegisterOnChange!,
@@ -47,8 +52,6 @@ export class RegisterBuilder<T extends InitState> {
       this.name,
       this.id!,
       this.type,
-      this.setStore,
-      this.getStore,
       this.value,
       this.radioValue
     )
