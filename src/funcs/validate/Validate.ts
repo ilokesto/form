@@ -1,5 +1,5 @@
 import type { Resolver } from "@ilokesto/common-resolver/types";
-import type { InitState, IStore, IValidate, RegisterErrorObj, SicilianEvent, Validator } from "../../type";
+import type { InitState, IStore, IValidate, RegisterErrorObj, SicilianEvent, StoreValue, Validator } from "../../type";
 import { HandlerChain } from "./validateHandler/HandlerChain";
 import { HandlerFactory } from "./validateHandler/HandlerFactory";
 
@@ -9,7 +9,7 @@ export class Validate<T extends InitState> implements IValidate {
   constructor(
     private store: IStore<T>,
     private ErrorObjStore: IStore<Validator<T>>,
-    private setError: (action: Partial<T> & { [x: string]: string | boolean | FileList }) => void,
+    private setError: (action: Partial<T> & { [x: string]: StoreValue }) => void,
     private resolver: Resolver<T> | undefined
   ) {
     this.handlerChain = new HandlerChain(this.setError);
@@ -23,7 +23,7 @@ export class Validate<T extends InitState> implements IValidate {
       const { valid, error } = this.resolver.validate(store);
 
       if (!valid) {
-        this.setError({ [name]: typeof error[name] === "string" ? error[name] : "" } as Partial<T> & { [x: string]: string | boolean | FileList });
+        this.setError({ [name]: typeof error[name] === "string" ? error[name] : "" } as Partial<T> & { [x: string]: StoreValue });
         return;
       }
     }

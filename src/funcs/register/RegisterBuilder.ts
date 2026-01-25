@@ -1,4 +1,4 @@
-import type { ExtractKeys, InitObject, InitState, IStore, RegisterErrorObj, Validator, ValidInputTypes } from "../../type"
+import type { ExtractKeys, InitObject, InitState, IStore, RegisterErrorObj, StoreValue, Validator, ValidInputTypes } from "../../type"
 import { usePageNavigation } from "../usePageNavigation"
 import { Register, type IRegister } from "./Register"
 import type { IRegisterOnBlur } from "./RegisterOnBlur"
@@ -24,7 +24,7 @@ export class RegisterBuilder<T extends InitState> {
     this.id = name
 
     // ErrorObjStore 덮어쓰기
-    this.ErrorObj && this.ErrorObjStore.setStore({ [name]: this.ErrorObj } as Partial<Validator<T>> & { [x: string]: string | boolean | FileList });
+    this.ErrorObj && this.ErrorObjStore.setStore({ [name]: this.ErrorObj } as Partial<Validator<T>> & { [x: string]: StoreValue });
 
     // 페이지 이동시에 form을 초기화 할 것인지 여부를 결정
     this.clearFormOn?.includes("routeChange") && usePageNavigation(this.clearForm)
@@ -34,7 +34,7 @@ export class RegisterBuilder<T extends InitState> {
     if (!this.RegisterOnChange) throw new Error("RegisterOnChange is required")
     if (!this.RegisterOnFocus) throw new Error("RegisterOnFocus is required")
     if (!this.RegisterOnBlur) throw new Error("RegisterOnBlur is required")
-    if (this.value === undefined) this.value = "" as T[ExtractKeys<T>]
+    if (this.value === undefined) throw new Error("value is required")
     
     return new Register(
       this.RegisterOnChange!,

@@ -9,7 +9,7 @@ import { RegisterOnBlur } from "../funcs/register/RegisterOnBlur";
 import { RegisterOnChange } from "../funcs/register/RegisterOnChange";
 import { RegisterOnFocus } from "../funcs/register/RegisterOnFocus";
 import { Validate } from "../funcs/validate/Validate";
-import type { ExtractKeys, InitObject, InitState, IStore, RegisterErrorObj, State, TRegister, Validator, ValidInputTypes } from "../type";
+import type { ExtractKeys, InitObject, InitState, IStore, RegisterErrorObj, State, StoreValue, TRegister, Validator, ValidInputTypes } from "../type";
 import { getObjByKeys } from "../utils/getObjByKeys";
 import { SyncState } from "../utils/SyncState";
 import { Store } from "./Store";
@@ -27,12 +27,59 @@ export class CreateForm<T extends InitState> {
   private clearFormOn: InitObject<T>["clearFormOn"]
 
   // Public
-  public useValues: State<T, string | boolean | FileList>;
+  public useValues: State<T, StoreValue>;
   public useErrors: State<{ [key in keyof T]: string }, string>;
   public setValues: IStore<T>["setStore"];
   public setErrors: IStore<{ [key in keyof T]: string }>["setStore"];
   public initValue: T
   public clearForm: () => void
+
+  private getDefaultValue = (type: ValidInputTypes): StoreValue | undefined => {
+    if (type === "checkbox") return false
+    if (type === "radio") return ""
+    if (type === "file") return undefined
+    return ""
+  }
+
+  private useStoreDefaultValue = (name: ExtractKeys<T> | string, storeDefaultValue: StoreValue | undefined) =>
+    useEffect(() => {
+      if (storeDefaultValue === undefined) return
+      const storeValue = this.ValueStore.getStore()[name as ExtractKeys<T>]
+      if (storeValue === undefined) {
+        this.ValueStore.setStore({ [name]: storeDefaultValue } as unknown as Partial<T> & { [x: string]: StoreValue })
+      }
+    }, [name, storeDefaultValue])
+
+  private createValidate = () =>
+    new Validate(
+      this.ValueStore,
+      this.ErrorObjStore,
+      this.ErrorStore.setStore,
+      this.resolver
+    )
+
+  private buildRegister = (props: {
+    name: ExtractKeys<T> | string
+    validate?: RegisterErrorObj<T>
+    type: ValidInputTypes
+    value?: string
+    inputValue: T[ExtractKeys<T>]
+  }) =>
+    new RegisterBuilder(props.name, props.value, this.ErrorObjStore, this.clearForm, props.validate, this.clearFormOn)
+      .setRegisterOnChange(new RegisterOnChange(
+        this.validateOn,
+        this.ValueStore.setStore,
+        this.ErrorStore.setStore,
+        this.createValidate()
+      ))
+      .setRegisterOnFocus(new RegisterOnFocus(this.ErrorStore.setStore))
+      .setRegisterOnBlur(new RegisterOnBlur(
+        this.validateOn,
+        this.createValidate()
+      ))
+      .setValue(props.inputValue)
+      .setType(props.type)
+      .build()
 
   constructor(props?: InitObject<T>) {
     const { initValue = {} as T, validator, resolver, validateOn, clearFormOn } = props ?? {}
@@ -55,48 +102,13 @@ export class CreateForm<T extends InitState> {
   }
 
   public useRegister : TRegister<T> = ({ name, validate, type = "text", value }: {name: ExtractKeys<T> | string, validate?: RegisterErrorObj<T>, type?: ValidInputTypes, value?: string}): IRegister<T> => {
-    const currentValue = this.useValues(name) as T[ExtractKeys<T>]
-    const defaultValue = type === "checkbox"
-      ? (false as unknown as T[ExtractKeys<T>])
-      : type === "radio"
-        ? ("" as unknown as T[ExtractKeys<T>])
-        : type === "file"
-          ? undefined
-          : ("" as unknown as T[ExtractKeys<T>])
+    const currentValue = this.useValues(name) as T[ExtractKeys<T>] | undefined
+    const storeDefaultValue = this.getDefaultValue(type)
+    const inputValue = (currentValue ?? storeDefaultValue ?? "") as T[ExtractKeys<T>]
 
-    useEffect(() => {
-      if (defaultValue === undefined) return
-      const storeValue = this.ValueStore.getStore()[name as ExtractKeys<T>]
-      if (storeValue === undefined) {
-        this.ValueStore.setStore({ [name]: defaultValue } as unknown as Partial<T> & { [x: string]: string | boolean | FileList })
-      }
-    }, [name, defaultValue])
+    this.useStoreDefaultValue(name, storeDefaultValue)
 
-    return new RegisterBuilder(name, value, this.ErrorObjStore, this.clearForm, validate, this.clearFormOn)
-      .setRegisterOnChange(new RegisterOnChange(
-        this.validateOn,
-        this.ValueStore.setStore,
-        this.ErrorStore.setStore,
-        new Validate(
-          this.ValueStore,
-          this.ErrorObjStore,
-          this.ErrorStore.setStore,
-          this.resolver
-        )
-      ))
-      .setRegisterOnFocus(new RegisterOnFocus(this.ErrorStore.setStore))
-      .setRegisterOnBlur(new RegisterOnBlur(
-        this.validateOn,
-        new Validate(
-          this.ValueStore,
-          this.ErrorObjStore,
-          this.ErrorStore.setStore,
-          this.resolver
-        )
-      ))
-      .setValue(currentValue)
-      .setType(type)
-      .build()
+    return this.buildRegister({ name, validate, type, value, inputValue })
   }
 
   public handleSubmit = (SubmitFn: (data: T, event?: FormEvent) => (Promise<unknown> | unknown)) => (e: FormEvent) =>

@@ -1,4 +1,4 @@
-import type { InitState, SicilianEvent } from ".";
+import type { InitState, SicilianEvent, StoreValue } from ".";
 
 export interface IValidate {
   doValidate: (e: SicilianEvent) => void;
@@ -16,6 +16,6 @@ export type RegisterErrorObj<T extends InitState> = {
 
 type RegExpErrorObj = { RegExp: RegExp; message?: string };
 type CustomCheckerErrorObj<T extends InitState> = {
-  checkFn: (value: string, store: T & { [x: string]: string | boolean | FileList }, checked?: boolean) => boolean;
+  checkFn: (value: string, store: T & { [x: string]: StoreValue }, checked?: boolean) => boolean;
   message?: string;
 };

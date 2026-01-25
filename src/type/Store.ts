@@ -5,13 +5,15 @@ import type { IRegister } from "../funcs/register/Register";
 export interface IStore<T> {
   getStore: () => T;
   setStore: {
-    (nextState: Partial<T> & { [x: string]: string | boolean | FileList }): void;
+    (nextState: Partial<T> & { [x: string]: StoreValue }): void;
   };
   subscribe: (cb: () => void) => () => boolean;
 }
 
+export type StoreValue = string | boolean | FileList;
+
 export type InitState = {
-  [x: string]: string | boolean | FileList;
+  [x: string]: StoreValue;
 };
 
 export type InitObject<T extends InitState> = {
