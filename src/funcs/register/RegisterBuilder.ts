@@ -1,4 +1,4 @@
-import type { InitState, IStore, RegisterErrorObj, InitObject, Validator, ExtractKeys, ValidInputTypes } from "../../type"
+import type { ExtractKeys, InitObject, InitState, IStore, RegisterErrorObj, Validator, ValidInputTypes } from "../../type"
 import { usePageNavigation } from "../usePageNavigation"
 import { Register, type IRegister } from "./Register"
 import type { IRegisterOnBlur } from "./RegisterOnBlur"
@@ -9,8 +9,6 @@ export class RegisterBuilder<T extends InitState> {
   private RegisterOnChange?: IRegisterOnChange
   private RegisterOnFocus?: IRegisterOnFocus
   private RegisterOnBlur?: IRegisterOnBlur
-  private setStore?: IStore<T>["setStore"]
-  private getStore?: IStore<T>["getStore"]
   public id?: ExtractKeys<T> | string
   public type?: ValidInputTypes
   public value?: T[ExtractKeys<T>]
@@ -36,14 +34,7 @@ export class RegisterBuilder<T extends InitState> {
     if (!this.RegisterOnChange) throw new Error("RegisterOnChange is required")
     if (!this.RegisterOnFocus) throw new Error("RegisterOnFocus is required")
     if (!this.RegisterOnBlur) throw new Error("RegisterOnBlur is required")
-    if (!this.setStore) throw new Error("setStore is required")
-    if (!this.getStore) throw new Error("getStore is required")
     if (this.value === undefined) this.value = "" as T[ExtractKeys<T>]
-
-    const currentValue = this.getStore()[this.name as ExtractKeys<T>]
-    if (currentValue === undefined) {
-      this.setStore({ [this.name]: this.value } as unknown as Partial<T> & { [x: string]: string | boolean | FileList })
-    }
     
     return new Register(
       this.RegisterOnChange!,
@@ -69,16 +60,6 @@ export class RegisterBuilder<T extends InitState> {
 
   public setRegisterOnBlur(registerOnBlur: IRegisterOnBlur) {
     this.RegisterOnBlur = registerOnBlur
-    return this
-  }
-
-  public setSetStore(setter: IStore<T>["setStore"]) {
-    this.setStore = setter
-    return this
-  }
-
-  public setGetStore(getter: IStore<T>["getStore"]) {
-    this.getStore = getter
     return this
   }
 

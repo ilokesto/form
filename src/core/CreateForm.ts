@@ -1,5 +1,5 @@
 import type { Resolver } from "@ilokesto/common-resolver/types";
-import type { FormEvent } from "react";
+import { useEffect, type FormEvent } from "react";
 import { HandleServerAction } from "../funcs/handleSubmit/HandleServerAction";
 import { HandleSubmit } from "../funcs/handleSubmit/HandleSubmit";
 import { HandleSubmitBuilder } from "../funcs/handleSubmit/HandleSubmitBuilder";
@@ -27,8 +27,8 @@ export class CreateForm<T extends InitState> {
   private clearFormOn: InitObject<T>["clearFormOn"]
 
   // Public
-  public getValues: State<T, string | boolean | FileList>;
-  public getErrors: State<{ [key in keyof T]: string }, string>;
+  public useValues: State<T, string | boolean | FileList>;
+  public useErrors: State<{ [key in keyof T]: string }, string>;
   public setValues: IStore<T>["setStore"];
   public setErrors: IStore<{ [key in keyof T]: string }>["setStore"];
   public initValue: T
@@ -43,8 +43,8 @@ export class CreateForm<T extends InitState> {
     this.resolver = resolver;
     this.validateOn = validateOn ?? []
     this.clearFormOn = clearFormOn ?? []
-    this.getValues = (name?: ExtractKeys<T> | string) => SyncState.doSync(this.ValueStore, name)
-    this.getErrors = (name?: ExtractKeys<T> | string) => SyncState.doSync(this.ErrorStore, name)
+    this.useValues = (name?: ExtractKeys<T> | string) => SyncState.doSync(this.ValueStore, name)
+    this.useErrors = (name?: ExtractKeys<T> | string) => SyncState.doSync(this.ErrorStore, name)
     this.setValues = this.ValueStore.setStore
     this.setErrors = this.ErrorStore.setStore as IStore<{ [key in keyof T]: string }>["setStore"]
     this.initValue = initValue
@@ -54,8 +54,25 @@ export class CreateForm<T extends InitState> {
     }
   }
 
-  public register : TRegister<T> = ({ name, validate, type = "text", value }: {name: ExtractKeys<T> | string, validate?: RegisterErrorObj<T>, type?: ValidInputTypes, value?: string}): IRegister<T> =>
-    new RegisterBuilder(name, value, this.ErrorObjStore, this.clearForm, validate, this.clearFormOn)
+  public useRegister : TRegister<T> = ({ name, validate, type = "text", value }: {name: ExtractKeys<T> | string, validate?: RegisterErrorObj<T>, type?: ValidInputTypes, value?: string}): IRegister<T> => {
+    const currentValue = this.useValues(name) as T[ExtractKeys<T>]
+    const defaultValue = type === "checkbox"
+      ? (false as unknown as T[ExtractKeys<T>])
+      : type === "radio"
+        ? ("" as unknown as T[ExtractKeys<T>])
+        : type === "file"
+          ? undefined
+          : ("" as unknown as T[ExtractKeys<T>])
+
+    useEffect(() => {
+      if (defaultValue === undefined) return
+      const storeValue = this.ValueStore.getStore()[name as ExtractKeys<T>]
+      if (storeValue === undefined) {
+        this.ValueStore.setStore({ [name]: defaultValue } as unknown as Partial<T> & { [x: string]: string | boolean | FileList })
+      }
+    }, [name, defaultValue])
+
+    return new RegisterBuilder(name, value, this.ErrorObjStore, this.clearForm, validate, this.clearFormOn)
       .setRegisterOnChange(new RegisterOnChange(
         this.validateOn,
         this.ValueStore.setStore,
@@ -77,11 +94,10 @@ export class CreateForm<T extends InitState> {
           this.resolver
         )
       ))
-      .setSetStore(this.ValueStore.setStore)
-      .setGetStore(this.ValueStore.getStore)
-      .setValue(this.getValues(name) as T[ExtractKeys<T>])
+      .setValue(currentValue)
       .setType(type)
       .build()
+  }
 
   public handleSubmit = (SubmitFn: (data: T, event?: FormEvent) => (Promise<unknown> | unknown)) => (e: FormEvent) =>
     new HandleSubmitBuilder<T>()
