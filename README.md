@@ -51,7 +51,7 @@ The example below shows basic sicilian usage. It implements a simple login form 
 import { useForm } from '@ilokesto/sicilian';
 
 export default function MySimpleForm() {
-  const { register, handleSubmit, getErrors } = useForm({
+  const { register, handleSubmit, useFields } = useForm({
     initValue: {
       name: '',
       email: ''
@@ -74,18 +74,21 @@ export default function MySimpleForm() {
     console.log('data:', data);
   };
 
+  const nameField = useFields('name');
+  const emailField = useFields('email');
+
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
       <div>
         <label htmlFor="name">name:</label>
         <input id="name" {...register({ name: 'name', type: 'text' })} />
-        {getErrors('name')}
+        {nameField.error}
       </div>
 
       <div>
         <label htmlFor="email">email:</label>
         <input id="email" {...register({ name: 'email', type: 'email' })} />
-        {getErrors('email')}
+        {emailField.error}
       </div>
 
       <button type="submit">login</button>

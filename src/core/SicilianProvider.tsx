@@ -1,15 +1,14 @@
 import { createContext, useContext, type ReactElement } from "react"
-import type { ExtractKeys, InitState, RegisterErrorObj, State, TRegister, ValidInputTypes } from "../type"
+import type { ExtractKeys, InitState, RegisterErrorObj, TRegister, TUseFields, ValidInputTypes } from "../type"
 
 export type SicilianProviderProps<T extends InitState> = {
   children: ReactElement,
   value: {
-    register: TRegister<T> ,
-    validate?: RegisterErrorObj<T>,
+    useRegister: TRegister<T> ,
     name: ExtractKeys<T>,
+    validate?: RegisterErrorObj<T>,
     type?: ValidInputTypes,
-    getValues?: State<T, unknown>,
-    getErrors?: State<{ [key in keyof T]: string }, string>,
+    useFields?: TUseFields<T>,
   }
 }
 
@@ -22,11 +21,9 @@ const Context = createContext<SicilianProviderProps<any>["value"] | undefined>(u
 
 export const SicilianProvider = <T extends InitState>({ children, value }: SicilianProviderProps<T>) => <Context.Provider value={{
   ...value,
-  getValues: value.getValues ?? polyfillWithErrorMessage("getValues"),
-  getErrors: value.getErrors ?? polyfillWithErrorMessage("getErrors")
+  useFields: value.useFields ?? polyfillWithErrorMessage("useFields")
 }}>
   {children}
 </Context.Provider>
 
 export const useSicilianContext = () => useContext(Context) as Required<SicilianProviderProps<InitState>["value"]> ?? getContextErrorMessage()
-

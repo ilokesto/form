@@ -1,4 +1,4 @@
-import type { InitState, InitObject, IStore, SicilianEvent, IValidate, StoreValue } from "../../type";
+import type { FieldMeta, InitObject, InitState, IStore, IValidate, SicilianEvent, StoreValue } from "../../type";
 
 export interface IRegisterOnChange {
   onChange: (e: SicilianEvent) => void
@@ -9,6 +9,7 @@ export class RegisterOnChange<T extends InitState> implements IRegisterOnChange 
     private validateOn: InitObject<T>["validateOn"],
     private setValueStore: IStore<T>["setStore"],
     private setErrorStore: IStore<T>["setStore"],
+    private updateFieldMeta: (name: string, nextMeta: Partial<FieldMeta>) => void,
     private validate: IValidate
   ) {}
 
@@ -22,6 +23,7 @@ export class RegisterOnChange<T extends InitState> implements IRegisterOnChange 
       this.setValueStore({ [name] : value } as Partial<T> & { [x: string]: StoreValue  });
     }
 
+    this.updateFieldMeta(name, { dirty: true })
     this.validateOn?.includes("change") && this.setErrorStore({ [name]: "" } as Partial<T> & { [x: string]: StoreValue });
     this.validateOn?.includes("change") && this.validate.doValidate(e);
   }
