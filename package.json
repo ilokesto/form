@@ -1,6 +1,6 @@
 {
   "name": "@ilokesto/sicilian",
-  "version": "4.0.0",
+  "version": "4.0.1",
   "types": "dist/index.d.ts",
   "module": "dist/index.js",
   "exports": {
@@ -46,7 +46,7 @@
     "type": "git",
     "url": "git+https://github.com/ilokesto/sicilian"
   },
-  "homepage": "https://ilokesto.vercel.app/sicilian",
+  "homepage": "https://ilokesto.ayden94.com/ko/form",
   "keywords": [
     "react",
     "form",
@@ -55,7 +55,7 @@
   ],
   "author": "Jeong Jinho <wpfekdml@me.com>",
   "license": "MIT",
-  "description": "",
+  "description": "Deprecated. Use @ilokesto/form: https://ilokesto.ayden94.com/ko/form",
   "dependencies": {
     "@ilokesto/common-resolver": "^1.0.2"
   },

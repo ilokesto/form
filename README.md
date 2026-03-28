@@ -1,3 +1,13 @@
+# Deprecated
+
+`@ilokesto/sicilian` is deprecated.
+
+- Use `@ilokesto/form` for new projects.
+- Docs: https://ilokesto.ayden94.com/ko/form
+- Prefer Standard Schema for new validation flows.
+- This package is frozen and receives no new features.
+
+Legacy reference is kept below for existing users only.
 
 ![ilokestoSicilian](https://github.com/user-attachments/assets/a2e9c05c-7249-4b83-b50f-3194e1943481)
 
@@ -10,7 +20,7 @@
 
 &nbsp;
 
-[Official documents](https://ilokesto.vercel.app/sicilian)
+[Official documents](https://ilokesto.ayden94.com/ko/form)
 
 &nbsp;
 
