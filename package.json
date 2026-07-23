@@ -50,7 +50,10 @@
     "./package.json": "./package.json"
   },
   "files": [
-    "dist"
+    "dist",
+    "README.md",
+    "README.ko.md",
+    "LICENSE"
   ],
   "dependencies": {
     "@ilokesto/store": "1.1.1",
