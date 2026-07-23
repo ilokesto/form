@@ -5,6 +5,7 @@ export type FormStateSummary<TValues> = {
   errors: Record<string, FormError[]>;
   dirtyFields: Record<string, true>;
   touchedFields: Record<string, true>;
+  focusedField: string | null;
   isDirty: boolean;
   isValid: boolean;
   isSubmitting: boolean;
@@ -18,12 +19,14 @@ export function createFormStateSummary<TValues>(state: Readonly<FormState<TValue
   const errors = collectErrors(state);
   const dirtyFields = collectFlaggedFields(state, 'dirty');
   const touchedFields = collectFlaggedFields(state, 'touched');
+  const focusedField = findFocusedField(state);
 
   return {
     state,
     errors,
     dirtyFields,
     touchedFields,
+    focusedField,
     isDirty: Object.keys(dirtyFields).length > 0,
     isValid: Object.keys(errors).length === 0,
     isSubmitting: state.isSubmitting,
@@ -47,4 +50,9 @@ function collectFlaggedFields<TValues>(state: Readonly<FormState<TValues>>, flag
       .filter(([, field]) => field[flag])
       .map(([key]) => [key, true]),
   );
+}
+
+function findFocusedField<TValues>(state: Readonly<FormState<TValues>>): string | null {
+  const entry = Object.entries(state.fields).find(([, field]) => field.isFocused);
+  return entry ? entry[0] : null;
 }
