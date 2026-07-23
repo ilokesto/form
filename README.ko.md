@@ -641,6 +641,8 @@ const valid = await form.blur('email');
 
 `path`에 해당하는 field의 `isFocused`를 `true`로 바꾼다. 다른 field는 건드리지 않는다 — DOM이 이전에 focus 되어 있던 element에 자연스럽게 `blur` 이벤트를 발생시키므로, `blur()`를 통해 `isFocused`가 clearing된다. Array rebasing 시 `isFocused`는 `move`/`swap`/`insert`/`remove`에 대해 보존된다.
 
+core는 DOM과 독립적이므로 여러 field에 `focus()`를 호출하면 둘 이상이 동시에 `isFocused: true`가 될 수 있다. DOM 어댑터에서는 브라우저가 자연스럽게 한 번에 하나로 제한하지만, core를 직접 사용할 때는 이전 field를 `blur()` 하는 것은 호출자의 책임이다. `useFormState().focusedField` aggregate는 **`Object.entries` 순서상 첫 번째**로 발견된 focused field를 반환하며, "가장 최근에 focus 된 field"가 아니다. 모든 focused field를 알려면 `state.fields`를 직접 순회하라.
+
 ### `setErrors(path, errors)`
 
 하나의 field error list를 교체한다.

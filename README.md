@@ -643,6 +643,8 @@ If `validateOn` does not contain `'blur'`, it returns `true` after touching the 
 
 Sets `isFocused: true` on the field at `path`. Other fields are not touched — DOM naturally fires a `blur` event on the previously focused element, which clears `isFocused` via `blur()`. Array rebasing preserves `isFocused` across `move`/`swap`/`insert`/`remove`.
 
+The core is DOM-independent, so calling `focus()` on multiple fields can leave more than one field with `isFocused: true`. In DOM adapters this is naturally bounded to one by the browser; in direct core usage it is the caller's responsibility to `blur()` the previous field. The `useFormState().focusedField` aggregate returns the **first** focused field found in `Object.entries` order, not the most recently focused one — to enumerate all focused fields, iterate `state.fields` directly.
+
 ### `setErrors(path, errors)`
 
 Replaces the error list for one field.

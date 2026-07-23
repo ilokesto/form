@@ -60,7 +60,12 @@ export class FormStateWriter<TValues> {
     );
   }
 
-  /** field의 isFocused를 true로 바꾼다. focus 이벤트에서 호출된다. */
+  /**
+   * field의 isFocused를 true로 바꾼다. focus 이벤트에서 호출된다.
+   *
+   * fieldKey에 해당하는 field가 없으면 default state를 생성해 기록한다. 이는 touchField와 동일한 패턴이지만,
+   * 존재하지 않는 path에 대해 의도치 않게 field가 생성되는 부수 효과에 유의해야 한다.
+   */
   public focusField(fieldKey: PathKey): void {
     this.store.setState(prevState =>
       produce(prevState, draft => {
@@ -74,7 +79,12 @@ export class FormStateWriter<TValues> {
     );
   }
 
-  /** field의 isFocused를 false로 바꾼다. blur 이벤트에서 호출된다. */
+  /**
+   * field의 isFocused를 false로 바꾼다. blur 이벤트에서 호출된다.
+   *
+   * fieldKey에 해당하는 field가 없으면 default state를 생성해 기록한다. focusField와 동일한 fallback 패턴이며,
+   * 존재하지 않는 path에 대해 의도치 않게 field가 생성되는 부수 효과에 유의해야 한다.
+   */
   public unfocusField(fieldKey: PathKey): void {
     this.store.setState(prevState =>
       produce(prevState, draft => {
