@@ -399,6 +399,7 @@ type FieldState<TValue = unknown> = {
   touched: boolean;
   dirty: boolean;
   modified: boolean;
+  isFocused: boolean;
 };
 ```
 
@@ -407,6 +408,7 @@ Flag의 의미:
 - `touched`: field가 한 번 이상 blur되었다.
 - `dirty`: 현재 value가 같은 path의 initial value와 `Object.is` 기준으로 다르다.
 - `modified`: `source: 'user'` write로 field가 변경되었다.
+- `isFocused`: field가 현재 focus 중이다. `focus()`가 `true`로, `blur()`가 (`validateOn`과 무관하게 항상) `false`로 설정한다.
 - `errors`: validation 또는 manual assignment로 붙은 field errors.
 
 ### `FormState`
@@ -442,9 +444,9 @@ Core는 leaf field states와 array container keys를 따로 저장한다.
     items: [{ title: 'A' }, { title: 'B' }],
   },
   fields: {
-    '["user","name"]': { value: 'Ada', errors: [], touched: false, dirty: false, modified: false },
-    '["items",0,"title"]': { value: 'A', errors: [], touched: false, dirty: false, modified: false },
-    '["items",1,"title"]': { value: 'B', errors: [], touched: false, dirty: false, modified: false },
+    '["user","name"]': { value: 'Ada', errors: [], touched: false, dirty: false, modified: false, isFocused: false },
+    '["items",0,"title"]': { value: 'A', errors: [], touched: false, dirty: false, modified: false, isFocused: false },
+    '["items",1,"title"]': { value: 'B', errors: [], touched: false, dirty: false, modified: false, isFocused: false },
   },
   submitCount: 0,
   arrayKeys: {
@@ -637,7 +639,7 @@ const valid = await form.blur('email');
 
 ### `focus(path)`
 
-현재는 no-op이다. Minimal core state가 focused field를 저장하지 않더라도 framework adapter가 stable command surface를 제공할 수 있도록 존재한다.
+`path`에 해당하는 field의 `isFocused`를 `true`로 바꾼다. 다른 field는 건드리지 않는다 — DOM이 이전에 focus 되어 있던 element에 자연스럽게 `blur` 이벤트를 발생시키므로, `blur()`를 통해 `isFocused`가 clearing된다. Array rebasing 시 `isFocused`는 `move`/`swap`/`insert`/`remove`에 대해 보존된다.
 
 ### `setErrors(path, errors)`
 
@@ -968,7 +970,7 @@ Constructor는 하나의 `FormStateStore`를 만들고 모든 collaborator에 �
 2. Field를 touched 처리한다.
 3. 설정된 경우에만 blur validation을 실행한다.
 
-`focus()`는 현재 no-op이다. Minimal core state가 focus를 추적하지 않기 때문이다. Adapter-level consistency를 위해 method는 유지한다.
+`focus()`는 field의 `isFocused`를 `true`로 바꾼다. 대응되는 `blur()` command가 `isFocused`를 clearing하고 (`validateOn` 설정과 무관하게 항상), field를 `touched`로 표시한다. `isFocused` flag는 array rebasing 시 보존된다.
 
 `setErrors()`, `clearErrors()`, `trigger()`는 path를 key로 normalize하고 store 또는 validation engine에 위임한다.
 
