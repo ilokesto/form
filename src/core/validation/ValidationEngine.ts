@@ -24,6 +24,8 @@ export class ValidationEngine<TValues> {
   private readonly validateOn: readonly ValidationTrigger[];
   /** field schema cleanup이 최신 등록만 제거하도록 구분하는 증가 id다. */
   private nextFieldSchemaId = 0;
+  /** async validation race condition 방지용 generation counter다. 새 검증이 시작될 때마다 증가하며, stale 검증 결과는 폐기된다. */
+  private validationGeneration = 0;
 
   /**
    * validation engine을 만든다.
@@ -77,7 +79,12 @@ export class ValidationEngine<TValues> {
    * @returns 해당 field에 errors가 하나도 없으면 true.
    */
   public async validateField(fieldKey: PathKey, _trigger: ValidationTrigger): Promise<boolean> {
+    const generation = ++this.validationGeneration;
     const fieldSchemaErrors = await this.validateFieldSchema(fieldKey);
+
+    if (generation !== this.validationGeneration) {
+      return true;
+    }
 
     if (fieldSchemaErrors) {
       this.applyErrors([fieldKey], { [fieldKey]: fieldSchemaErrors });
@@ -85,6 +92,11 @@ export class ValidationEngine<TValues> {
     }
 
     const schemaResult = await this.validateSchema();
+
+    if (generation !== this.validationGeneration) {
+      return true;
+    }
+
     this.applyErrors([fieldKey], schemaResult.errorsByKey);
     return (schemaResult.errorsByKey[fieldKey] ?? []).length === 0;
   }
@@ -97,6 +109,7 @@ export class ValidationEngine<TValues> {
    * @returns 요청된 field들이 모두 valid이면 true.
    */
   public async validateFields(fieldKeys: readonly PathKey[], _trigger: ValidationTrigger): Promise<boolean> {
+    const generation = ++this.validationGeneration;
     const targetFieldKeys = ValidationEngine.unique(fieldKeys);
 
     if (targetFieldKeys.length === 0) {
@@ -104,10 +117,20 @@ export class ValidationEngine<TValues> {
     }
 
     const localErrorsByKey = await this.validateFieldSchemas(targetFieldKeys);
+
+    if (generation !== this.validationGeneration) {
+      return true;
+    }
+
     const formSchemaFieldKeys = targetFieldKeys.filter(fieldKey => !this.fieldSchemas.has(fieldKey));
     const schemaResult = formSchemaFieldKeys.length > 0
       ? await this.validateSchema()
       : ValidationEngine.createValidSchemaResult();
+
+    if (generation !== this.validationGeneration) {
+      return true;
+    }
+
     const errorsByKey = this.mergeErrorsByKey(schemaResult.errorsByKey, localErrorsByKey);
 
     this.applyErrors([...formSchemaFieldKeys, ...Object.keys(localErrorsByKey)], errorsByKey);
@@ -122,8 +145,19 @@ export class ValidationEngine<TValues> {
    * @returns schema validation이 성공하면 true.
    */
   public async validateRegisteredFields(_trigger: ValidationTrigger): Promise<boolean> {
+    const generation = ++this.validationGeneration;
     const schemaResult = await this.validateSchema();
+
+    if (generation !== this.validationGeneration) {
+      return true;
+    }
+
     const localErrorsByKey = await this.validateRegisteredFieldSchemas();
+
+    if (generation !== this.validationGeneration) {
+      return true;
+    }
+
     const errorsByKey = this.mergeErrorsByKey(schemaResult.errorsByKey, localErrorsByKey);
     const keysToWrite = this.getValidationWriteKeys(errorsByKey);
 
