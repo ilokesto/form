@@ -82,7 +82,7 @@ export class ValidationEngine<TValues> {
     const generation = ++this.validationGeneration;
     const fieldSchemaErrors = await this.validateFieldSchema(fieldKey);
 
-    if (generation !== this.validationGeneration) {
+    if (this.isStale(generation)) {
       return true;
     }
 
@@ -93,7 +93,7 @@ export class ValidationEngine<TValues> {
 
     const schemaResult = await this.validateSchema();
 
-    if (generation !== this.validationGeneration) {
+    if (this.isStale(generation)) {
       return true;
     }
 
@@ -118,7 +118,7 @@ export class ValidationEngine<TValues> {
 
     const localErrorsByKey = await this.validateFieldSchemas(targetFieldKeys);
 
-    if (generation !== this.validationGeneration) {
+    if (this.isStale(generation)) {
       return true;
     }
 
@@ -127,7 +127,7 @@ export class ValidationEngine<TValues> {
       ? await this.validateSchema()
       : ValidationEngine.createValidSchemaResult();
 
-    if (generation !== this.validationGeneration) {
+    if (this.isStale(generation)) {
       return true;
     }
 
@@ -148,13 +148,13 @@ export class ValidationEngine<TValues> {
     const generation = ++this.validationGeneration;
     const schemaResult = await this.validateSchema();
 
-    if (generation !== this.validationGeneration) {
+    if (this.isStale(generation)) {
       return true;
     }
 
     const localErrorsByKey = await this.validateRegisteredFieldSchemas();
 
-    if (generation !== this.validationGeneration) {
+    if (this.isStale(generation)) {
       return true;
     }
 
@@ -177,6 +177,11 @@ export class ValidationEngine<TValues> {
     }
 
     return this.schema.validate(this.store.getValues());
+  }
+
+  /** 주어진 generation이 현재 validationGeneration과 다르면, 즉 stale 검증이면 true를 반환한다. */
+  private isStale(generation: number): boolean {
+    return generation !== this.validationGeneration;
   }
 
   /**
