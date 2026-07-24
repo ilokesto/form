@@ -293,3 +293,87 @@ test('array move preserves isFocused on the moved child', () => {
   expect(form.getFieldState(['items', 0, 'name']).isFocused).toBe(true);
   expect(form.getFieldState(['items', 1, 'name']).isFocused).toBe(false);
 });
+
+test('async validation race: stale slower validation does not overwrite newer results', async () => {
+  let resolveValidation: ((result: { value: unknown } | { issues: readonly [{ message: string; path: readonly string[] }] }) => void) | undefined;
+  let schemaCallCount = 0;
+
+  const schema = standardSchema(() => {
+    schemaCallCount += 1;
+    return new Promise(r => { resolveValidation = r as typeof resolveValidation; });
+  });
+
+  const form = new CreateForm({
+    defaultValues: { email: '' },
+    validateOn: ['change'],
+    schema,
+  });
+
+  form.setValue('email', 'first', { source: 'user' });
+  const firstPromise = form.trigger('email');
+
+  form.setValue('email', 'second', { source: 'user' });
+  const secondPromise = form.trigger('email');
+
+  await Promise.resolve();
+  await Promise.resolve();
+  await Promise.resolve();
+  await Promise.resolve();
+
+  // Generation guard discards the first validation before it reaches validateSchema,
+  // so only the second validation calls the schema.
+  expect(schemaCallCount).toBe(1);
+  expect(resolveValidation).toBeDefined();
+
+  resolveValidation!({ value: {} });
+  await secondPromise;
+
+  expect(form.getFieldState('email').errors).toEqual([]);
+
+  // First validation's Promise resolves without applying errors (guard discarded it).
+  await firstPromise;
+
+  expect(form.getFieldState('email').errors).toEqual([]);
+});
+
+test('async validation race: latest validation result is applied when it resolves last', async () => {
+  let resolveValidation: ((result: { value: unknown } | { issues: readonly [{ message: string; path: readonly string[] }] }) => void) | undefined;
+  let schemaCallCount = 0;
+
+  const schema = standardSchema(() => {
+    schemaCallCount += 1;
+    return new Promise(r => { resolveValidation = r as typeof resolveValidation; });
+  });
+
+  const form = new CreateForm({
+    defaultValues: { email: '' },
+    validateOn: ['change'],
+    schema,
+  });
+
+  form.setValue('email', 'first', { source: 'user' });
+  const firstPromise = form.trigger('email');
+
+  form.setValue('email', 'second', { source: 'user' });
+  const secondPromise = form.trigger('email');
+
+  await Promise.resolve();
+  await Promise.resolve();
+  await Promise.resolve();
+  await Promise.resolve();
+
+  expect(schemaCallCount).toBe(1);
+  expect(resolveValidation).toBeDefined();
+
+  resolveValidation!({ issues: [{ message: 'Second is invalid', path: ['email'] }] });
+  await secondPromise;
+
+  expect(form.getFieldState('email').errors.map(error => error.message)).toEqual(['Second is invalid']);
+
+  // First validation resolves without overwriting (guard discarded it).
+  await firstPromise;
+
+  // This is the race condition: if the engine doesn't guard stale results,
+  // the first (stale) validation overwrites the second (correct) result.
+  expect(form.getFieldState('email').errors.map(error => error.message)).toEqual(['Second is invalid']);
+});
