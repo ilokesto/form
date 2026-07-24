@@ -6,6 +6,9 @@
     "build": "rm -rf dist && tsc",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
+    "lint": "biome lint .",
+    "lint:fix": "biome lint --write .",
+    "format": "biome format --write .",
     "changeset": "changeset",
     "version": "changeset version",
     "release": "changeset publish"
@@ -73,6 +76,7 @@
     "vite": "^7.3.3",
     "vitest": "^4.1.7",
     "vue": "^3.5.34",
+    "@biomejs/biome": "^2.0.0",
     "@changesets/cli": "^2.28.0"
   },
   "peerDependencies": {
