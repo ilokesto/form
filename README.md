@@ -47,6 +47,8 @@ pnpm test
 
 The package emits ESM JavaScript and TypeScript declarations to `dist/`.
 
+> **ESM-only.** This package ships `"type": "module"` with ESM-only `exports`. CommonJS `require()` is not supported. Use a modern bundler (Vite, webpack 5+, esbuild, tsup) or Node.js ESM (`import`). If you need CJS compatibility, use dynamic `import()` or configure your bundler to transpile `@ilokesto/form`.
+
 ## Quick start
 
 ```ts

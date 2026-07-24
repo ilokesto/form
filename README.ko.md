@@ -47,6 +47,8 @@ pnpm test
 
 이 package는 ESM JavaScript와 TypeScript declaration을 `dist/`로 emit한다.
 
+> **ESM-only.** 이 package는 `"type": "module"`과 ESM-only `exports`를 제공한다. CommonJS `require()`는 지원하지 않는다. Vite, webpack 5+, esbuild, tsup 같은 현대 번들러 또는 Node.js ESM(`import`)을 사용하라. CJS 호환이 필요하면 dynamic `import()` 또는 번들러에서 `@ilokesto/form`을 transpile하도록 설정하라.
+
 ## Quick start
 
 ```ts
