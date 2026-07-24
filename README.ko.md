@@ -185,6 +185,21 @@ Event model은 DOM event 중심이다. Custom component도 DOM-compatible `value
 
 Vue binding은 `./vue` subpath로 노출된다. React adapter와 같은 `useForm(form)` 형태를 쓰지만, Vue template의 `v-bind`에 바로 전달할 수 있도록 `onInput`, `onChange`, `onBlur`, `onFocus` handler를 가진 props를 반환한다.
 
+`useForm`은 `values` 필드(`ref`, `computed`, getter, 평면 값 모두 가능)와 optional `resetOptions`를 가진 `VueFormOptions` 객체도 받는다. `values` reference가 바뀌면 adapter가 `form.reset(values, resetOptions)`를 호출한다 — React adapter와 동일한 모델. 추적을 보장하려면 반응형 소스(`ref`/`computed`)를 직접 전달하라. 평면 값은 생성 시 1회 평가되며 컴포넌트가 다시 렌더링되어 `useForm`이 다시 호출될 때 다시 평가된다.
+
+```vue
+<script setup lang="ts">
+import { ref } from 'vue';
+import { useForm } from '@ilokesto/form/vue';
+
+const serverValues = ref({ email: 'initial@example.com' });
+const { form, useRegister } = useForm({
+  defaultValues: { email: '' },
+  values: serverValues,
+});
+</script>
+```
+
 ```vue
 <script setup lang="ts">
 import { CreateForm } from '@ilokesto/form';
@@ -242,7 +257,7 @@ Vue adapter도 같은 세 가지 개념을 노출한다.
 | `useRegister(options)` | 하나의 input 중심 `v-bind` binding object를 반환한다. `type`이 포함되고 기본값은 `text`다. Text input은 `input` event에서, checkbox/radio는 `change` event에서 값을 갱신한다. select/textarea 타입은 generic으로 좁힌다. |
 | `useRegister(options[])` / `useRegister(optionA, optionB)` | map-friendly rendering을 위해 여러 binding object를 반환한다. |
 | `useField(options)` | getter 기반 reactive read를 가진 `{ props, value, setValue, errors, dirty, touched }`를 반환한다. |
-| `useFormState()` | `errors`, `dirtyFields`, `touchedFields`, `isDirty`, `isValid`, `submitCount` 같은 form 전체 aggregate getter를 반환한다. |
+| `useFormState()` | `errors`, `dirtyFields`, `touchedFields`, `focusedField`, `isDirty`, `isValid`, `submitCount` 같은 form 전체 aggregate getter를 반환한다. |
 
 Field-local schema는 React와 같은 방식으로 동작하고 현재 Vue effect scope가 정리될 때 함께 cleanup된다.
 
