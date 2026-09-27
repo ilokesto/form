@@ -1,6 +1,6 @@
 # @ilokesto/form
 
-English | [한국어](./README.ko.md)
+**English** | [한국어](./README.ko.md)
 
 `@ilokesto/form` is a framework-agnostic form state core. It keeps form values, field metadata, validation errors, submit attempts, and array item keys in one normalized store, while leaving rendering and event binding to framework adapters.
 
@@ -11,6 +11,12 @@ The package is designed around five ideas:
 3. **Normalized field state**: nested values are split into leaf `FieldState` records and reconstructed when `getValues()` is called.
 4. **Standard Schema validation**: the core depends only on the Standard Schema v1 `~standard.validate` contract, not on a specific schema library.
 5. **Array rebasing**: when array items move, swap, insert, or disappear, child field metadata such as `errors`, `touched`, `dirty`, and `modified` is moved with the item.
+
+## Documentation
+
+- Full docs: [English](https://ilokesto.ayden94.com/en/form) · [한국어](https://ilokesto.ayden94.com/ko/form)
+- Source: [packages/form](https://github.com/ilokesto/ilokesto/tree/main/packages/form)
+- npm: [@ilokesto/form](https://www.npmjs.com/package/@ilokesto/form)
 
 ## Table of contents
 

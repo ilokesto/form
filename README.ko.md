@@ -1,6 +1,6 @@
 # @ilokesto/form
 
-[English](./README.md) | 한국어
+[English](./README.md) | **한국어**
 
 `@ilokesto/form`은 프레임워크에 의존하지 않는 form state core다. 렌더링과 이벤트 바인딩은 framework adapter에 맡기고, core는 form values, field metadata, validation errors, submit attempts, array item keys를 하나의 정규화된 store 안에서 관리한다.
 
@@ -11,6 +11,12 @@
 3. **정규화된 field state**: nested values는 leaf `FieldState` record로 분리되어 저장되고, `getValues()`를 호출할 때 다시 복원된다.
 4. **Standard Schema validation**: core는 특정 schema library가 아니라 Standard Schema v1의 `~standard.validate` 계약에만 의존한다.
 5. **Array rebasing**: array item이 move, swap, insert, remove될 때 `errors`, `touched`, `dirty`, `modified` 같은 child field metadata가 item과 함께 이동한다.
+
+## 문서
+
+- 전체 문서: [English](https://ilokesto.ayden94.com/en/form) · [한국어](https://ilokesto.ayden94.com/ko/form)
+- 소스: [packages/form](https://github.com/ilokesto/ilokesto/tree/main/packages/form)
+- npm: [@ilokesto/form](https://www.npmjs.com/package/@ilokesto/form)
 
 ## Table of contents
 
