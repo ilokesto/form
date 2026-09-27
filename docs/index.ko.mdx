@@ -5,7 +5,7 @@ description: "프레임워크와 분리된 폼 상태, 검증, 배열 메타데�
 
 # Form
 
-`@ilokesto/form`은 React, Vue, Solid, Svelte 어댑터와 함께 쓰는 프레임워크 독립 폼 상태 코어입니다. 코어는 값, 필드 메타데이터, 검증 오류, 제출 시도 횟수, 배열 항목의 안정적인 키를 하나의 정규화된 저장소에 보관합니다. 화면 렌더링은 각 프레임워크가 맡습니다. React, Vue, Solid는 `useForm(form)`에서 `useRegister`, `useField`, `useFormState`를 제공하고, Svelte는 `register` 액션과 읽기 가능한 폼 상태 저장소를 제공합니다.
+마크업을 직접 제어하면서 폼 값을 수집하고 검증해 제출하려면 `@ilokesto/form`을 사용하세요. 프레임워크와 분리된 컨트롤러와 React, Vue, Solid, Svelte용 작은 어댑터를 제공합니다. 입력 요소, 라벨, 레이아웃, 접근성은 애플리케이션이 결정하고, Form은 값, 상호작용 상태, 검증 오류, 제출 상태, 배열 항목의 안정적인 키를 일관되게 관리합니다.
 
 ## 설치
 
@@ -15,7 +15,7 @@ description: "프레임워크와 분리된 폼 상태, 검증, 배열 메타데�
 
 사용하는 프레임워크 피어 의존성도 함께 설치하세요. 예를 들면 `react`, `vue`, `solid-js`, `svelte` 중 하나입니다. 루트 진입점은 의도적으로 프레임워크를 가져오지 않습니다. 그래서 서버 유틸리티, 테스트, 공유 도메인 모듈에서도 UI 런타임 없이 폼 인스턴스를 만들 수 있습니다.
 
-## 작은 코어 예시
+## 코어 동작 확인하기
 
 ```ts lineNumbers
 import { CreateForm } from '@ilokesto/form';
@@ -34,7 +34,12 @@ form.setValue(['profile', 'name'], 'Grace', { source: 'user' });
 
 const values = form.getValues();
 const email = form.getFieldState('email');
+
+console.log(values);
+console.log(email.dirty, email.modified);
 ```
+
+예시를 실행하면 `profile.name: 'Grace'`가 포함된 갱신된 값이 출력되고, 이어서 `true true`가 출력됩니다. 이메일 값이 초기값과 다르고 사용자 입력으로 변경되었기 때문입니다. 이 코어 흐름에는 UI 프레임워크가 필요하지 않습니다.
 
 가장 중요한 규칙은 경로 의미입니다. 문자열은 그대로 하나의 필드 이름입니다. 따라서 `'profile.name'`은 점으로 나뉘는 경로가 아니라 최상위 필드 하나입니다. 중첩 값을 가리키려면 `['profile', 'name']` 같은 튜플 경로를 사용하세요. 이 명시성 덕분에 실제 제품 데이터의 필드 이름에 점이 들어가도 의도하지 않은 분리가 일어나지 않습니다.
 
@@ -47,4 +52,4 @@ const email = form.getFieldState('email');
 
 ## 다음에 읽을 문서
 
-작동하는 React 예시는 [빠른 시작](/ko/form/quick-start), 설계 모델은 [핵심 개념](/ko/form/core-concepts), 코어 API는 [CreateForm](/ko/form/reference/create-form), DOM 바인딩은 사용하는 프레임워크 통합 문서를 읽으세요.
+[빠른 시작](/ko/form/quick-start)에서 완전한 폼을 만들고 실행해 보세요. 그다음 [핵심 개념](/ko/form/core-concepts)에서 경로, 메타데이터, 검증, 배열을 이해할 수 있습니다. 이미 모델을 알고 있다면 [CreateForm 레퍼런스](/ko/form/reference/create-form)나 사용하는 [프레임워크 통합](/ko/form/integrations/react)으로 바로 이동하세요.

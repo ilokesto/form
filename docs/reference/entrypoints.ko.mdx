@@ -5,17 +5,17 @@ description: "코어와 프레임워크 어댑터를 올바른 패키지 하위 
 
 # 진입점
 
-`@ilokesto/form`에는 프레임워크와 분리된 루트 진입점 하나와 네 개의 어댑터 진입점이 있습니다. `CreateForm`, `CreateFormOptions`, `FieldPathInput`, `Form`, `FormError`, `ResetOptions`, `StandardSchemaV1`은 루트에서 가져옵니다. `FieldState`와 `FormState`는 `getFieldState()`와 `getState()`가 반환하는 런타임 모양이며 루트에서 가져올 수 없습니다. 프레임워크 도우미는 `@ilokesto/form/react`, `@ilokesto/form/vue`, `@ilokesto/form/solid`, `@ilokesto/form/svelte`에서 가져옵니다.
+`@ilokesto/form`에는 프레임워크와 분리된 루트 진입점 하나와 네 개의 어댑터 진입점이 있습니다. `CreateForm`과 모든 코어 공개 타입은 루트에서 가져옵니다. 공개 타입에는 `CreateFormOptions`, `FieldPathInput`, `FieldPathValue`, `FieldSchemaOptions`, `FieldState`, `Form`, `FormArray`, `FormError`, `FormState`, `ResetOptions`, `SetValueOptions`, `StandardSchemaV1`, `ValidationTrigger`가 포함됩니다. 프레임워크 도우미는 `@ilokesto/form/react`, `@ilokesto/form/vue`, `@ilokesto/form/solid`, `@ilokesto/form/svelte`에서 가져옵니다.
 
 ```ts lineNumbers
-import { CreateForm, type FormError } from '@ilokesto/form';
+import { CreateForm, type FieldState, type FormError } from '@ilokesto/form';
 import { useForm as useReactForm } from '@ilokesto/form/react';
 import { useForm as useVueForm } from '@ilokesto/form/vue';
 import { useForm as useSolidForm } from '@ilokesto/form/solid';
 import { useForm as useSvelteForm } from '@ilokesto/form/svelte';
 ```
 
-루트 진입점은 프레임워크 피어를 가져오지 않습니다. 어댑터 하위 경로는 패키지의 선택 피어 의존성을 따릅니다. React, Vue, Solid, Svelte 애플리케이션은 각 렌더러를 직접 설치해야 합니다. 가져오기 경로를 명확히 쓰면 Svelte를 React와 같은 훅 구조로 오해해 문서화하는 실수도 줄일 수 있습니다. Svelte는 `register`와 `useFormState`를 제공하며, 같은 모양의 `useField`와 `useRegister`를 노출하지 않습니다.
+루트 진입점은 프레임워크 피어를 가져오지 않습니다. 어댑터 하위 경로는 패키지의 선택 피어 의존성을 따릅니다. React, Vue, Solid, Svelte 애플리케이션은 각 렌더러를 직접 설치해야 합니다. 가져오기 경로를 명확히 쓰면 Svelte를 React와 같은 훅 구조로 오해해 문서화하는 실수도 줄일 수 있습니다. Svelte는 액션 기반 `register`와 `useField`, `useFormState`, `handleSubmit`을 제공하지만 `useRegister`는 노출하지 않습니다.
 
 ## 실무 사용 팁
 

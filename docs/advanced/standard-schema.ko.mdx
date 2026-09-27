@@ -5,7 +5,7 @@ description: "Form이 특정 검증 라이브러리에 의존하지 않고 Stand
 
 # Standard Schema
 
-`StandardSchemaV1`은 검증 경계입니다. 호환 스키마는 `~standard.version`, `vendor`, 선택적인 타입 정보, `validate(value, options)` 함수를 노출합니다. Form은 성공 값과 issue 목록에 관심이 있으며, 어떤 라이브러리가 그 결과를 만들었는지는 알 필요가 없습니다.
+`StandardSchemaV1`은 검증 경계입니다. 호환 스키마는 `~standard.version`, `vendor`, 선택적인 타입 정보, `validate(value, options)` 함수를 노출합니다. Form은 성공 값과 issue 목록에 관심이 있으며, 어떤 라이브러리가 그 결과를 만들었는지는 알 필요가 없습니다. 아래는 동기 validator만 간추린 모양이며, `validate`는 같은 결과를 `Promise`로 반환할 수도 있습니다.
 
 ```ts lineNumbers
 type StandardSchemaV1<Input = unknown, Output = Input> = {

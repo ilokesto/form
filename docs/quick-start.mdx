@@ -5,7 +5,7 @@ description: "Create a form, bind fields, validate on blur and submit, and read 
 
 # Quick start
 
-This page builds a small login form. It starts with the framework-neutral `CreateForm`, then binds React inputs through the React adapter. The same core instance can be used with Vue, Solid, or Svelte; only the rendering layer changes.
+Build a login form that validates when a field loses focus, blocks an invalid submit, and displays the submitted email after valid input. This example uses React; the same core controller works with Vue, Solid, or Svelte through their adapter entrypoints.
 
 ## 1. Install
 
@@ -15,10 +15,14 @@ This page builds a small login form. It starts with the framework-neutral `Creat
 
 Use `vue`, `solid-js`, or `svelte` instead of `react` when you follow a different integration page.
 
-## 2. Create the form outside render
+## 2. Add the complete component
 
-```ts lineNumbers
-import { CreateForm } from '@ilokesto/form';
+Create `LoginForm.tsx`:
+
+```tsx lineNumbers
+import { useState } from 'react';
+import { CreateForm, type StandardSchemaV1 } from '@ilokesto/form';
+import { useForm } from '@ilokesto/form/react';
 
 type LoginValues = {
   email: string;
@@ -26,52 +30,66 @@ type LoginValues = {
   remember: boolean;
 };
 
-export const loginForm = new CreateForm<LoginValues>({
+const loginSchema: StandardSchemaV1<unknown, LoginValues> = {
+  '~standard': {
+    version: 1,
+    vendor: 'login-example',
+    validate(value) {
+      const values = value as LoginValues;
+      const issues = [];
+
+      if (!values.email.includes('@')) {
+        issues.push({ message: 'Enter a valid email', path: ['email'] });
+      }
+      if (values.password.length < 8) {
+        issues.push({ message: 'Use at least 8 characters', path: ['password'] });
+      }
+
+      return issues.length > 0 ? { issues } : { value: values };
+    },
+  },
+};
+
+const loginForm = new CreateForm<LoginValues>({
   defaultValues: {
     email: '',
     password: '',
     remember: false,
   },
+  schema: loginSchema,
   validateOn: ['blur', 'submit'],
 });
-```
-
-`defaultValues` establishes the reset baseline and the first `FieldState` values. `validateOn` tells the core when automatic validation should run. You can still call `trigger()` manually at any time.
-
-## 3. Bind fields in React
-
-```tsx lineNumbers
-import { useForm } from '@ilokesto/form/react';
-import { loginForm } from './login-form';
 
 export function LoginForm() {
-  const { form, useField, useRegister, useFormState } = useForm(loginForm);
+  const [result, setResult] = useState('');
+  const { handleSubmit, useField, useRegister, useFormState } = useForm(loginForm);
   const email = useField({ name: 'email' });
-  const password = useRegister({ name: 'password', type: 'password' });
+  const password = useField({ name: 'password', type: 'password' });
   const remember = useRegister({ name: 'remember', type: 'checkbox' });
   const state = useFormState();
 
   return (
-    <form
-      onSubmit={(event) => {
-        event.preventDefault();
-        void form.submit(async (values) => {
-          await signIn(values);
-        });
-      }}
-    >
-      <input {...email.props} />
+    <form onSubmit={handleSubmit(async (values) => {
+      setResult(`Signed in as ${values.email}`);
+    })}>
+      <label>Email <input type="email" {...email.props} /></label>
       {email.errors.map((error) => <p key={error.message}>{error.message}</p>)}
-      <input {...password} />
+      <label>Password <input {...password.props} /></label>
+      {password.errors.map((error) => <p key={error.message}>{error.message}</p>)}
       <label><input type="checkbox" {...remember} /> Remember me</label>
-      <button disabled={!state.isDirty || !state.isValid}>Sign in</button>
+      <button disabled={state.isSubmitting}>Sign in</button>
+      {result && <p role="status">{result}</p>}
     </form>
   );
 }
 ```
 
-`useField` is convenient when you need value, errors, and setters together. `useRegister` is lighter when you only need DOM binding props. `useFormState` summarizes the whole form with `errors`, `dirtyFields`, `touchedFields`, `isDirty`, `isValid`, `isSubmitting`, and `submitCount`.
+`defaultValues` establishes the reset baseline. `useField` returns binding props and errors, while `useRegister` returns only binding props. `handleSubmit` prevents the browser submit, validates the form, and calls the callback only for valid values.
 
-## 4. Read and reset
+## 3. Run it and check the result
 
-After a successful submit, `getValues()` returns reconstructed values. `reset()` returns all fields to the initial baseline, or accepts a replacement baseline. Use `setErrors()` for server-side errors and `clearErrors()` when the user retries.
+Render `<LoginForm />` in your React application. Blur an empty field or submit immediately to see its validation message. Enter an email containing `@` and a password of at least eight characters, then submit. The page displays `Signed in as ada@example.com` (using the email you entered). Each submit attempt increments `submitCount`, so it is `1` after a valid first attempt or `2` after one invalid attempt followed by the valid one.
+
+## Next steps
+
+Read [Core concepts](/en/form/core-concepts) for the model behind this example. Continue with the [React integration](/en/form/integrations/react) for binding variants and external values, or [Build a login form](/en/form/guides/build-a-login-form) for production concerns such as server errors and reset behavior.

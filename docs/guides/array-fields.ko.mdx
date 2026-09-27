@@ -10,13 +10,16 @@ description: "안정적인 키와 메타데이터 재배치로 동적 목록을 
 ```tsx lineNumbers
 const phones = form.array(['phones']);
 const keys = phones.keys();
+const bindings = useRegister(keys.map((_, index) => ({
+  name: ['phones', index, 'value'] as const,
+})));
 
 return keys.map((key, index) => (
-  <input key={key} {...useRegister({ name: ['phones', index, 'value'] })} />
+  <input key={key} {...bindings[index]} />
 ));
 ```
 
-사용자가 항목을 추가, 제거, 이동, 교환, 교체할 때는 서로 관련 없는 필드를 직접 쓰기보다 `FormArray` 명령을 호출하세요. 그래야 코어가 `dirty`, `touched`, `modified`, errors를 재배치할 수 있습니다. 렌더 키는 프레임워크가 잘못된 논리 항목에 DOM 노드를 재사용하지 않도록 돕고, 경로 인덱스는 현재 값 위치를 설명합니다.
+이 코드는 `form`과 `useRegister`가 이미 있는 React 컴포넌트 조각입니다. `map` 안에서 훅을 호출하지 말고 한 번의 훅 호출로 목록을 등록하세요. 사용자가 항목을 추가, 제거, 이동, 교환, 교체할 때는 서로 관련 없는 필드를 직접 쓰기보다 `FormArray` 명령을 호출하세요. 그래야 코어가 `dirty`, `touched`, `modified`, 포커스 상태, errors를 재배치할 수 있습니다. 렌더 키는 React가 잘못된 논리 항목에 DOM 노드를 재사용하지 않도록 돕고, 경로 인덱스는 현재 값 위치를 설명합니다.
 
 ## 점검 목록
 

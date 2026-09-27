@@ -5,7 +5,7 @@ description: "Framework-agnostic form state, validation, array metadata, and fra
 
 # Form
 
-`@ilokesto/form` is a framework-agnostic form state core with small framework adapters for React, Vue, Solid, and Svelte. The core owns values, field metadata, validation errors, submit attempts, and stable array item keys in one normalized store. Rendering remains a framework concern: React, Vue, and Solid expose `useForm(form)` with `useRegister`, `useField`, and `useFormState`, while Svelte exposes an action-centered `register` plus a readable form state store.
+Use `@ilokesto/form` when you need to collect, validate, and submit form values without giving up control of your markup. It provides a framework-agnostic controller plus small adapters for React, Vue, Solid, and Svelte. You choose the inputs, labels, layout, and accessibility; Form keeps values, interaction state, validation errors, submit state, and stable array item keys consistent.
 
 ## Install
 
@@ -15,7 +15,7 @@ description: "Framework-agnostic form state, validation, array metadata, and fra
 
 Install the framework peer you use as well: `react`, `vue`, `solid-js`, or `svelte`. The root entrypoint intentionally does not import those frameworks, so server utilities, tests, and shared domain modules can create forms without pulling a UI runtime into the bundle.
 
-## Small core example
+## See the core work
 
 ```ts lineNumbers
 import { CreateForm } from '@ilokesto/form';
@@ -34,7 +34,12 @@ form.setValue(['profile', 'name'], 'Grace', { source: 'user' });
 
 const values = form.getValues();
 const email = form.getFieldState('email');
+
+console.log(values);
+console.log(email.dirty, email.modified);
 ```
+
+Running the example prints the updated values, including `profile.name: 'Grace'`, followed by `true true` because the email write differs from its default and came from the user. No UI framework is required for this core workflow.
 
 The most important rule is path semantics. A string is a literal field name, so `'profile.name'` is one top-level key. Use tuple paths such as `['profile', 'name']` when you want nested values. That explicitness prevents accidental splits when real product data contains dots in field names.
 
@@ -47,6 +52,4 @@ The most important rule is path semantics. A string is a literal field name, so 
 
 ## Where to go next
 
-Read [Quick start](/en/form/quick-start) for a working React example, [Core concepts](/en/form/core-concepts) for the mental model, [CreateForm](/en/form/reference/create-form) for the core API, and the integration page for your framework when you are ready to bind DOM inputs.
-
-> This documentation lives in the `@ilokesto/form` repository and is synced to the ilokesto docs site.
+Build and run a complete form in [Quick start](/en/form/quick-start). Then read [Core concepts](/en/form/core-concepts) to understand paths, metadata, validation, and arrays. If you already know the model, go directly to the [CreateForm reference](/en/form/reference/create-form) or your [framework integration](/en/form/integrations/react).

@@ -5,17 +5,17 @@ description: "Import the core and framework adapters from the correct package su
 
 # Entrypoints
 
-`@ilokesto/form` has one framework-neutral root entrypoint and four adapter entrypoints. Import `CreateForm`, `CreateFormOptions`, `FieldPathInput`, `Form`, `FormError`, `ResetOptions`, and `StandardSchemaV1` from the root. `FieldState` and `FormState` are runtime shapes returned by `getFieldState()` and `getState()`; they are not importable from the root. Import framework helpers from `@ilokesto/form/react`, `@ilokesto/form/vue`, `@ilokesto/form/solid`, or `@ilokesto/form/svelte`.
+`@ilokesto/form` has one framework-neutral root entrypoint and four adapter entrypoints. Import `CreateForm` and all core public types from the root, including `CreateFormOptions`, `FieldPathInput`, `FieldPathValue`, `FieldSchemaOptions`, `FieldState`, `Form`, `FormArray`, `FormError`, `FormState`, `ResetOptions`, `SetValueOptions`, `StandardSchemaV1`, and `ValidationTrigger`. Import framework helpers from `@ilokesto/form/react`, `@ilokesto/form/vue`, `@ilokesto/form/solid`, or `@ilokesto/form/svelte`.
 
 ```ts lineNumbers
-import { CreateForm, type FormError } from '@ilokesto/form';
+import { CreateForm, type FieldState, type FormError } from '@ilokesto/form';
 import { useForm as useReactForm } from '@ilokesto/form/react';
 import { useForm as useVueForm } from '@ilokesto/form/vue';
 import { useForm as useSolidForm } from '@ilokesto/form/solid';
 import { useForm as useSvelteForm } from '@ilokesto/form/svelte';
 ```
 
-The root entrypoint stays free of framework peers. The adapter subpaths declare optional peer expectations through the package: React, Vue, Solid, and Svelte applications should install their own renderer. Keeping imports explicit also prevents accidentally documenting Svelte as if it had React-like hooks. Svelte exposes `register` and `useFormState`, not the same `useField` and `useRegister` helper names.
+The root entrypoint stays free of framework peers. The adapter subpaths declare optional peer expectations through the package: React, Vue, Solid, and Svelte applications should install their own renderer. Keeping imports explicit also prevents accidentally documenting Svelte as if it had React-like hooks. Svelte exposes an action-based `register` plus `useField`, `useFormState`, and `handleSubmit`; it does not expose `useRegister`.
 
 ## Practical guidance
 

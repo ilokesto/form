@@ -20,7 +20,7 @@ const unsubscribe = form.subscribe(() => {
 });
 ```
 
-불변 스냅샷이 필요하면 `getState()`를 쓰고, 프레임워크나 외부 관찰자가 변경 알림을 받아야 하면 `subscribe()`를 사용합니다. 필드 단위 작업에는 `getValue`, `getValues`, `setValue`, `getFieldState`를 우선 사용하세요. `focus()`는 의도 명령입니다. 현재 코어 상태 구조는 포커스 플래그를 저장하지 않습니다.
+불변 스냅샷이 필요하면 `getState()`를 쓰고, 프레임워크나 외부 관찰자가 변경 알림을 받아야 하면 `subscribe()`를 사용합니다. 필드 단위 작업에는 `getValue`, `getValues`, `setValue`, `getFieldState`를 우선 사용하세요. `focus(path)`는 해당 필드의 `isFocused`를 설정합니다. `blur(path)`는 이를 해제하고 필드를 touched 처리하며 설정에 따라 blur 검증을 실행합니다.
 
 ## 실무 사용 팁
 

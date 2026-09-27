@@ -3,7 +3,7 @@
   "root": true,
   "pages": [
     "index",
-    "---Getting Started---",
+    "---Introduction---",
     "quick-start",
     "core-concepts",
     "---Reference---",

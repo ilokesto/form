@@ -5,7 +5,7 @@ description: "Understand value, errors, touched, dirty, modified, and manual err
 
 # Field state and errors
 
-A `FieldState` contains `value`, `errors`, `touched`, `dirty`, and `modified`. `getFieldState(path)` returns a readable shape even when the field has not been explicitly edited yet. `FormError` contains a `message` and optional machine-readable `type`.
+A `FieldState` contains `value`, `errors`, `touched`, `dirty`, `modified`, and `isFocused`. `getFieldState(path)` returns a readable shape even when the field has not been explicitly edited yet. `FormError` contains a `message` and optional machine-readable `type`.
 
 ```ts lineNumbers
 const email = form.getFieldState('email');
@@ -14,7 +14,7 @@ form.clearErrors('email');
 form.clearErrors();
 ```
 
-Use `setErrors` for server responses, optimistic checks, or UI-driven errors that do not belong in the schema. `clearErrors(path)` removes errors from selected fields, and `clearErrors()` removes all field errors. `blur(path)` marks a field touched and can validate when `validateOn` includes `blur`. `dirty` compares against the initial value; `modified` records user-originated interaction.
+Use `setErrors` for server responses, optimistic checks, or UI-driven errors that do not belong in the schema. `clearErrors(path)` removes errors from selected fields, and `clearErrors()` removes all field errors. `focus(path)` sets `isFocused`; `blur(path)` clears it, marks the field touched, and can validate when `validateOn` includes `blur`. `dirty` compares against the initial value; `modified` records user-originated interaction.
 
 ## Practical guidance
 

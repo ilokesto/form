@@ -5,7 +5,7 @@ description: "Use the register action and readable form state store from @ilokes
 
 # Svelte
 
-Install `svelte` as the peer and import from `@ilokesto/form/svelte`. Svelte is action-centered: `useForm(form)` returns `form`, `register`, and `useFormState()`. It does not expose the same `useField` or `useRegister` helpers as React, Vue, and Solid.
+Install `svelte` as the peer and import from `@ilokesto/form/svelte`. Svelte is action-centered: `useForm(form)` returns `form`, `register`, `useField`, `useFormState()`, and `handleSubmit`. It does not expose the `useRegister` helper used by React, Vue, and Solid.
 
 ```svelte lineNumbers
 <script lang="ts">

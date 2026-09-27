@@ -20,7 +20,7 @@ const unsubscribe = form.subscribe(() => {
 });
 ```
 
-Use `getState()` when you need the immutable snapshot, and `subscribe()` when a framework or external observer needs notification. Prefer `getValue`, `getValues`, `setValue`, and `getFieldState` for field-level operations. `focus()` is an intent command; the current core state shape does not store a focused flag.
+Use `getState()` when you need the immutable snapshot, and `subscribe()` when a framework or external observer needs notification. Prefer `getValue`, `getValues`, `setValue`, and `getFieldState` for field-level operations. `focus(path)` sets that field's `isFocused` state; `blur(path)` clears it, marks the field touched, and runs blur validation when configured.
 
 ## Practical guidance
 

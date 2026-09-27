@@ -5,7 +5,7 @@ description: "Validate, call valid or invalid callbacks, count submits, and rest
 
 # Submit and reset
 
-`submit(onValid, onInvalid)` validates the form, increments `submitCount`, and calls the appropriate callback. It resolves to the value returned by `onValid`, or `undefined` when validation fails. Use this method instead of reading values first and validating later; it keeps submit attempts and validation in one flow.
+`submit(onValid, onInvalid)` validates the form, increments `submitCount`, and calls the appropriate callback. While validation or `onValid` is pending, `isSubmitting` is true. On completion, `isSubmitted` is true and `isSubmitSuccessful` reports whether the valid callback completed successfully. The promise resolves to the value returned by `onValid`, resolves to `undefined` when validation fails, and rejects when `onValid` throws or rejects.
 
 ```ts lineNumbers
 await form.submit(
@@ -19,7 +19,7 @@ await form.submit(
 );
 ```
 
-`reset()` restores the original `defaultValues`. `reset(nextValues)` replaces the baseline and clears field metadata around the new values. Combine `submit`, `setErrors`, and `clearErrors` for server flows: submit valid client values, map server errors to fields, clear those errors when the user changes or retries.
+`reset()` restores the current `defaultValues`. `reset(nextValues)` replaces that baseline and clears field metadata around the new values. The optional `ResetOptions` can preserve dirty values, errors, touched flags, or submit state with `keepDirtyValues`, `keepErrors`, `keepTouched`, and `keepSubmitState`. Combine `submit`, `setErrors`, and `clearErrors` for server flows: submit valid client values, map server errors to fields, clear those errors when the user changes or retries.
 
 ## Practical guidance
 

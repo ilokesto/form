@@ -17,14 +17,13 @@ await form.submit(
     }
     form.reset(result.values);
   },
-  (fields) => {
-    const firstInvalid = Object.keys(fields)[0];
-    if (firstInvalid) form.focus(firstInvalid);
+  () => {
+    form.focus('email');
   },
 );
 ```
 
-Server errors are usually not schema errors because they depend on remote state. Add them with `setErrors`, clear them with `clearErrors`, and consider disabling submit while `isSubmitting` from `useFormState()` is true.
+This fragment is for a form whose first required field is `email`; focus a known public field path rather than passing an internal key from the invalid-fields record back into `focus()`. Server errors are usually not schema errors because they depend on remote state. Add them with `setErrors`, clear them with `clearErrors`, and consider disabling submit while `isSubmitting` from `useFormState()` is true.
 
 ## Checklist
 

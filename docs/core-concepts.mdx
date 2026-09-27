@@ -22,7 +22,7 @@ form.setValue('user.email', 'literal top-level value');
 
 ## Field state and metadata
 
-Every field has `value`, `errors`, `touched`, `dirty`, and `modified`. `dirty` compares the current value with the initial value. `modified` records whether a user-originated write happened. `touched` is set by `blur()`. These flags power UI decisions without forcing every framework adapter to invent its own metadata model.
+Every field has `value`, `errors`, `touched`, `dirty`, `modified`, and `isFocused`. `dirty` compares the current value with the initial value. `modified` records whether a user-originated write happened. `focus()` and `blur()` update focus state, and `blur()` also sets `touched`. These flags power UI decisions without forcing every framework adapter to invent its own metadata model.
 
 ## Validation and Standard Schema
 
@@ -31,3 +31,7 @@ Form-level `schema` and field-local schemas both use `StandardSchemaV1`. Field-l
 ## Arrays and rebasing
 
 `array(path)` returns commands that update array values and rebase child field metadata. When you `move`, `swap`, `insert`, or `remove`, errors and touched state should follow the logical item rather than stay glued to a numeric index. Stable `keys()` support list rendering while this rebasing happens.
+
+## Next steps
+
+Use the [CreateForm reference](/en/form/reference/create-form) for exact controller methods and state shapes. Read [Validation flow](/en/form/guides/validation-flow) when choosing validation timing, or [Array fields](/en/form/guides/array-fields) before rendering a dynamic list.

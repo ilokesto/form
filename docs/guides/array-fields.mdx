@@ -10,13 +10,16 @@ Dynamic lists need two paths: the array path and each child field path. Get stab
 ```tsx lineNumbers
 const phones = form.array(['phones']);
 const keys = phones.keys();
+const bindings = useRegister(keys.map((_, index) => ({
+  name: ['phones', index, 'value'] as const,
+})));
 
 return keys.map((key, index) => (
-  <input key={key} {...useRegister({ name: ['phones', index, 'value'] })} />
+  <input key={key} {...bindings[index]} />
 ));
 ```
 
-When the user adds, removes, moves, swaps, or replaces items, call the `FormArray` command rather than directly setting unrelated fields. That lets the core rebase `dirty`, `touched`, `modified`, and errors. The rendered key keeps the framework from reusing a DOM node for the wrong logical item while the path index still describes the current value location.
+This is a React component fragment with `form` and `useRegister` already available. Register the list in one hook call rather than calling a hook inside `map`. When the user adds, removes, moves, swaps, or replaces items, call the `FormArray` command rather than directly setting unrelated fields. That lets the core rebase `dirty`, `touched`, `modified`, focus state, and errors. The rendered key keeps React from reusing a DOM node for the wrong logical item while the path index still describes the current value location.
 
 ## Checklist
 

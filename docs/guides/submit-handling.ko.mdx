@@ -17,14 +17,13 @@ await form.submit(
     }
     form.reset(result.values);
   },
-  (fields) => {
-    const firstInvalid = Object.keys(fields)[0];
-    if (firstInvalid) form.focus(firstInvalid);
+  () => {
+    form.focus('email');
   },
 );
 ```
 
-서버 오류는 원격 상태에 의존하므로 보통 스키마 오류가 아닙니다. `setErrors`로 추가하고, `clearErrors`로 지우며, `useFormState()`의 `isSubmitting`이 true인 동안 제출 버튼을 비활성화하는 것을 고려하세요.
+이 조각은 첫 번째 필수 필드가 `email`인 폼을 전제로 합니다. invalid-fields 기록의 내부 키를 `focus()`에 다시 넘기지 말고 알고 있는 공개 필드 경로에 포커스하세요. 서버 오류는 원격 상태에 의존하므로 보통 스키마 오류가 아닙니다. `setErrors`로 추가하고, `clearErrors`로 지우며, `useFormState()`의 `isSubmitting`이 true인 동안 제출 버튼을 비활성화하는 것을 고려하세요.
 
 ## 점검 목록
 

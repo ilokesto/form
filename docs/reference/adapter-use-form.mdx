@@ -5,7 +5,7 @@ description: "Compare React, Vue, Solid, and Svelte adapter return shapes."
 
 # Adapter useForm
 
-All adapters start from an existing core form. React, Vue, and Solid return `form`, `useRegister`, `useField`, and `useFormState`. Their binding props differ by framework event names, but the field options are shared through `RegisterOptions`: `name`, optional `schema`, `schemaOptions`, `type`, `value`, `checkedValue`, and `uncheckedValue`.
+All adapters can start from an existing core form or create one from options. React, Vue, and Solid return `form`, `useRegister`, `useField`, `useFormState`, and `handleSubmit`; React also exposes `useFieldState`. Their binding props differ by framework event names, but the field options are shared through `RegisterOptions`: `name`, optional `schema`, `schemaOptions`, `type`, `value`, `checkedValue`, and `uncheckedValue`.
 
 ```ts lineNumbers
 const react = useReactForm(form);
@@ -14,7 +14,7 @@ const solid = useSolidForm(form);
 const svelte = useSvelteForm(form);
 ```
 
-Svelte is intentionally different. It returns `form`, a `register` action, and `useFormState()` as a readable store. It does not expose the same `useField` and `useRegister` helpers, so Svelte examples should be action-centered. For text inputs, checkbox, radio, select, and multiple select behavior, read the integration page for your framework.
+Svelte is intentionally action-centered. It returns `form`, a `register` action, `useField`, `useFormState()` as a readable store, and `handleSubmit`. It does not expose `useRegister`, so simple Svelte bindings should use the action. For text inputs, checkbox, radio, select, and multiple select behavior, read the integration page for your framework.
 
 ## Practical guidance
 

@@ -5,7 +5,7 @@ description: "검증하고 성공 또는 실패 콜백을 호출하며 제출 �
 
 # 제출과 초기화
 
-`submit(onValid, onInvalid)`은 폼을 검증하고 `submitCount`를 증가시킨 뒤 알맞은 콜백을 호출합니다. 검증이 성공하면 `onValid`의 반환값으로 resolve되고, 실패하면 `undefined`가 됩니다. 값을 먼저 읽고 나중에 검증하기보다 이 메서드를 쓰면 제출 시도와 검증이 한 흐름에 묶입니다.
+`submit(onValid, onInvalid)`은 폼을 검증하고 `submitCount`를 증가시킨 뒤 알맞은 콜백을 호출합니다. 검증이나 `onValid`가 진행 중이면 `isSubmitting`이 true입니다. 완료되면 `isSubmitted`가 true가 되고, `isSubmitSuccessful`은 유효한 값 콜백이 성공적으로 끝났는지를 나타냅니다. 반환 promise는 `onValid`의 반환값으로 resolve되고, 검증 실패 시 `undefined`로 resolve되며, `onValid`가 throw하거나 reject하면 reject됩니다.
 
 ```ts lineNumbers
 await form.submit(
@@ -19,7 +19,7 @@ await form.submit(
 );
 ```
 
-`reset()`은 원래 `defaultValues`로 되돌립니다. `reset(nextValues)`는 기준값을 교체하고 새 값 주변의 필드 메타데이터를 정리합니다. 서버 흐름에서는 `submit`, `setErrors`, `clearErrors`를 함께 사용하세요. 클라이언트 검증을 통과한 값을 제출하고, 서버 오류를 필드에 매핑한 뒤, 사용자가 수정하거나 다시 시도할 때 그 오류를 지웁니다.
+`reset()`은 현재 `defaultValues`로 되돌립니다. `reset(nextValues)`는 그 기준값을 교체하고 새 값 주변의 필드 메타데이터를 정리합니다. 선택적인 `ResetOptions`의 `keepDirtyValues`, `keepErrors`, `keepTouched`, `keepSubmitState`로 dirty 값, 오류, touched 플래그, 제출 상태를 보존할 수 있습니다. 서버 흐름에서는 `submit`, `setErrors`, `clearErrors`를 함께 사용하세요. 클라이언트 검증을 통과한 값을 제출하고, 서버 오류를 필드에 매핑한 뒤, 사용자가 수정하거나 다시 시도할 때 그 오류를 지웁니다.
 
 ## 실무 사용 팁
 

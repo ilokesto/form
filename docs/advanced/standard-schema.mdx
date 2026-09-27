@@ -5,7 +5,7 @@ description: "How Form consumes Standard Schema without depending on a validatio
 
 # Standard Schema
 
-`StandardSchemaV1` is the validation boundary. A compatible schema exposes `~standard.version`, `vendor`, optional phantom `types`, and a `validate(value, options)` function. Form cares about success values and issue lists, not the library that produced them.
+`StandardSchemaV1` is the validation boundary. A compatible schema exposes `~standard.version`, `vendor`, optional phantom `types`, and a `validate(value, options)` function. Form cares about success values and issue lists, not the library that produced them. The condensed shape below shows a synchronous validator; `validate` may return the same result in a `Promise`.
 
 ```ts lineNumbers
 type StandardSchemaV1<Input = unknown, Output = Input> = {
