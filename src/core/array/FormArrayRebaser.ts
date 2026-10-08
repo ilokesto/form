@@ -1,12 +1,11 @@
-import type { IndexMapper } from './ArrayItemReorder';
+import type { FormArrayMutation } from './FormArrayMutationPlanner';
 import { FormArrayPath } from './FormArrayPath';
+import { FieldStateFactory } from '../state/FieldStateFactory';
 import { FormStateInitializer } from '../state/FormStateInitializer';
+import { FormStateReader } from '../state/FormStateReader';
 import { FormPath } from '../path/index';
 import { ValueHelper } from '../value/index';
-import { FormStateStore } from '../state/index';
 import type { FieldPath, FormState } from '../types';
-
-export type { IndexMapper } from './ArrayItemReorder';
 
 /**
  * 배열 변경 이후 FormState 전체를 다시 맞추는 rebase 담당 클래스다.
@@ -29,23 +28,18 @@ export class FormArrayRebaser {
    * 4. 배열 child field는 mapPreviousIndex로 새 index를 찾아 메타데이터를 옮긴다.
    * 5. 살아남은 arrayKeys를 보존하고 변경된 배열의 key와 submitCount를 새 state에 다시 반영한다.
    *
-   * @param store - 현재 FormState를 읽을 store.
+   * @param previousState - 변경 전 FormState snapshot.
    * @param fieldPath - 변경된 배열 field path.
-   * @param nextArray - 변경 후 배열 값.
-   * @param nextKeys - 변경 후 배열 item key 목록.
-   * @param mapPreviousIndex - 이전 item index를 새 index로 바꾸는 mapper.
+   * @param mutation - 변경 후 배열 값, item key, 이전 index를 새 index로 바꾸는 mapper.
    * @returns store에 넣을 새 FormState.
    */
   public static rebase<TValues>(
-    store: FormStateStore<TValues>,
+    previousState: Readonly<FormState<TValues>>,
     fieldPath: FieldPath,
-    nextArray: readonly unknown[],
-    nextKeys: readonly string[],
-    mapPreviousIndex: IndexMapper,
+    mutation: FormArrayMutation,
   ): FormState<TValues> {
-    const previousState = store.getState();
-    const fieldPaths = store.getKnownFieldPaths();
-    const nextValues = ValueHelper.setValueAtPath(store.getValues(), fieldPath, [...nextArray]);
+    const fieldPaths = FormStateReader.getKnownFieldPaths(previousState);
+    const nextValues = ValueHelper.setValueAtPath(FormStateReader.getValues(previousState), fieldPath, [...mutation.values]);
     const initializedState = FormStateInitializer.initialize(nextValues);
     const arrayKey = FormPath.pathToKey(fieldPath);
     const rebasedFields = { ...initializedState.fields };
@@ -69,7 +63,7 @@ export class FormArrayRebaser {
         return;
       }
 
-      const nextIndex = mapPreviousIndex(previousIndex);
+      const nextIndex = mutation.mapPreviousIndex(previousIndex);
 
       if (nextIndex === undefined) {
         return;
@@ -77,7 +71,7 @@ export class FormArrayRebaser {
 
       const nextFieldPath = FormArrayPath.replaceArrayIndex(currentFieldPath, fieldPath, nextIndex);
       const nextFieldKey = FormPath.pathToKey(nextFieldPath);
-      const nextField = initializedState.fields[nextFieldKey] ?? FormStateStore.getDefaultFieldState();
+      const nextField = initializedState.fields[nextFieldKey] ?? FieldStateFactory.createDefault();
 
       rebasedFields[nextFieldKey] = {
         ...nextField,
@@ -104,7 +98,7 @@ export class FormArrayRebaser {
           return;
         }
 
-        const nextIndex = mapPreviousIndex(previousIndex);
+        const nextIndex = mutation.mapPreviousIndex(previousIndex);
 
         if (nextIndex === undefined) {
           return;
@@ -121,7 +115,7 @@ export class FormArrayRebaser {
       }
     });
 
-    rebasedArrayKeys[arrayKey] = [...nextKeys];
+    rebasedArrayKeys[arrayKey] = [...mutation.keys];
 
     return {
       ...initializedState,

@@ -71,23 +71,21 @@ test('runs standard schema validation for blur, manual trigger, and submit', asy
 });
 
 test('tracks submit lifecycle for pending, invalid, and throwing submissions', async () => {
-  let resolveSubmit: (() => void) | undefined;
+  const callbackStarted = Promise.withResolvers<void>();
+  const callbackCompleted = Promise.withResolvers<void>();
   const form = new CreateForm({ defaultValues: { email: 'ada@example.com' } });
-  const pendingSubmit = form.submit(() => new Promise<void>(resolve => {
-    resolveSubmit = resolve;
-  }));
+  const pendingSubmit = form.submit(() => {
+    callbackStarted.resolve();
+    return callbackCompleted.promise;
+  });
 
   expect(form.getState().submitCount).toBe(1);
   expect(form.getState().isSubmitting).toBe(true);
   expect(form.getState().isSubmitted).toBe(false);
   expect(form.getState().isSubmitSuccessful).toBe(false);
 
-  for (let index = 0; index < 5 && !resolveSubmit; index += 1) {
-    await Promise.resolve();
-  }
-
-  expect(resolveSubmit).toBeDefined();
-  resolveSubmit?.();
+  await callbackStarted.promise;
+  callbackCompleted.resolve();
   await pendingSubmit;
 
   expect(form.getState().isSubmitting).toBe(false);
@@ -295,12 +293,14 @@ test('array move preserves isFocused on the moved child', () => {
 });
 
 test('async validation race: stale slower validation does not overwrite newer results', async () => {
-  let resolveValidation: ((result: { value: unknown } | { issues: readonly [{ message: string; path: readonly string[] }] }) => void) | undefined;
+  const validationStarted = Promise.withResolvers<void>();
+  const validationResult = Promise.withResolvers<{ value: unknown }>();
   let schemaCallCount = 0;
 
   const schema = standardSchema(() => {
     schemaCallCount += 1;
-    return new Promise(r => { resolveValidation = r as typeof resolveValidation; });
+    validationStarted.resolve();
+    return validationResult.promise;
   });
 
   const form = new CreateForm({
@@ -315,15 +315,10 @@ test('async validation race: stale slower validation does not overwrite newer re
   form.setValue('email', 'second', { source: 'user' });
   const secondPromise = form.trigger('email');
 
-  await Promise.resolve();
-  await Promise.resolve();
-  await Promise.resolve();
-  await Promise.resolve();
+  await validationStarted.promise;
 
   expect(schemaCallCount).toBe(1);
-  expect(resolveValidation).toBeDefined();
-
-  resolveValidation!({ value: {} });
+  validationResult.resolve({ value: {} });
   await secondPromise;
 
   expect(form.getFieldState('email').errors).toEqual([]);
@@ -334,12 +329,14 @@ test('async validation race: stale slower validation does not overwrite newer re
 });
 
 test('async validation race: latest validation result is applied when it resolves last', async () => {
-  let resolveValidation: ((result: { value: unknown } | { issues: readonly [{ message: string; path: readonly string[] }] }) => void) | undefined;
+  const validationStarted = Promise.withResolvers<void>();
+  const validationResult = Promise.withResolvers<{ issues: readonly [{ message: string; path: readonly string[] }] }>();
   let schemaCallCount = 0;
 
   const schema = standardSchema(() => {
     schemaCallCount += 1;
-    return new Promise(r => { resolveValidation = r as typeof resolveValidation; });
+    validationStarted.resolve();
+    return validationResult.promise;
   });
 
   const form = new CreateForm({
@@ -354,15 +351,10 @@ test('async validation race: latest validation result is applied when it resolve
   form.setValue('email', 'second', { source: 'user' });
   const secondPromise = form.trigger('email');
 
-  await Promise.resolve();
-  await Promise.resolve();
-  await Promise.resolve();
-  await Promise.resolve();
+  await validationStarted.promise;
 
   expect(schemaCallCount).toBe(1);
-  expect(resolveValidation).toBeDefined();
-
-  resolveValidation!({ issues: [{ message: 'Second is invalid', path: ['email'] }] });
+  validationResult.resolve({ issues: [{ message: 'Second is invalid', path: ['email'] }] });
   await secondPromise;
 
   expect(form.getFieldState('email').errors.map(error => error.message)).toEqual(['Second is invalid']);

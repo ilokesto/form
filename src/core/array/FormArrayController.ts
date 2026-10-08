@@ -2,7 +2,7 @@ import { ArrayKeyGenerator } from './ArrayKeyGenerator';
 import { FormArrayMutationPlanner, type FormArrayMutation } from './FormArrayMutationPlanner';
 import { FormPath } from '../path/index';
 import { FormStateStore } from '../state/index';
-import { FormArrayRebaser, type IndexMapper } from './FormArrayRebaser';
+import { FormArrayRebaser } from './FormArrayRebaser';
 import type { FieldPath, FormArray } from '../types';
 
 /**
@@ -20,21 +20,18 @@ export class FormArrayController<TValues> implements FormArray {
   private readonly keyGenerator: ArrayKeyGenerator;
   /** 이 controller가 담당하는 배열 field의 내부 tuple path다. */
   private readonly fieldPath: FieldPath;
-  /** insert/remove/move/swap/replace의 다음 배열 상태를 계산하는 planner다. */
-  private readonly mutations: FormArrayMutationPlanner;
 
   /**
    * 배열 controller를 만든다.
    *
    * @param store - form state store.
-   * @param keys - item key 생성기. factory가 같은 생성기를 공유해 key 충돌을 줄인다.
+   * @param keys - 같은 form의 controller들이 공유하는 item key 생성기.
    * @param fieldPath - 제어할 배열 field path.
    */
   public constructor(store: FormStateStore<TValues>, keys: ArrayKeyGenerator, fieldPath: FieldPath) {
     this.store = store;
     this.keyGenerator = keys;
     this.fieldPath = fieldPath;
-    this.mutations = new FormArrayMutationPlanner();
   }
 
   /**
@@ -53,7 +50,7 @@ export class FormArrayController<TValues> implements FormArray {
    * @param value - 삽입할 item value.
    */
   public insert(index: number, value: unknown): void {
-    this.applyMutation(this.mutations.insert(this.getArray(), this.getKeys(), index, value, this.keyGenerator.create()));
+    this.applyMutation(FormArrayMutationPlanner.insert(this.getArray(), this.getKeys(), index, value, this.keyGenerator.create()));
   }
 
   /**
@@ -62,7 +59,7 @@ export class FormArrayController<TValues> implements FormArray {
    * @param value - 추가할 item value.
    */
   public push(value: unknown): void {
-    this.applyMutation(this.mutations.push(this.getArray(), this.getKeys(), value, this.keyGenerator.create()));
+    this.applyMutation(FormArrayMutationPlanner.push(this.getArray(), this.getKeys(), value, this.keyGenerator.create()));
   }
 
   /**
@@ -71,7 +68,7 @@ export class FormArrayController<TValues> implements FormArray {
    * @param index - 제거할 item index. 유효하지 않으면 아무 일도 하지 않는다.
    */
   public remove(index: number): void {
-    this.applyMutation(this.mutations.remove(this.getArray(), this.getKeys(), index));
+    this.applyMutation(FormArrayMutationPlanner.remove(this.getArray(), this.getKeys(), index));
   }
 
   /**
@@ -81,7 +78,7 @@ export class FormArrayController<TValues> implements FormArray {
    * @param toIndex - 이동 후 index.
    */
   public move(fromIndex: number, toIndex: number): void {
-    this.applyMutation(this.mutations.move(this.getArray(), this.getKeys(), fromIndex, toIndex));
+    this.applyMutation(FormArrayMutationPlanner.move(this.getArray(), this.getKeys(), fromIndex, toIndex));
   }
 
   /**
@@ -91,7 +88,7 @@ export class FormArrayController<TValues> implements FormArray {
    * @param rightIndex - 두 번째 item index.
    */
   public swap(leftIndex: number, rightIndex: number): void {
-    this.applyMutation(this.mutations.swap(this.getArray(), this.getKeys(), leftIndex, rightIndex));
+    this.applyMutation(FormArrayMutationPlanner.swap(this.getArray(), this.getKeys(), leftIndex, rightIndex));
   }
 
   /**
@@ -103,7 +100,7 @@ export class FormArrayController<TValues> implements FormArray {
    * @param values - 새 배열 값.
    */
   public replace(values: readonly unknown[]): void {
-    this.applyMutation(this.mutations.replace(values, values.map(() => this.keyGenerator.create())));
+    this.applyMutation(FormArrayMutationPlanner.replace(values, values.map(() => this.keyGenerator.create())));
   }
 
   /**
@@ -137,19 +134,8 @@ export class FormArrayController<TValues> implements FormArray {
       return;
     }
 
-    this.rebase(mutation.values, mutation.keys, mutation.mapPreviousIndex);
-  }
-
-  /**
-   * 다음 배열 값과 key 목록을 FormState 전체에 반영한다.
-   *
-   * @param nextArray - 변경 후 배열 값.
-   * @param nextKeys - 변경 후 item key 목록.
-   * @param mapPreviousIndex - 기존 child field index를 새 index로 매핑하는 함수.
-   */
-  private rebase(nextArray: readonly unknown[], nextKeys: readonly string[], mapPreviousIndex: IndexMapper): void {
-    this.store.replaceState(() =>
-      FormArrayRebaser.rebase(this.store, this.fieldPath, nextArray, nextKeys, mapPreviousIndex),
+    this.store.replaceState(previousState =>
+      FormArrayRebaser.rebase(previousState, this.fieldPath, mutation),
     );
   }
 }

@@ -1,1 +1,2 @@
-export { FormArrayFactory } from './FormArrayFactory';
+export { ArrayKeyGenerator } from './ArrayKeyGenerator';
+export { FormArrayController } from './FormArrayController';

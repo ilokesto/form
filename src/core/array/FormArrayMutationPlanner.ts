@@ -31,7 +31,7 @@ export class FormArrayMutationPlanner {
    * @param nextKey - 새 item에 부여할 key.
    * @returns rebase에 필요한 mutation.
    */
-  public insert(
+  public static insert(
     currentArray: readonly unknown[],
     currentKeys: readonly string[],
     index: number,
@@ -63,7 +63,7 @@ export class FormArrayMutationPlanner {
    * @param nextKey - 새 item key.
    * @returns rebase에 필요한 mutation.
    */
-  public push(currentArray: readonly unknown[], currentKeys: readonly string[], value: unknown, nextKey: string): FormArrayMutation {
+  public static push(currentArray: readonly unknown[], currentKeys: readonly string[], value: unknown, nextKey: string): FormArrayMutation {
     return {
       values: [...currentArray, value],
       keys: [...currentKeys, nextKey],
@@ -79,7 +79,7 @@ export class FormArrayMutationPlanner {
    * @param index - 제거할 index.
    * @returns 유효하지 않은 index면 undefined, 아니면 mutation.
    */
-  public remove(currentArray: readonly unknown[], currentKeys: readonly string[], index: number): FormArrayMutation | undefined {
+  public static remove(currentArray: readonly unknown[], currentKeys: readonly string[], index: number): FormArrayMutation | undefined {
     if (index < 0 || index >= currentArray.length) {
       return undefined;
     }
@@ -102,7 +102,7 @@ export class FormArrayMutationPlanner {
    * @param toIndex - 이동 후 index.
    * @returns 유효하지 않은 index거나 같은 위치면 undefined, 아니면 mutation.
    */
-  public move(currentArray: readonly unknown[], currentKeys: readonly string[], fromIndex: number, toIndex: number): FormArrayMutation | undefined {
+  public static move(currentArray: readonly unknown[], currentKeys: readonly string[], fromIndex: number, toIndex: number): FormArrayMutation | undefined {
     if (fromIndex < 0 || fromIndex >= currentArray.length || toIndex < 0 || toIndex >= currentArray.length || fromIndex === toIndex) {
       return undefined;
     }
@@ -125,7 +125,7 @@ export class FormArrayMutationPlanner {
    * @param rightIndex - 두 번째 index.
    * @returns 유효하지 않은 index거나 같은 위치면 undefined, 아니면 mutation.
    */
-  public swap(currentArray: readonly unknown[], currentKeys: readonly string[], leftIndex: number, rightIndex: number): FormArrayMutation | undefined {
+  public static swap(currentArray: readonly unknown[], currentKeys: readonly string[], leftIndex: number, rightIndex: number): FormArrayMutation | undefined {
     if (
       leftIndex < 0 ||
       rightIndex < 0 ||
@@ -155,7 +155,7 @@ export class FormArrayMutationPlanner {
    * @param nextKeys - 새 item key 목록.
    * @returns rebase에 필요한 mutation.
    */
-  public replace(values: readonly unknown[], nextKeys: readonly string[]): FormArrayMutation {
+  public static replace(values: readonly unknown[], nextKeys: readonly string[]): FormArrayMutation {
     return {
       values: [...values],
       keys: [...nextKeys],

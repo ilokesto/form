@@ -2,21 +2,16 @@ import { expect, test } from 'vitest';
 
 import {
   createControlledForm,
-  getValidation,
-  waitForValidations,
+  createDeferred,
 } from './helpers/controlledValidation';
-import type {
-  Deferred,
-  ValidationResult,
-  Values,
-} from './helpers/controlledValidation';
+import type { Values } from './helpers/controlledValidation';
 
 test('Given submit validation made stale by change validation, when the old result is valid, then submit waits for authoritative invalid validation', async () => {
-  const validations: Deferred<ValidationResult>[] = [];
-  const form = createControlledForm(validations);
+  const { form, nextValidation } = createControlledForm();
   let validCalls = 0;
   let invalidCalls = 0;
 
+  const submitStarted = nextValidation();
   const submission = form.submit(
     () => {
       validCalls += 1;
@@ -26,15 +21,17 @@ test('Given submit validation made stale by change validation, when the old resu
       invalidCalls += 1;
     },
   );
-  await waitForValidations(validations, 1);
+  const submitResult = await submitStarted;
+  const changeStarted = nextValidation();
   form.setValue('email', 'invalid', { validate: true });
-  await waitForValidations(validations, 2);
-  getValidation(validations, 0).resolve({ value: { email: '', name: '' } });
-  await waitForValidations(validations, 3);
+  const changeResult = await changeStarted;
+  const retryStarted = nextValidation();
+  submitResult.resolve({ value: { email: '', name: '' } });
+  const retryResult = await retryStarted;
 
   expect(validCalls).toBe(0);
-  getValidation(validations, 1).resolve({ value: { email: 'invalid', name: '' } });
-  getValidation(validations, 2).resolve({
+  changeResult.resolve({ value: { email: 'invalid', name: '' } });
+  retryResult.resolve({
     issues: [{ message: 'Current email is invalid', path: ['email'] }],
   });
 
@@ -47,74 +44,70 @@ test('Given submit validation made stale by change validation, when the old resu
 });
 
 test('Given values change without automatic validation, when pending submit validation resolves, then submit revalidates current values', async () => {
-  const validations: Deferred<ValidationResult>[] = [];
-  const form = createControlledForm(validations);
+  const { form, nextValidation } = createControlledForm();
   let submittedValues: Values | undefined;
 
+  const submitStarted = nextValidation();
   const submission = form.submit((values) => {
     submittedValues = values;
     return 'submitted';
   });
-  await waitForValidations(validations, 1);
+  const submitResult = await submitStarted;
   form.setValue('email', 'latest');
-  getValidation(validations, 0).resolve({ value: { email: '', name: '' } });
-  await waitForValidations(validations, 2);
+  const retryStarted = nextValidation();
+  submitResult.resolve({ value: { email: '', name: '' } });
+  const retryResult = await retryStarted;
 
   expect(submittedValues).toBeUndefined();
-  getValidation(validations, 1).resolve({ value: { email: 'latest', name: '' } });
+  retryResult.resolve({ value: { email: 'latest', name: '' } });
 
   expect(await submission).toBe('submitted');
   expect(submittedValues).toEqual({ email: 'latest', name: '' });
 });
 
 test('Given concurrent submits with deferred callbacks, when each callback completes, then both submissions settle in sequence', async () => {
-  const validations: Deferred<ValidationResult>[] = [];
-  const form = createControlledForm(validations);
+  const { form, nextValidation, validations } = createControlledForm();
   const callbackOrder: string[] = [];
-  let resolveFirstCallback: (() => void) | undefined;
-  let resolveSecondCallback: (() => void) | undefined;
+  const firstCallbackStarted = createDeferred<void>();
+  const secondCallbackStarted = createDeferred<void>();
+  const firstCallback = createDeferred<void>();
+  const secondCallback = createDeferred<void>();
 
+  const firstStarted = nextValidation();
   const firstSubmission = form.submit(async () => {
     callbackOrder.push('first');
-    await new Promise<void>((resolve) => {
-      resolveFirstCallback = resolve;
-    });
+    firstCallbackStarted.resolve();
+    await firstCallback.promise;
     return 'first result';
   });
   const secondSubmission = form.submit(async () => {
     callbackOrder.push('second');
-    await new Promise<void>((resolve) => {
-      resolveSecondCallback = resolve;
-    });
+    secondCallbackStarted.resolve();
+    await secondCallback.promise;
     return 'second result';
   });
 
-  await waitForValidations(validations, 1);
+  const firstResult = await firstStarted;
   expect(form.getState().submitCount).toBe(2);
   expect(form.getState().isSubmitting).toBe(true);
 
-  getValidation(validations, 0).resolve({ value: { email: '', name: '' } });
-  for (let turn = 0; turn < 10 && resolveFirstCallback === undefined; turn += 1) {
-    await Promise.resolve();
-  }
+  firstResult.resolve({ value: { email: '', name: '' } });
+  await firstCallbackStarted.promise;
 
   expect(callbackOrder).toEqual(['first']);
-  expect(resolveFirstCallback).toBeDefined();
   expect(validations).toHaveLength(1);
   expect(form.getState().isSubmitting).toBe(true);
 
-  resolveFirstCallback?.();
-  await waitForValidations(validations, 2);
-  getValidation(validations, 1).resolve({ value: { email: '', name: '' } });
-  for (let turn = 0; turn < 10 && resolveSecondCallback === undefined; turn += 1) {
-    await Promise.resolve();
-  }
+  const secondStarted = nextValidation();
+  firstCallback.resolve();
+  const secondResult = await secondStarted;
+  secondResult.resolve({ value: { email: '', name: '' } });
+  await secondCallbackStarted.promise;
 
   expect(callbackOrder).toEqual(['first', 'second']);
-  expect(resolveSecondCallback).toBeDefined();
   expect(form.getState().isSubmitting).toBe(true);
 
-  resolveSecondCallback?.();
+  secondCallback.resolve();
   expect(await Promise.all([firstSubmission, secondSubmission])).toEqual([
     'first result',
     'second result',

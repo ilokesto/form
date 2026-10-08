@@ -1,5 +1,6 @@
 import { StandardSchemaValidator, type StandardSchemaValidationResult } from './StandardSchemaValidator';
 import { ValidationSequencer, type ValidationToken } from './ValidationSequencer';
+import { ValidationSnapshot } from './ValidationSnapshot';
 import type { FormStateStore } from '../state/index';
 import type { CreateFormOptions, FieldSchemaOptions, FormError, PathKey, ValidationTrigger } from '../types';
 
@@ -7,11 +8,6 @@ export type ValidationOutcome =
   | { readonly kind: 'invalid' }
   | { readonly kind: 'stale' }
   | { readonly kind: 'valid' };
-
-type ValueSnapshot = {
-  readonly arrayKeys: ReadonlyMap<PathKey, readonly string[]>;
-  readonly fieldValues: ReadonlyMap<PathKey, unknown>;
-};
 
 /**
  * Standard Schema validation 실행을 담당하는 엔진이다.
@@ -109,7 +105,9 @@ export class ValidationEngine<TValues> {
     }
 
     const token = this.sequencer.startFields(targetFieldKeys);
-    const snapshot = this.captureValueSnapshot();
+    const snapshot = ValidationSnapshot.capture(this.store.getState());
+
+    // Field validation gives local schemas precedence before running the form fallback.
     const localErrorsByKey = await this.validateFieldSchemas(targetFieldKeys);
 
     if (this.isStale(token, snapshot)) {
@@ -118,7 +116,7 @@ export class ValidationEngine<TValues> {
 
     const formSchemaFieldKeys = targetFieldKeys.filter(fieldKey => !this.fieldSchemas.has(fieldKey));
     const schemaResult = formSchemaFieldKeys.length > 0
-      ? await this.validateSchema()
+      ? await this.validateFormSchema()
       : ValidationEngine.createValidSchemaResult();
 
     if (this.isStale(token, snapshot)) {
@@ -147,14 +145,16 @@ export class ValidationEngine<TValues> {
     _trigger: ValidationTrigger,
   ): Promise<ValidationOutcome> {
     const token = this.sequencer.startFull();
-    const snapshot = this.captureValueSnapshot();
-    const schemaResult = await this.validateSchema();
+    const snapshot = ValidationSnapshot.capture(this.store.getState());
+
+    // Full validation runs the form schema first, then applies local overrides.
+    const schemaResult = await this.validateFormSchema();
 
     if (this.isStale(token, snapshot)) {
       return { kind: 'stale' };
     }
 
-    const localErrorsByKey = await this.validateRegisteredFieldSchemas();
+    const localErrorsByKey = await this.validateFieldSchemas([...this.fieldSchemas.keys()]);
 
     if (this.isStale(token, snapshot)) {
       return { kind: 'stale' };
@@ -175,7 +175,7 @@ export class ValidationEngine<TValues> {
    *
    * @returns schema가 없으면 성공 결과, 있으면 schema validation 결과.
    */
-  private validateSchema(): Promise<StandardSchemaValidationResult> {
+  private validateFormSchema(): Promise<StandardSchemaValidationResult> {
     if (!this.schema) {
       return Promise.resolve(ValidationEngine.createValidSchemaResult());
     }
@@ -183,30 +183,8 @@ export class ValidationEngine<TValues> {
     return this.schema.validate(this.store.getValues());
   }
 
-  private captureValueSnapshot(): ValueSnapshot {
-    const state = this.store.getState();
-    return {
-      arrayKeys: new Map(Object.entries(state.arrayKeys)),
-      fieldValues: new Map(
-        Object.entries(state.fields).map(([fieldKey, field]) => [fieldKey, field.value]),
-      ),
-    };
-  }
-
-  private isStale(token: ValidationToken, snapshot: ValueSnapshot): boolean {
-    if (this.sequencer.isStale(token)) return true;
-
-    const state = this.store.getState();
-    if (snapshot.fieldValues.size !== Object.keys(state.fields).length) return true;
-    if (snapshot.arrayKeys.size !== Object.keys(state.arrayKeys).length) return true;
-
-    for (const [fieldKey, value] of snapshot.fieldValues) {
-      if (!Object.is(state.fields[fieldKey]?.value, value)) return true;
-    }
-    for (const [fieldKey, keys] of snapshot.arrayKeys) {
-      if (!Object.is(state.arrayKeys[fieldKey], keys)) return true;
-    }
-    return false;
+  private isStale(token: ValidationToken, snapshot: ValidationSnapshot): boolean {
+    return this.sequencer.isStale(token) || !snapshot.matches(this.store.getState());
   }
 
   /**
@@ -216,6 +194,7 @@ export class ValidationEngine<TValues> {
    * @param errorsByKey - field key별 errors.
    */
   private applyErrors(fieldKeys: readonly PathKey[], errorsByKey: Readonly<Record<PathKey, readonly FormError[]>>): void {
+    // Each field write notifies synchronously; applying a result is not a batched state change.
     fieldKeys.forEach(fieldKey => {
       this.store.setErrorsByKey(fieldKey, errorsByKey[fieldKey] ?? []);
     });
@@ -245,11 +224,6 @@ export class ValidationEngine<TValues> {
     }));
 
     return errorsByKey;
-  }
-
-  /** 등록된 모든 field-local schema를 검증한다. */
-  private validateRegisteredFieldSchemas(): Promise<Record<PathKey, FormError[]>> {
-    return this.validateFieldSchemas([...this.fieldSchemas.keys()]);
   }
 
   /**

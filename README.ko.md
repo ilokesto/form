@@ -818,507 +818,100 @@ Array 전체를 교체한다. 기존 item link를 의도적으로 끊기 때문�
 
 ## Runtime flows
 
-### Form creation flow
+### 필드 명령
+
+`src/core/form/CreateForm.ts`부터 읽으면 명령의 전체 순서를 볼 수 있다.
 
 ```txt
-new CreateForm(options)
-  -> new FormStateStore(options.defaultValues)
-    -> FormStateInitializer.initialize(defaultValues)
-      -> fields for leaf values
-      -> arrayKeys for array containers
-  -> new ValidationEngine(store, options)
-  -> new FormFieldCommands(store, validation)
-  -> new FormArrayFactory(store)
-  -> new FormSubmitter(store, validation)
+setValue -> 경로 정규화 -> store.setValue -> 필요하면 change 검증
+blur     -> 경로 정규화 -> unfocus -> touch -> 필요하면 blur 검증
+trigger  -> 경로 정규화 -> 지정 필드 또는 전체 검증
+array    -> form이 공유하는 키 생성기로 controller 생성
+submit   -> 제출 큐 -> 검증 -> callback -> 완료 처리
 ```
 
-핵심은 모든 collaborator가 같은 `FormStateStore`를 공유한다는 점이다.
+상태 변경은 동기적으로 알린다. Blur의 unfocus와 touch 알림은 각각 유지한다.
+`dirty`는 기본값과의 `Object.is` 비교 결과이고, `modified`는 사용자 입력으로
+변경되었는지를 기록한다. 두 flag의 의미는 다르다.
 
-### Value write flow
+### 검증과 제출
+
+지정 필드 검증은 local schema를 먼저 실행한 뒤 나머지 대상에 form schema를
+적용한다. 전체 검증은 form schema 이후 등록된 local schema를 실행한다.
+Local 결과는 빈 오류 목록을 포함해 form schema 결과보다 우선한다. Local schema가
+없는 지정 필드 검증은 form 전체 schema를 실행하지만 지정 필드 오류만 기록한다.
+
+비동기 단계마다 검증 revision과 캡처한 값이 유효한지 확인한다. 서로 다른 필드의
+검증은 순서가 바뀌어 완료되어도 반영되지만, 겹치는 검증은 최신 결과를 덮어쓰면
+안 된다. 오류는 기존처럼 필드별로 기록하며 새로운 일괄 알림을 도입하지 않는다.
+
+`FormSubmitter`는 동시 제출을 큐에 넣는다. 시도 횟수는 즉시 증가시키고,
+stale 검증은 다시 실행한다. Invalid이면 `onInvalid`, valid이면 현재 값으로
+`onValid`를 호출하고, 대기 중인 제출이 모두 끝나면 submit 상태를 완료한다.
+
+### 배열 변경
 
 ```txt
-form.setValue(path, value, options)
-  -> FormFieldCommands.setValue()
-  -> FormPath.toFieldPath(path)
-  -> FormStateStore.setValue()
-  -> FormStateWriter.setValue()
-  -> compute dirty from defaultValues
-  -> optionally mark modified
-  -> optionally start change validation
+controller가 현재 값과 키를 읽음
+  -> 정적 planner가 { values, keys, mapPreviousIndex } 계산
+  -> store.replaceState(previousState => rebase(previousState, path, mutation))
+  -> 다음 snapshot 한 번 반영
 ```
 
-`dirty`와 `modified`는 의도적으로 분리되어 있다. Programmatic write는 field를 dirty하게 만들 수 있지만 user-modified로 표시하지 않을 수 있다.
-
-### Blur flow
-
-```txt
-form.blur(path)
-  -> FormFieldCommands.blur()
-  -> FormPath.pathInputToKey(path)
-  -> FormStateStore.touchField(key)
-  -> if validateOn includes 'blur': ValidationEngine.validateField(key, 'blur')
-  -> otherwise return true
-```
-
-### Manual validation flow
-
-```txt
-form.trigger(...paths)
-  -> no paths: validateRegisteredFields('manual')
-  -> with paths: validateFields(keys, 'manual')
-  -> StandardSchemaValidator.validate(values)
-  -> issue paths become PathKeys
-  -> selected field errors are replaced
-```
-
-Field-level validation도 full schema를 실행한 뒤 target field errors만 적용한다. 이렇게 하면 schema adapter가 단순하고 schema-library independent하게 유지된다.
-
-### Submit flow
-
-```txt
-form.submit(onValid, onInvalid)
-  -> increment submitCount
-  -> validateRegisteredFields('submit')
-  -> invalid: onInvalid(fields), return undefined
-  -> valid: onValid(getValues())
-```
-
-`submitCount`는 successful submissions가 아니라 submit attempts를 기록한다.
-
-### Array mutation flow
-
-```txt
-form.array('items').move(1, 0)
-  -> FormArrayController.move()
-  -> read current array values and keys
-  -> FormArrayMutationPlanner.move()
-    -> next values
-    -> next keys
-    -> previous-index to next-index mapper
-  -> FormArrayRebaser.rebase()
-    -> write next array into values
-    -> initialize a fresh FormState from next values
-    -> preserve non-array fields
-    -> move child metadata through the index mapper
-    -> write next array keys
-```
-
-이 흐름이 `items[1].name` metadata를 동일한 logical item에 붙인 채 그 item이 `items[0].name`으로 이동하게 만드는 핵심 기능이다.
+Rebaser는 전달받은 snapshot에서 값을 복원하고 다음 상태를 초기화한 뒤,
+살아남은 자식 필드 메타데이터와 중첩 배열 키를 새 경로로 옮긴다. Errors, touched,
+dirty, modified, focus는 item을 따라간다. 배열 밖 필드와 submit 상태는 보존한다.
+Replace는 기존 자식 메타데이터를 버리고 새 키를 만든다. 기존 defaultValues
+동작도 그대로 유지한다.
 
 ## Internal architecture
 
 ```txt
-src/index.ts
-  -> src/core/index.ts
-    -> form/CreateForm.ts
-       -> state/FormStateStore.ts
-          -> state/FormStateInitializer.ts
-          -> state/FormStateReader.ts
-          -> state/FormStateWriter.ts
-       -> form/FormFieldCommands.ts
-          -> validation/ValidationEngine.ts
-             -> validation/StandardSchemaValidator.ts
-       -> form/FormSubmitter.ts
-       -> array/FormArrayFactory.ts
-          -> array/FormArrayController.ts
-             -> array/FormArrayMutationPlanner.ts
-             -> array/FormArrayRebaser.ts
-                -> array/FormArrayPath.ts
-                -> array/ArrayItemReorder.ts
-             -> array/ArrayKeyGenerator.ts
-    -> path/FormPath.ts
-    -> value/ValueHelper.ts
-    -> types.ts
-  -> src/adapters/
-     -> dom/FieldValue.ts
-     -> dom/RegisterBinding.ts
-     -> FormStateSummary.ts
-  -> src/react/index.ts
-     -> shared adapter logic 위의 React hook adapter
-  -> src/vue/index.ts
-     -> shared adapter logic 위의 Vue composable adapter
-  -> src/solid/index.ts
-     -> shared adapter logic 위의 Solid helper adapter
-  -> src/svelte/index.ts
-     -> shared adapter logic 위의 Svelte action adapter
+CreateForm                         공개 명령 순서와 공유 배열 키
+  FormStateStore                   상태 소유와 쓰기
+    FormStateInitializer           중첩 기본값 -> 정규화된 snapshot
+    FormStateReader                snapshot -> 필드와 중첩 값
+  ValidationEngine                 schema 등록과 검증 단계
+    StandardSchemaValidator        schema 결과 -> 필드 오류
+    ValidationSequencer            겹치는 검증의 revision
+    ValidationSnapshot             캡처한 값과 배열 키 비교
+  FormSubmitter                    제출 큐와 callback 수명
+  FormArrayController              배열 읽기와 상태 반영
+    FormArrayMutationPlanner       순수 배열 변경 계산
+    FormArrayRebaser                이전 snapshot + 변경 결과 -> 다음 snapshot
 ```
 
-Responsibility summary:
-
-| Area | Responsibility |
-| --- | --- |
-| `form/` | Public orchestration: field commands, submit flow, array controller access. |
-| `state/` | Normalized state initialization, reading, writing, and store facade. |
-| `path/` | Conversion between public path input, tuple paths, and string path keys. |
-| `value/` | Immutable nested get/set and reconstruction of values from field states. |
-| `validation/` | Standard Schema execution and error normalization. |
-| `array/` | Array item key management, mutation planning, and child field metadata rebasing. |
-| `adapters/` | 내부 shared adapter logic: DOM value extraction/binding, form-state aggregation. |
-| `react/` | Public `Form` interface를 감싸는 React hook adapter. |
-| `vue/` | Public `Form` interface를 감싸는 Vue composable adapter. |
-| `solid/` | Public `Form` interface를 감싸는 Solid helper adapter. |
-| `svelte/` | Public `Form` interface를 감싸는 Svelte action adapter. |
-| `types.ts` | Public and internal TypeScript contracts. |
+React, Vue, Solid, Svelte adapter는 공개 `Form` 계약에 의존한다.
+`adapters/`는 DOM 값·바인딩과 상태 집계를 공유하고, 구독과 컴포넌트 수명 관리는
+각 framework 디렉터리에 남긴다.
 
 ## Core walkthrough
 
-### `src/index.ts`
-
-Package root는 안정적인 framework-agnostic surface만 export한다.
-
-```ts
-export { CreateForm } from './core/index';
-export type {
-  CreateFormOptions,
-  FieldPathInput,
-  Form,
-  FormError,
-  StandardSchemaV1,
-} from './core/index';
-```
-
-Internal state와 command helper 타입은 package root에서 내보내지 않는다. 이 문서에서는 구현 설명을 위해 다루지만, consumer는 `Form`, `CreateForm`, field path, errors, Standard Schema contract를 통해 사용해야 한다.
-
-### `src/core/index.ts`
-
-이 파일은 `types.ts`의 public types와 `CreateForm`을 re-export한다. Package root와 implementation folders 사이의 boundary다.
-
-### `src/core/types.ts`
-
-`types.ts`는 core vocabulary를 정의한다.
-
-- public path type: `FieldPathInput`; internal path concepts: `FieldPathSegment`, `FieldPath`, `PathKey`
-- exported validation types: `FormError`, `StandardSchemaV1`; internal validation trigger type: `ValidationTrigger`
-- internal state types: `FieldState`, `ArrayKeys`, `FormState`
-- public API types: `CreateFormOptions`, `Form`; internal command helper types: `FormArray`, `SetValueOptions`
-
-이 파일에서 가장 중요한 설계는 public string path가 literal field name이라는 점이다. Nested field에는 tuple path가 필요하다.
-
-### `src/core/form/CreateForm.ts`
-
-`CreateForm`은 top-level controller이자 main public class다.
-
-네 collaborator를 소유한다.
-
-```txt
-store     -> state storage and state operations
-fields    -> setValue, blur, errors, trigger
-arrays    -> array(path) controller creation
-submitter -> submitCount, validation, callbacks
-```
-
-Constructor는 하나의 `FormStateStore`를 만들고 모든 collaborator에 전달한다. 그래서 모든 command는 같은 snapshot 위에서 동작한다.
-
-대부분의 method는 얇은 delegation이다.
-
-- `getState()`, `getFieldState()`, `getValue()`, `getValues()`, `reset()`은 `FormStateStore`에 위임한다.
-- `setValue()`, `blur()`, `focus()`, `setErrors()`, `clearErrors()`, `trigger()`는 `FormFieldCommands`에 위임한다.
-- `array()`는 path를 tuple로 변환하고 `FormArrayFactory`에 controller를 요청한다.
-- `submit()`은 `FormSubmitter`에 위임한다.
-
-이 구조는 public API를 stable하게 유지하면서 implementation responsibilities를 분리한다.
-
-### `src/core/form/FormFieldCommands.ts`
-
-`FormFieldCommands`는 field-level operations를 묶는다.
-
-`setValue()`:
-
-1. `FormPath.toFieldPath()`로 path를 tuple로 변환한다.
-2. `store.setValue()`로 value를 쓴다.
-3. 결과 `PathKey`를 받는다.
-4. `options.validate`가 true이거나 `validateOn`에 `'change'`가 있으면 change validation을 시작한다.
-
-`blur()`:
-
-1. Public path를 `PathKey`로 변환한다.
-2. Field를 touched 처리한다.
-3. 설정된 경우에만 blur validation을 실행한다.
-
-`focus()`는 field의 `isFocused`를 `true`로 바꾼다. 대응되는 `blur()` command가 `isFocused`를 clearing하고 (`validateOn` 설정과 무관하게 항상), field를 `touched`로 표시한다. `isFocused` flag는 array rebasing 시 보존된다.
-
-`setErrors()`, `clearErrors()`, `trigger()`는 path를 key로 normalize하고 store 또는 validation engine에 위임한다.
-
-### `src/core/form/FormSubmitter.ts`
-
-`FormSubmitter`는 submit-specific sequencing을 분리한다.
-
-```txt
-increment submitCount
-validate all registered fields
-if invalid -> call onInvalid(fields) and return undefined
-if valid -> call onValid(getValues())
-```
-
-Submit은 multi-step command이므로 `CreateForm`이 validation branching까지 책임지지 않게 별도 class로 분리되어 있다.
-
-### `src/core/state/FieldStateFactory.ts`
-
-`FieldStateFactory`는 default field state shape을 중앙화한다.
-
-```ts
-{
-  value: undefined,
-  errors: [],
-  touched: false,
-  dirty: false,
-  modified: false,
-}
-```
-
-Shared mutable reference를 피하기 위해 매번 새 `errors` array를 만든다. 같은 factory는 initial leaf fields와 missing-field fallback에 모두 사용된다.
-
-### `src/core/state/FormStateInitializer.ts`
-
-`FormStateInitializer.initialize(defaultValues)`는 nested values를 normalized `FormState`로 변환한다.
-
-Rules:
-
-1. Arrays는 leaf field가 아니라 containers다.
-2. Array containers는 `initial-0`, `initial-1` 같은 `arrayKeys`를 받는다.
-3. Array items는 recursive하게 방문된다.
-4. Plain objects는 traverse된다.
-5. Empty plain object는 더 내려갈 field가 없으므로 leaf value로 저장된다.
-6. `Date`, class instance 같은 non-plain objects는 leaf value로 취급된다.
-7. Primitive와 `null`은 leaf value다.
-
-그래서 `getState().fields`는 원래 nested object가 아니라 leaf paths를 가진다.
-
-### `src/core/state/FormStateReader.ts`
-
-`FormStateReader`는 read-only derived operations를 담당한다.
-
-- `getKnownFieldPaths()`는 저장된 모든 `PathKey`를 tuple path로 되돌린다.
-- `getFieldStateByKey()`는 existing field 또는 default `FieldState`를 반환한다.
-- `getFieldState()`와 `getValue()`는 path-input convenience methods다.
-- `getValues()`는 `ValueHelper.getValuesFromFields()`로 full nested value tree를 복원한다.
-- `getValueAtPath()`는 먼저 values를 복원한 뒤 nested path를 읽는다.
-
-Reader는 store를 직접 소유하지 않고 snapshot getter를 받기 때문에 항상 최신 state를 읽는다.
-
-### `src/core/state/FormStateWriter.ts`
-
-`FormStateWriter`는 모든 state mutation을 `immer`로 수행한다.
-
-> **번들 참고:** `immer`는 컨슈머 번들에 ~5KB를 추가한다. `FormState`가 flat `Record<PathKey, FieldState>` 구조이므로 spread 기반 업데이트(`{ ...state, [key]: nextField }`)로 immer를 대체해도 동작이 동일하다. 마이그레이션 전에 벤치마크하라 — immer는 구조 공유와 가독성 이점을 제공하며, array rebasing 경로에서는 크기 비용을 상회할 수 있다.
-
-`setValue()`:
-
-- Tuple path를 `PathKey`로 변환한다.
-- 해당 tuple path의 initial value를 읽는다.
-- 가능하면 existing field metadata를 보존한다.
-- `value`를 교체한다.
-- `Object.is`로 `dirty`를 계산한다.
-- `source: 'user'`일 때만 `modified`를 설정한다.
-- Validation이 재사용할 수 있도록 `PathKey`를 반환한다.
-
-Other methods:
-
-- `touchField()`는 `touched: true`를 설정한다.
-- `setErrorsByKey()`는 error array를 교체한다.
-- `clearErrors()`는 target fields 또는 existing fields 전체 errors를 비운다.
-- `reset()`은 현재 또는 replacement initial values로 state를 다시 초기화한다.
-- `incrementSubmitCount()`는 attempts를 증가시킨다.
-- `replaceState()`는 array rebasing 같은 whole-state operation을 위한 escape hatch다.
-
-### `src/core/state/FormStateStore.ts`
-
-`FormStateStore`는 core의 다른 부분들이 사용하는 facade다.
-
-소유하는 것:
-
-- `@ilokesto/store`의 `Store<FormState<TValues>>`
-- `FormStateReader`
-- `FormStateWriter`
-
-Collaborator들은 operation이 reader, writer, underlying store 중 어디에서 구현되는지 알 필요가 없다. Facade만 호출하면 된다.
-
-### `src/core/path/FormPath.ts`
-
-`FormPath`는 path conversion rules를 정의한다.
-
-Key methods:
-
-- `path(...segments)`: tuple path helper.
-- `toFieldPath(input)`: string은 `[input]`이 되고 tuple path는 그대로 통과한다.
-- `pathInputToKey(input)`: public path input을 `PathKey`로 변환한다.
-- `pathToKey(path)`: `[]`는 `$`, 나머지는 tuple을 JSON stringify한다.
-- `keyToPath(key)`: key를 tuple segments로 parse하고 validate한다.
-
-JSON encoding이 path collision을 방지한다.
-
-> **성능 참고:** `pathToKey`는 `JSON.stringify`를, `keyToPath`는 `JSON.parse`를 사용한다. 큰 폼(수백 필드)에서 잦은 업데이트 시 NUL separator 기반 커스텀 인코딩으로 hot path 오버헤드를 줄일 수 있다. 마이그레이션 전에 벤치마크하라 — 현재 접근은 정확하고 읽기 쉬우며 실제 영향은 보통 미미하다.
-
-### `src/core/value/ValueHelper.ts`
-
-`ValueHelper`는 immutable nested value operations를 제공한다.
-
-`getValueAtPath(source, path)`는 object/array를 안전하게 walk한다. 중간 value가 nullish이거나 primitive이면 `undefined`를 반환한다.
-
-`setValueAtPath(source, path, value)`는 new root value를 반환하고 path를 따라 container를 shallow-clone한다. Missing container는 next segment로 추론한다. Number면 array를 만들고 string이면 object를 만든다.
-
-`getValuesFromFields(state, fieldPaths)`는 public values를 두 단계로 복원한다.
-
-1. `arrayKeys`에서 empty array containers를 만든다.
-2. 모든 leaf field value를 tuple path 위치에 쓴다.
-
-이 과정을 통해 normalized `fields`가 다시 nested object가 된다.
-
-### `src/core/validation/ValidationEngine.ts`
-
-`ValidationEngine`은 validation triggers와 store writes를 조율한다.
-
-- Default `validateOn`은 `['submit']`이다.
-- Schema가 없으면 validation은 error 없이 성공한다.
-- `validateField(key, trigger)`는 full schema를 실행하고 해당 field errors만 적용한다.
-- `validateFields(keys, trigger)`는 full schema를 실행하고 selected fields errors만 적용한다.
-- `validateRegisteredFields(trigger)`는 full schema를 실행하고 current fields와 schema error keys 전체를 update한다.
-
-Engine은 schema를 호출할 때 trigger value를 전달하지 않는다. Trigger는 engine이 언제 실행될지를 제어하지 schema API를 바꾸지 않는다.
-
-`ValidationSequencer`는 full-form revision과 field별 revision을 추적한다. 겹치는 작업만 stale 처리하고 독립 field 작업은 유지하며, error나 submit callback을 적용하기 전에 captured field-value 및 array-shape snapshot이 최신인지 확인한다.
-
-### `src/core/validation/StandardSchemaValidator.ts`
-
-`StandardSchemaValidator`는 Standard Schema result를 core errors로 adapt한다.
-
-Success:
-
-```ts
-{ valid: true, errorsByKey: {} }
-```
-
-Failure:
-
-```ts
-{
-  valid: false,
-  errorsByKey: {
-    '["email"]': [{ type: 'standard_schema', message: 'Email is invalid' }],
-  },
-}
-```
-
-Issue path conversion rules:
-
-- Missing path 또는 empty path는 root path `[]`와 key `$`가 된다.
-- String과 number path segment는 그대로 보존된다.
-- Object path segment는 `.key` property를 사용한다.
-- Symbol 같은 unsupported key는 root error로 fallback된다.
-
-### `src/core/array/ArrayKeyGenerator.ts`
-
-`ArrayKeyGenerator`는 runtime item keys를 만든다.
-
-```txt
-item-1
-item-2
-item-3
-```
-
-하나의 `FormArrayFactory`는 form instance마다 하나의 generator를 공유한다. 이렇게 하면 여러 controller 사이에서 accidental key collision 가능성을 줄인다.
-
-### `src/core/array/ArrayItemReorder.ts`
-
-`ArrayItemReorder`는 array order operations를 위한 pure helper다.
-
-- `moveItem(items, from, to)`는 reordered copy를 반환한다.
-- `swapItems(items, left, right)`는 swapped copy를 반환한다.
-- `createIndexMapper(previousLength, nextOrder)`는 previous index를 next index로 mapping하는 function을 반환한다.
-
-`nextOrder`는 "각 next position에는 어떤 previous index가 있는가?"로 표현된다. New item은 `-1`을 사용하고 removed item은 아예 등장하지 않는다.
-
-### `src/core/array/FormArrayMutationPlanner.ts`
-
-`FormArrayMutationPlanner`는 store를 몰라도 array mutations를 계산한다.
-
-각 mutation은 다음 형태를 반환한다.
-
-```ts
-type FormArrayMutation = {
-  values: readonly unknown[];
-  keys: readonly string[];
-  mapPreviousIndex: (index: number) => number | undefined;
-};
-```
-
-Command behavior:
-
-- `insert()`는 target index를 보정하고 새 value/key를 삽입한다. New item은 `-1`에서 온 것으로 처리되어 previous metadata가 붙지 않는다.
-- `push()`는 value/key를 끝에 추가한다.
-- `remove()`는 value/key를 제거하고 removed index는 `undefined`로 map한다.
-- `move()`는 같은 rule로 values와 keys를 이동한다.
-- `swap()`은 같은 rule로 values와 keys를 교환한다.
-- `replace()`는 모두 새 values/keys를 반환하고 모든 previous index를 `undefined`로 map한다.
-
-이 planner는 pure하기 때문에 store와 독립적으로 test하기 쉽다.
-
-### `src/core/array/FormArrayPath.ts`
-
-`FormArrayPath`는 rebasing 중 필요한 path helpers를 담는다.
-
-- `hasPathPrefix(fieldPath, prefix)`는 tuple prefix equality를 확인한다.
-- `isArrayChildPath(fieldPath, arrayPath)`는 `['items']` 아래의 `['items', 0, 'name']`처럼 field가 array item 아래에 있는지 확인한다.
-- `replaceArrayIndex(fieldPath, arrayPath, nextIndex)`는 item index가 교체된 새 child path를 만든다.
-
-### `src/core/array/FormArrayController.ts`
-
-`FormArrayController`는 `form.array(path)`가 반환하는 public command object다.
-
-보유하는 것:
-
-- shared `FormStateStore`
-- shared `ArrayKeyGenerator`
-- controlled array `FieldPath`
-- `FormArrayMutationPlanner`
-
-각 command는 같은 pattern을 따른다.
-
-```txt
-read current array value
-read current keys
-ask planner for next values, keys, and index mapper
-if mutation exists, rebase the whole FormState
-```
-
-`getArray()`는 array path의 현재 value를 읽는다. Value가 array가 아니면 empty array를 사용한다.
-
-`getKeys()`는 stored `arrayKeys`를 읽는다. 없으면 current array length만큼 key를 만든다.
-
-### `src/core/array/FormArrayFactory.ts`
-
-`FormArrayFactory`는 `FormArrayController` instances를 만들고 form instance를 위한 하나의 `ArrayKeyGenerator`를 공유한다.
-
-이 덕분에 `form.array('items')`를 반복 호출해서 fresh controller를 만들어도 key sequence가 reset되지 않는다.
-
-### `src/core/array/FormArrayRebaser.ts`
-
-`FormArrayRebaser`는 가장 중요한 array component다. Array mutation 뒤 values, field states, array keys, submit count를 정렬한다.
-
-Detailed sequence:
-
-1. Current store에서 known field paths를 읽는다.
-2. `store.getValues()`로 current values를 복원한다.
-3. `ValueHelper.setValueAtPath()`로 next array를 values에 쓴다.
-4. Next values에서 fresh `FormState`를 initialize한다.
-5. Freshly initialized fields에서 시작한다.
-6. Previous fields를 순회한다.
-7. Changed array 밖의 fields는 보존한다.
-8. Changed array 안의 child fields는 previous item index를 next item index로 mapping한다.
-9. Item이 아직 존재하면 child path의 index를 교체하고 metadata를 new field로 copy한다.
-10. Array path에 next `arrayKeys`를 쓴다.
-11. `submitCount`를 보존한다.
-
-Rebased child field에 copy되는 것은 metadata뿐이다.
-
-```txt
-errors
-touched
-dirty
-modified
-```
-
-Value 자체는 next values로부터 freshly initialized state에서 온다. 그래서 stale value를 방지하면서 user interaction metadata는 보존한다.
+모든 import를 따라가기보다 아래 순서로 읽으면 된다.
+
+| 알고 싶은 내용 | `src/core/` 아래 파일 | 책임 |
+| --- | --- | --- |
+| 공개 명령 다음에 무슨 일이 일어나는가? | `form/CreateForm.ts` | 경로 변환, 상태 변경, 검증 요청. |
+| 상태는 어디서 바뀌는가? | `state/FormStateStore.ts` | store 소유와 immer 쓰기, reset·submit flag 반영. |
+| 값을 어떻게 복원하는가? | `state/FormStateReader.ts` | 명시적으로 받은 snapshot의 정적 계산. Store나 getter를 소유하지 않는다. |
+| 초기 상태는 어떻게 만드는가? | `state/FormStateInitializer.ts` | 배열과 일반 객체를 순회하고 빈 객체·특수 객체·원시값은 leaf로 유지. |
+| 없는 필드는 어떻게 읽는가? | `state/FieldStateFactory.ts` | undefined 값, 새 오류 배열, isFocused를 포함한 false flag 생성. |
+| 경로는 어떻게 표현하는가? | `path/FormPath.ts` | 문자열은 단일 segment, tuple은 JSON key, root는 `$`. |
+| 중첩 값을 어떻게 변경하는가? | `value/ValueHelper.ts` | 불변 nested get/set과 fields·배열 container에서 값 복원. |
+| 검증 결과는 언제 적용하는가? | `validation/ValidationEngine.ts` | Local schema 우선순위, 지정·전체 검증 실행, stale 판별. |
+| 어느 검증이 이전 검증을 대체하는가? | `validation/ValidationSequencer.ts` | 전체·필드별 revision과 schema 등록에 따른 무효화. |
+| 검증 중 값이 달라졌는가? | `validation/ValidationSnapshot.ts` | 필드 값과 배열 키 identity 캡처·비교. |
+| Schema issue는 어떻게 변환하는가? | `validation/StandardSchemaValidator.ts` | Standard Schema issue 정규화. 없거나 지원하지 않는 경로는 root 오류. |
+| 제출 순서는 어떻게 보장하는가? | `form/FormSubmitter.ts` | 제출 큐, stale 검증 재시도, 완료 상태 처리. |
+| 다음 배열 순서는 무엇인가? | `array/FormArrayMutationPlanner.ts` | 인스턴스나 store 없이 정적 insert/push/remove/move/swap/replace 계산. |
+| 메타데이터는 어떻게 item을 따라가는가? | `array/FormArrayRebaser.ts` | Store 접근이나 알림 없는 순수 snapshot 변환. |
+| 배열 변경은 누가 반영하는가? | `array/FormArrayController.ts` | 배열 상태를 읽고 updater의 snapshot을 rebaser에 전달. |
+| 배열 키는 어디서 만드는가? | `array/ArrayKeyGenerator.ts` | CreateForm마다 하나를 소유하고 새 controller들과 공유. |
+| Index와 경로는 어떻게 옮기는가? | `array/ArrayItemReorder.ts`, `array/FormArrayPath.ts` | 순수 정렬·index mapping·자식 경로 교체. |
+
+공개 surface는 `src/index.ts`와 framework entry point가 정의한다.
+`core/types.ts`는 기존 경로·상태·schema·명령 계약을 설명한다.
+내부 모듈은 구현 상세이며 새로운 package export가 아니다.
 
 ## Design decisions
 
@@ -1357,7 +950,7 @@ pnpm typecheck
 pnpm test
 ```
 
-`pnpm build`는 TypeScript로 declaration files를 emit하고, NodeNext 호환성을 위해 declaration-file relative specifier만 보정한 뒤, Vite로 ESM JavaScript를 bundle한다. 그래서 source import는 extensionless로 유지하면서도 `dist/index.js`, `dist/react/index.js`, `dist/vue/index.js`, `dist/solid/index.js`, `dist/svelte/index.js` 같은 adapter subpath는 ESM runtime에서 직접 import할 수 있다.
+`pnpm build`는 tsup으로 core와 네 framework entry point의 ESM JavaScript 및 declaration files를 bundle한다. `pnpm test:pack`은 별도 consumer에서 packed package의 runtime import와 TypeScript 계약을 확인한다.
 
 `pnpm test`는 Vitest suite를 실행한다.
 

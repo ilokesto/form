@@ -818,508 +818,102 @@ Replaces the whole array. Existing item links are intentionally broken, so child
 
 ## Runtime flows
 
-### Form creation flow
+### Field commands
+
+Start with `src/core/form/CreateForm.ts`. It shows the complete orchestration:
 
 ```txt
-new CreateForm(options)
-  -> new FormStateStore(options.defaultValues)
-    -> FormStateInitializer.initialize(defaultValues)
-      -> fields for leaf values
-      -> arrayKeys for array containers
-  -> new ValidationEngine(store, options)
-  -> new FormFieldCommands(store, validation)
-  -> new FormArrayFactory(store)
-  -> new FormSubmitter(store, validation)
+setValue -> normalize path -> store.setValue -> optional change validation
+blur     -> normalize path -> unfocus -> touch -> optional blur validation
+trigger  -> normalize paths -> selected-field or full validation
+array    -> create controller with the form's shared key generator
+submit   -> submit queue -> validation -> callback -> completion
 ```
 
-The important point is that all collaborators share the same `FormStateStore`.
+Writes notify synchronously. Blur retains separate unfocus and touch notifications.
+`dirty` compares against the default value with `Object.is`; `modified` records
+user-originated writes. These flags have different meanings.
 
-### Value write flow
+### Validation and submission
+
+Selected-field validation runs local schemas first, then the form schema for
+remaining targets. Full validation runs the form schema first, then registered
+local schemas. A local result, including an empty error list, takes precedence.
+Without a local schema, selected-field validation executes the whole form schema
+but writes only the selected errors.
+
+Every asynchronous phase checks both its validation revision and captured values
+before writing errors. Independent field validations may finish in either order;
+overlapping work must not overwrite newer results. Errors are applied through the
+existing per-field write boundaries, not a new batch update.
+
+`FormSubmitter` queues concurrent submissions. It increments the attempt count
+immediately, retries stale validation, calls `onInvalid` for invalid results or
+`onValid` with current values, and completes submit state when the queue drains.
+
+### Array mutations
 
 ```txt
-form.setValue(path, value, options)
-  -> FormFieldCommands.setValue()
-  -> FormPath.toFieldPath(path)
-  -> FormStateStore.setValue()
-  -> FormStateWriter.setValue()
-  -> compute dirty from defaultValues
-  -> optionally mark modified
-  -> optionally start change validation
+controller reads values and keys
+  -> static planner computes { values, keys, mapPreviousIndex }
+  -> store.replaceState(previousState => rebase(previousState, path, mutation))
+  -> one next snapshot
 ```
 
-`dirty` and `modified` are intentionally separate. Programmatic writes can make a field dirty without marking it as user-modified.
-
-### Blur flow
-
-```txt
-form.blur(path)
-  -> FormFieldCommands.blur()
-  -> FormPath.pathInputToKey(path)
-  -> FormStateStore.touchField(key)
-  -> if validateOn includes 'blur': ValidationEngine.validateField(key, 'blur')
-  -> otherwise return true
-```
-
-### Manual validation flow
-
-```txt
-form.trigger(...paths)
-  -> no paths: validateRegisteredFields('manual')
-  -> with paths: validateFields(keys, 'manual')
-  -> field-local schema exists: validate that field value and replace that field's errors
-  -> otherwise: StandardSchemaValidator.validate(values)
-  -> issue paths become PathKeys
-  -> selected field errors are replaced
-```
-
-Without a field-local schema, field-level validation still runs the whole form schema, then applies only the target field errors. This keeps the schema adapter simple and schema-library independent. With a field-local schema, that schema overrides form-level errors for the same field.
-
-### Submit flow
-
-```txt
-form.submit(onValid, onInvalid)
-  -> increment submitCount
-  -> validateRegisteredFields('submit')
-  -> invalid: onInvalid(fields), return undefined
-  -> valid: onValid(getValues())
-```
-
-`submitCount` records submit attempts, not successful submissions.
-
-### Array mutation flow
-
-```txt
-form.array('items').move(1, 0)
-  -> FormArrayController.move()
-  -> read current array values and keys
-  -> FormArrayMutationPlanner.move()
-    -> next values
-    -> next keys
-    -> previous-index to next-index mapper
-  -> FormArrayRebaser.rebase()
-    -> write next array into values
-    -> initialize a fresh FormState from next values
-    -> preserve non-array fields
-    -> move child metadata through the index mapper
-    -> write next array keys
-```
-
-This is the core feature that keeps `items[1].name` metadata attached to the same logical item when that item moves to `items[0].name`.
+Rebasing reconstructs values from the supplied snapshot, initializes the next
+state, and moves surviving child metadata and nested array keys to their new
+paths. Errors, touched, dirty, modified and focus follow the item. Unrelated
+fields and submit state are preserved. Replace intentionally drops old child
+metadata and creates fresh keys. The existing defaultValues behavior is retained.
 
 ## Internal architecture
 
 ```txt
-src/index.ts
-  -> src/core/index.ts
-    -> form/CreateForm.ts
-       -> state/FormStateStore.ts
-          -> state/FormStateInitializer.ts
-          -> state/FormStateReader.ts
-          -> state/FormStateWriter.ts
-       -> form/FormFieldCommands.ts
-          -> validation/ValidationEngine.ts
-             -> validation/StandardSchemaValidator.ts
-       -> form/FormSubmitter.ts
-       -> array/FormArrayFactory.ts
-          -> array/FormArrayController.ts
-             -> array/FormArrayMutationPlanner.ts
-             -> array/FormArrayRebaser.ts
-                -> array/FormArrayPath.ts
-                -> array/ArrayItemReorder.ts
-             -> array/ArrayKeyGenerator.ts
-    -> path/FormPath.ts
-    -> value/ValueHelper.ts
-    -> types.ts
-  -> src/adapters/
-     -> dom/FieldValue.ts
-     -> dom/RegisterBinding.ts
-     -> FormStateSummary.ts
-  -> src/react/index.ts
-     -> React hook adapter over shared adapter logic
-  -> src/vue/index.ts
-     -> Vue composable adapter over shared adapter logic
-  -> src/solid/index.ts
-     -> Solid helper adapter over shared adapter logic
-  -> src/svelte/index.ts
-     -> Svelte action adapter over shared adapter logic
+CreateForm                         public command order and shared array keys
+  FormStateStore                   state ownership and writes
+    FormStateInitializer           nested defaults -> normalized snapshot
+    FormStateReader                snapshot -> fields and nested values
+  ValidationEngine                 schema registration and validation phases
+    StandardSchemaValidator        schema results -> field errors
+    ValidationSequencer            overlapping validation revisions
+    ValidationSnapshot             captured values and array-key comparison
+  FormSubmitter                    submit queue and callback lifecycle
+  FormArrayController              array reads and state application
+    FormArrayMutationPlanner       pure array mutation calculation
+    FormArrayRebaser                previous snapshot + mutation -> next snapshot
 ```
 
-Responsibility summary:
-
-| Area | Responsibility |
-| --- | --- |
-| `form/` | Public orchestration: field commands, submit flow, array controller access. |
-| `state/` | Normalized state initialization, reading, writing, and store facade. |
-| `path/` | Conversion between public path input, tuple paths, and string path keys. |
-| `value/` | Immutable nested get/set and reconstruction of values from field states. |
-| `validation/` | Standard Schema execution and error normalization. |
-| `array/` | Array item key management, mutation planning, and child field metadata rebasing. |
-| `adapters/` | Internal shared adapter logic: DOM value extraction/binding and form-state aggregation. |
-| `react/` | React hook adapter around the public `Form` interface. |
-| `vue/` | Vue composable adapter around the public `Form` interface. |
-| `solid/` | Solid helper adapter around the public `Form` interface. |
-| `svelte/` | Svelte action adapter around the public `Form` interface. |
-| `types.ts` | Public and internal TypeScript contracts. |
+React, Vue, Solid and Svelte adapters depend on the public `Form` contract.
+`adapters/` shares DOM value/binding and aggregate-state logic; subscriptions and
+component lifecycle ownership remain in each framework directory.
 
 ## Core walkthrough
 
-### `src/index.ts`
-
-The package root exports only the stable framework-agnostic surface:
-
-```ts
-export { CreateForm } from './core/index';
-export type {
-  CreateFormOptions,
-  FieldPathInput,
-  Form,
-  FormError,
-  StandardSchemaV1,
-} from './core/index';
-```
-
-Internal state and command helper types stay out of the package root. They are documented here to explain the implementation, but consumers should interact through `Form`, `CreateForm`, field paths, errors, and Standard Schema contracts.
-
-### `src/core/index.ts`
-
-This file re-exports `CreateForm` and public types from `types.ts`. It is the boundary between the package root and the implementation folders.
-
-### `src/core/types.ts`
-
-`types.ts` defines the core vocabulary:
-
-- public path type: `FieldPathInput`; internal path concepts: `FieldPathSegment`, `FieldPath`, `PathKey`
-- exported validation types: `FormError`, `StandardSchemaV1`; internal validation trigger type: `ValidationTrigger`
-- internal state types: `FieldState`, `ArrayKeys`, `FormState`
-- public API types: `CreateFormOptions`, `Form`; internal command helper types: `FormArray`, `SetValueOptions`
-
-The most important design in this file is that public string paths are literal field names. Nested fields require tuple paths.
-
-### `src/core/form/CreateForm.ts`
-
-`CreateForm` is the top-level controller and the main public class.
-
-It owns four collaborators:
-
-```txt
-store     -> state storage and state operations
-fields    -> setValue, blur, errors, trigger
-arrays    -> array(path) controller creation
-submitter -> submitCount, validation, callbacks
-```
-
-The constructor creates one `FormStateStore`, then passes it to all collaborators. That makes every command operate on the same snapshot.
-
-Most methods are thin delegations:
-
-- `getState()`, `getFieldState()`, `getValue()`, `getValues()`, `reset()` delegate to `FormStateStore`.
-- `setValue()`, `blur()`, `focus()`, `setErrors()`, `clearErrors()`, `trigger()` delegate to `FormFieldCommands`.
-- `array()` converts the path to a tuple and asks `FormArrayFactory` for a controller.
-- `submit()` delegates to `FormSubmitter`.
-
-This keeps the public API stable while implementation responsibilities stay separated.
-
-### `src/core/form/FormFieldCommands.ts`
-
-`FormFieldCommands` groups field-level operations.
-
-`setValue()`:
-
-1. Converts the path to a tuple through `FormPath.toFieldPath()`.
-2. Writes the value through `store.setValue()`.
-3. Receives the resulting `PathKey`.
-4. Starts change validation if `options.validate` is true or `validateOn` contains `'change'`.
-
-`blur()`:
-
-1. Converts the public path to a `PathKey`.
-2. Marks the field as touched.
-3. Runs blur validation only when configured.
-
-`focus()` sets `isFocused: true` on the field. The matching `blur()` command clears `isFocused` (always, regardless of `validateOn`) and marks the field as `touched`. The `isFocused` flag is preserved across array rebasing.
-
-`setErrors()`, `clearErrors()`, and `trigger()` normalize paths to keys and delegate to the store or validation engine.
-
-### `src/core/form/FormSubmitter.ts`
-
-`FormSubmitter` isolates submit-specific sequencing:
-
-```txt
-increment submitCount
-validate all registered fields
-if invalid -> call onInvalid(fields) and return undefined
-if valid -> call onValid(getValues())
-```
-
-The class exists because submit is a multi-step command and should not make `CreateForm` responsible for validation branching.
-
-### `src/core/state/FieldStateFactory.ts`
-
-`FieldStateFactory` centralizes the default field state shape:
-
-```ts
-{
-  value: undefined,
-  errors: [],
-  touched: false,
-  dirty: false,
-  modified: false,
-}
-```
-
-It creates a new `errors` array each time to avoid shared mutable references. The same factory is used for initial leaf fields and missing-field fallbacks.
-
-### `src/core/state/FormStateInitializer.ts`
-
-`FormStateInitializer.initialize(defaultValues)` converts nested values into normalized `FormState`.
-
-Rules:
-
-1. Arrays are containers, not leaf fields.
-2. Array containers receive `arrayKeys` such as `initial-0`, `initial-1`.
-3. Array items are visited recursively.
-4. Plain objects are traversed.
-5. Empty plain objects are stored as leaf values because there is no deeper field.
-6. Non-plain objects such as `Date` and class instances are treated as leaf values.
-7. Primitives and `null` are leaf values.
-
-This is why `getState().fields` contains leaf paths rather than the original nested object.
-
-### `src/core/state/FormStateReader.ts`
-
-`FormStateReader` handles read-only derived operations.
-
-- `getKnownFieldPaths()` converts every stored `PathKey` back to a tuple path.
-- `getFieldStateByKey()` returns an existing field or a default `FieldState`.
-- `getFieldState()` and `getValue()` are path-input convenience methods.
-- `getValues()` reconstructs the full nested value tree with `ValueHelper.getValuesFromFields()`.
-- `getValueAtPath()` reconstructs values first, then reads a nested path from them.
-
-The reader receives a snapshot getter rather than owning the store directly, so it always reads the latest state.
-
-### `src/core/state/FormStateWriter.ts`
-
-`FormStateWriter` performs all state mutations through `immer`.
-
-> **Bundle note:** `immer` adds ~5KB to consumer bundles. Since `FormState` uses a flat `Record<PathKey, FieldState>`, spread-based updates (`{ ...state, [key]: nextField }`) could replace immer with no behavioral change. Benchmark before migrating — immer provides structural sharing and readability benefits that may outweigh the size cost for array rebasing paths.
-
-`setValue()`:
-
-- Converts the tuple path to a `PathKey`.
-- Reads the initial value at that tuple path.
-- Preserves existing field metadata when possible.
-- Replaces `value`.
-- Computes `dirty` with `Object.is`.
-- Sets `modified` only for `source: 'user'`.
-- Returns the `PathKey` so validation can reuse it.
-
-Other methods:
-
-- `touchField()` sets `touched: true`.
-- `setErrorsByKey()` replaces the error array.
-- `clearErrors()` clears target fields or all existing fields.
-- `reset()` reinitializes state from the current or replacement initial values.
-- `incrementSubmitCount()` increments attempts.
-- `replaceState()` is an escape hatch for whole-state operations such as array rebasing.
-
-### `src/core/state/FormStateStore.ts`
-
-`FormStateStore` is the facade used by the rest of the core.
-
-It owns:
-
-- `Store<FormState<TValues>>` from `@ilokesto/store`
-- `FormStateReader`
-- `FormStateWriter`
-
-Collaborators do not need to know whether an operation is implemented by the reader, writer, or underlying store. They call the facade.
-
-### `src/core/path/FormPath.ts`
-
-`FormPath` defines path conversion rules.
-
-Key methods:
-
-- `path(...segments)`: helper for tuple paths.
-- `toFieldPath(input)`: string becomes `[input]`; tuple path passes through.
-- `pathInputToKey(input)`: public path input to `PathKey`.
-- `pathToKey(path)`: `[]` becomes `$`, otherwise JSON stringifies the tuple.
-- `keyToPath(key)`: parses and validates a key back into tuple segments.
-
-The JSON encoding is what prevents path collisions.
-
-> **Performance note:** `pathToKey` uses `JSON.stringify` and `keyToPath` uses `JSON.parse`. For large forms (hundreds of fields) with frequent updates, a custom separator-based encoding (e.g. NUL-joined) could reduce hot-path overhead. Benchmark before migrating — the current approach is correct and readable, and real-world impact is typically negligible.
-
-### `src/core/value/ValueHelper.ts`
-
-`ValueHelper` provides immutable nested value operations.
-
-`getValueAtPath(source, path)` walks an object/array safely. If an intermediate value is nullish or primitive, it returns `undefined`.
-
-`setValueAtPath(source, path, value)` returns a new root value and shallow-clones containers along the path. Missing containers are inferred from the next segment: a number creates an array, a string creates an object.
-
-`getValuesFromFields(state, fieldPaths)` reconstructs public values in two phases:
-
-1. Create empty array containers from `arrayKeys`.
-2. Write every leaf field value into its tuple path.
-
-This lets normalized `fields` become a nested object again.
-
-### `src/core/validation/ValidationEngine.ts`
-
-`ValidationEngine` coordinates validation triggers and store writes.
-
-- Default `validateOn` is `['submit']`.
-- If no schema is provided, validation succeeds with no errors.
-- `validateField(key, trigger)` runs the full schema and applies only that field's errors.
-- `validateFields(keys, trigger)` runs the full schema and applies only selected fields' errors.
-- `validateRegisteredFields(trigger)` runs the full schema and updates all current fields plus all schema error keys.
-
-The engine deliberately ignores the trigger value when calling the schema. The trigger controls when the engine runs, not the schema API.
-
-`ValidationSequencer` tracks full-form and per-field revisions. Overlapping work becomes stale, independent field work remains valid, and every result is checked against its captured field-value and array-shape snapshot before errors or submit callbacks are applied.
-
-### `src/core/validation/StandardSchemaValidator.ts`
-
-`StandardSchemaValidator` adapts Standard Schema results to core errors.
-
-Success:
-
-```ts
-{ valid: true, errorsByKey: {} }
-```
-
-Failure:
-
-```ts
-{
-  valid: false,
-  errorsByKey: {
-    '["email"]': [{ type: 'standard_schema', message: 'Email is invalid' }],
-  },
-}
-```
-
-Issue path conversion rules:
-
-- Missing or empty path becomes the root path `[]` and key `$`.
-- String and number path segments are preserved.
-- Object path segments use their `.key` property.
-- Unsupported keys such as symbols fall back to root errors.
-
-### `src/core/array/ArrayKeyGenerator.ts`
-
-`ArrayKeyGenerator` creates runtime item keys:
-
-```txt
-item-1
-item-2
-item-3
-```
-
-A single `FormArrayFactory` shares one generator per form instance, reducing accidental key collisions across controllers.
-
-### `src/core/array/ArrayItemReorder.ts`
-
-`ArrayItemReorder` is a pure helper for array order operations.
-
-- `moveItem(items, from, to)` returns a reordered copy.
-- `swapItems(items, left, right)` returns a swapped copy.
-- `createIndexMapper(previousLength, nextOrder)` returns a function that maps a previous index to its next index.
-
-`nextOrder` is expressed as "for each next position, which previous index is here?" New items use `-1`, and removed items simply do not appear.
-
-### `src/core/array/FormArrayMutationPlanner.ts`
-
-`FormArrayMutationPlanner` calculates array mutations without knowing about the store.
-
-Each mutation returns:
-
-```ts
-type FormArrayMutation = {
-  values: readonly unknown[];
-  keys: readonly string[];
-  mapPreviousIndex: (index: number) => number | undefined;
-};
-```
-
-Command behavior:
-
-- `insert()` bounds the target index and inserts a new value/key. The new item maps from `-1`, so no previous metadata is attached to it.
-- `push()` appends a value/key.
-- `remove()` drops a value/key and maps removed indexes to `undefined`.
-- `move()` moves values and keys with the same rule.
-- `swap()` swaps values and keys with the same rule.
-- `replace()` returns all new values/keys and maps every previous index to `undefined`.
-
-Because this planner is pure, it is easy to test independently from the store.
-
-### `src/core/array/FormArrayPath.ts`
-
-`FormArrayPath` contains path helpers used during rebasing.
-
-- `hasPathPrefix(fieldPath, prefix)` checks tuple prefix equality.
-- `isArrayChildPath(fieldPath, arrayPath)` checks whether a field is below an array item, such as `['items', 0, 'name']` below `['items']`.
-- `replaceArrayIndex(fieldPath, arrayPath, nextIndex)` creates a new child path with the item index replaced.
-
-### `src/core/array/FormArrayController.ts`
-
-`FormArrayController` is the public command object returned by `form.array(path)`.
-
-It holds:
-
-- the shared `FormStateStore`
-- the shared `ArrayKeyGenerator`
-- the controlled array `FieldPath`
-- a `FormArrayMutationPlanner`
-
-Each command follows the same pattern:
-
-```txt
-read current array value
-read current keys
-ask planner for next values, keys, and index mapper
-if mutation exists, rebase the whole FormState
-```
-
-`getArray()` reads the current value at the array path. If the value is not an array, it uses an empty array.
-
-`getKeys()` reads stored `arrayKeys`; if none exist, it creates keys for the current array length.
-
-### `src/core/array/FormArrayFactory.ts`
-
-`FormArrayFactory` creates `FormArrayController` instances and shares one `ArrayKeyGenerator` for the form instance.
-
-This allows repeated calls such as `form.array('items')` to create fresh controllers without resetting the key sequence.
-
-### `src/core/array/FormArrayRebaser.ts`
-
-`FormArrayRebaser` is the most important array component. It aligns values, field states, array keys, and submit count after an array mutation.
-
-Detailed sequence:
-
-1. Read known field paths from the current store.
-2. Reconstruct current values with `store.getValues()`.
-3. Write the next array into those values with `ValueHelper.setValueAtPath()`.
-4. Initialize a fresh `FormState` from the next values.
-5. Start with the freshly initialized fields.
-6. Iterate over previous fields.
-7. Preserve fields outside the changed array.
-8. For child fields inside the changed array, map the previous item index to the next item index.
-9. If the item still exists, replace the index in the child path and copy metadata to the new field.
-10. Write the next `arrayKeys` for the array path.
-11. Preserve `submitCount`.
-
-Only metadata is copied for rebased child fields:
-
-```txt
-errors
-touched
-dirty
-modified
-```
-
-The value itself comes from the freshly initialized state based on the new values. This prevents stale values while preserving user interaction metadata.
+Read in this order rather than following every import:
+
+| Question | File under `src/core/` | Responsibility |
+| --- | --- | --- |
+| What happens after a public command? | `form/CreateForm.ts` | Normalize paths, write state, request validation. |
+| Where does state change? | `state/FormStateStore.ts` | Own the store and apply writes with immer, including reset and submit flags. |
+| How are values reconstructed? | `state/FormStateReader.ts` | Static calculations over an explicit snapshot; no store or getter ownership. |
+| How is initial state built? | `state/FormStateInitializer.ts` | Traverse arrays/plain objects; keep empty objects, non-plain objects and primitive values as leaves. |
+| What is an absent field? | `state/FieldStateFactory.ts` | Fresh metadata with undefined value, empty errors and false flags, including isFocused. |
+| How do paths work? | `path/FormPath.ts` | Literal strings become one segment; tuple paths encode as JSON keys, with root key `$`. |
+| How are nested values changed? | `value/ValueHelper.ts` | Immutable nested get/set and reconstruction from fields and array containers. |
+| When may validation apply? | `validation/ValidationEngine.ts` | Local-schema precedence, selected/full execution and stale-result checks. |
+| Which validation supersedes which? | `validation/ValidationSequencer.ts` | Full and per-field revisions, including schema registration invalidation. |
+| Did values change during validation? | `validation/ValidationSnapshot.ts` | Capture and compare field values and array-key identities. |
+| How are schema issues converted? | `validation/StandardSchemaValidator.ts` | Normalize Standard Schema issues; missing/unsupported paths become root errors. |
+| How are submissions serialized? | `form/FormSubmitter.ts` | Queue submissions, retry stale validation and settle lifecycle state. |
+| What is the next array order? | `array/FormArrayMutationPlanner.ts` | Static insert/push/remove/move/swap/replace calculations; no instance or store. |
+| How does metadata follow items? | `array/FormArrayRebaser.ts` | Pure snapshot transformation with no store access or notifications. |
+| Who applies an array mutation? | `array/FormArrayController.ts` | Read current array state and pass the updater snapshot to the rebaser. |
+| Where do array keys come from? | `array/ArrayKeyGenerator.ts` | One generator per CreateForm, shared across newly created controllers. |
+| How are indexes and paths mapped? | `array/ArrayItemReorder.ts`, `array/FormArrayPath.ts` | Pure ordering/index mapping and child-path replacement. |
+
+`src/index.ts` and the framework entry points define the published surface.
+`core/types.ts` describes the existing path, state, schema and command contracts.
+Internal modules are implementation details, not additional package exports.
 
 ## Design decisions
 
@@ -1358,7 +952,7 @@ pnpm typecheck
 pnpm test
 ```
 
-`pnpm build` emits declaration files with TypeScript, rewrites only declaration-file relative specifiers for NodeNext compatibility, and bundles ESM JavaScript with Vite so source imports can stay extensionless while `dist/index.js` and adapter subpaths such as `dist/react/index.js`, `dist/vue/index.js`, `dist/solid/index.js`, and `dist/svelte/index.js` remain directly importable by ESM runtimes.
+`pnpm build` uses tsup to bundle ESM JavaScript and declaration files for the core and four framework entry points. `pnpm test:pack` checks the packed package's runtime imports and TypeScript contracts in a separate consumer.
 
 `pnpm test` runs the Vitest suite.
 
