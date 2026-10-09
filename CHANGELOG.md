@@ -1,5 +1,15 @@
 # @ilokesto/form
 
+## 2.0.1
+
+### Patch Changes
+
+- 644829a: Simplify internal form command and state ownership, use snapshot-based array
+  rebasing, and clarify validation phases without changing the public API or
+  notification behavior.
+- Updated dependencies [e3b4d79]
+  - @ilokesto/store@2.0.1
+
 ## 2.0.0
 
 ### Major Changes
