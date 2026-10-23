@@ -77,6 +77,9 @@ test('history: missing Sicilian typeSafety archive -> original-history proof fai
   t.after(() => rm(parent, { recursive: true, force: true }));
   const root = path.join(parent, 'clone');
   git(repository, ['clone', '--no-local', '--quiet', repository, root]);
+  git(root, ['fetch', '--quiet', repository,
+    'refs/remotes/origin/legacy/*:refs/remotes/origin/legacy/*']);
+  await verifyHistory(root, manifest);
   const missing = 'refs/remotes/origin/legacy/sicilian/heads/typeSafety';
   git(root, ['update-ref', '-d', missing]);
 
