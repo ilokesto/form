@@ -15,7 +15,7 @@
 ## 문서
 
 - 전체 문서: [English](https://ilokesto.ayden94.com/en/form) · [한국어](https://ilokesto.ayden94.com/ko/form)
-- 소스: [packages/form](https://github.com/ilokesto/ilokesto/tree/main/packages/form)
+- 소스: [@ilokesto/form](https://github.com/ilokesto/form)
 - npm: [@ilokesto/form](https://www.npmjs.com/package/@ilokesto/form)
 
 ## Table of contents
@@ -974,3 +974,13 @@ Existing tests는 다음을 cover한다.
 - `replace()`가 child metadata를 의도적으로 drop하는지에 대한 test.
 - Root-level schema errors test.
 - Custom DOM-event-compatible component를 위한 adapter examples.
+
+## 독립 저장소
+
+Node 22와 pnpm 10.17.1을 사용하고 `pnpm install --frozen-lockfile`로 설치한다.
+
+`pnpm test:pack`은 격리된 소비자에 Form tarball을 설치하고 레지스트리에서 Store를 가져온다. `pnpm examples:build`와 `pnpm examples:typecheck`는 다섯 private 예제를 모두 검증한다.
+
+이 저장소는 `docs/`, `website/`, 변경 불가능한 `docs-publication/` 기록을 소유한다. `pnpm docs:publication:verify`, `pnpm docs:typecheck`, `pnpm docs:build`, `pnpm docs:test`를 실행한 뒤 `pnpm docs:start --hostname 127.0.0.1 --port 0`으로 확인한다. 영어와 한국어의 released/next 경로는 로컬에서 제공하며 다른 패키지는 기존 공개 사이트로 연결한다.
+
+`pnpm migrate:verify`는 원본 이력과 독립 저장소 경계를 검증한다. 루트 Changesets로 향후 릴리스를 관리한다. Bootstrap 중에는 게시와 릴리스 PR 생성을 비활성화하며 이 마이그레이션은 문서 사이트를 배포하지 않는다.

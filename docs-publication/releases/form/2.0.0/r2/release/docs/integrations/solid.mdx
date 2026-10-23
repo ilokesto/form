@@ -1,0 +1,50 @@
+---
+title: "Solid"
+description: "Use Solid-friendly binding props and reactive form summaries."
+---
+
+# Solid
+
+Install `solid-js` as the peer and import from `@ilokesto/form/solid`. `useForm(form)` returns the same conceptual helpers as React and Vue, but cleanup follows the Solid owner lifecycle and binding props use Solid event names.
+
+```tsx lineNumbers
+import { For } from 'solid-js';
+import { useForm } from '@ilokesto/form/solid';
+
+function Phones({ form }) {
+  const { form: controller, useRegister, useField, useFormState } = useForm(form);
+  const state = useFormState();
+  const phones = controller.array(['phones']);
+
+  return (
+    <form>
+      <For each={phones.keys()}>{(key, index) => (
+        <input {...useRegister({ name: ['phones', index(), 'value'] })} />
+      )}</For>
+      <input type="radio" {...useRegister({ name: 'role', type: 'radio', value: 'admin' })} />
+      <button disabled={!state.isDirty}>Save</button>
+    </form>
+  );
+}
+```
+
+Use `useField` for error rendering and direct setters. Use `useRegister` for text, checkbox, radio, select, textarea, and DOM-compatible custom controls. Keep array keys separate from tuple index paths, just as you would in React.
+
+## Syncing external values
+
+`SolidFormOptions` accepts `values` as `Accessor<T | undefined>` and accepts plain `resetOptions`. The first defined value and each later value with a different `Object.is` identity call `form.reset(values, resetOptions)`. `undefined` pauses synchronization without resetting, and re-emitting the last defined object remains a no-op. `resetOptions` applies only to value-driven resets.
+
+```tsx
+const [serverValues, setServerValues] = createSignal<Profile | undefined>();
+const { form } = useForm({
+  defaultValues: emptyProfile,
+  values: serverValues,
+  resetOptions: { keepDirtyValues: true },
+});
+```
+
+This overload requires an active Solid owner and fails before form creation when none exists. The tracking computation is disposed with that owner. `useForm(existingForm)` does not install values tracking.
+
+## Cautions
+
+Create the core form in a stable place, install the matching peer dependency, and import only from this adapter subpath in framework components. Keep server actions and domain helpers on the root `@ilokesto/form` API when they do not need rendering.

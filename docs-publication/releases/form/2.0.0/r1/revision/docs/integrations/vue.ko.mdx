@@ -1,0 +1,54 @@
+---
+title: "Vue"
+description: "@ilokesto/form/vue의 v-bind용 속성과 반응형 getter를 사용합니다."
+---
+
+# Vue
+
+`vue` 피어를 설치하고 `@ilokesto/form/vue`에서 가져옵니다. 이 어댑터는 React와 비슷한 도우미 이름을 유지하지만, `onInput`, `onChange`, `onBlur`, `onFocus` 핸들러를 가진 Vue 친화 객체를 반환합니다.
+
+```vue lineNumbers
+<script setup lang="ts">
+import { useForm } from '@ilokesto/form/vue';
+const { form: controller, useField, useRegister, useFormState } = useForm(form);
+const email = useField({ name: 'email', schema: emailSchema });
+const remember = useRegister({ name: 'remember', type: 'checkbox' });
+const [role] = useRegister<HTMLSelectElement>([{ name: 'role' }]);
+const state = useFormState();
+</script>
+
+<template>
+  <form @submit.prevent="controller.submit(save)">
+    <input v-bind="email.props" />
+    <input type="checkbox" v-bind="remember" />
+    <select v-bind="role" multiple />
+    <button :disabled="!state.isDirty || !state.isValid">Save</button>
+  </form>
+</template>
+```
+
+반환된 상태는 getter 기반으로 읽히므로 템플릿에서 최신 값을 볼 수 있습니다. field-local 스키마는 현재 Vue effect scope와 함께 정리됩니다. 커스텀 컴포넌트에서는 DOM과 호환되는 value, checked, 이벤트 동작을 통과시키세요.
+
+## 외부 값 동기화
+
+`VueFormOptions`는 `values`를 `MaybeRefOrGetter<T | undefined>`로 받고 plain `resetOptions`를 받습니다. 처음 정의된 값과 이후 `Object.is` identity가 달라진 값마다 `form.reset(values, resetOptions)`를 호출합니다. `undefined`는 reset 없이 동기화를 중단하고, 마지막으로 정의되었던 같은 object를 다시 emit해도 no-op입니다. `resetOptions`는 value-driven reset에만 사용됩니다.
+
+```vue
+<script setup lang="ts">
+import { ref } from 'vue';
+import { useForm } from '@ilokesto/form/vue';
+
+const serverValues = ref({ email: 'initial@example.com' });
+const { form, useRegister } = useForm({
+  defaultValues: { email: '' },
+  values: serverValues,
+  resetOptions: { keepDirtyValues: true },
+});
+</script>
+```
+
+변화 추적을 보장하려면 반응형 소스(`ref`/`computed`/getter)를 직접 전달하세요. 평면 값은 생성 시 한 번만 평가됩니다. 이 overload에는 active Vue effect scope가 필요하며 scope가 없으면 form 생성 전에 실패합니다. Watcher는 해당 scope와 함께 중지되며 `useForm(existingForm)`은 values watcher를 설치하지 않습니다.
+
+## 주의할 점
+
+코어 폼은 안정적인 위치에서 만들고, 해당 프레임워크 피어 의존성을 설치하며, 프레임워크 컴포넌트에서는 이 어댑터 하위 경로에서만 가져오세요. 서버 액션이나 도메인 도우미처럼 렌더링이 필요 없는 코드는 루트 `@ilokesto/form` API에 남겨두는 편이 좋습니다.

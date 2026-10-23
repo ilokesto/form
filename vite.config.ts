@@ -8,5 +8,6 @@ export default defineConfig({
   resolve: process.env.VITEST ? { conditions: ['browser'] } : undefined,
   test: {
     environment: 'jsdom',
+    include: ['test/**/*.test.{ts,tsx}'],
   },
 });

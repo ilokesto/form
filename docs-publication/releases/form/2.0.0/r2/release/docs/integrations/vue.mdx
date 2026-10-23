@@ -1,0 +1,54 @@
+---
+title: "Vue"
+description: "Use v-bind-ready register props and reactive getters from @ilokesto/form/vue."
+---
+
+# Vue
+
+Install `vue` as the peer and import from `@ilokesto/form/vue`. The adapter keeps the React-like helper names but returns Vue-friendly objects with `onInput`, `onChange`, `onBlur`, and `onFocus` handlers.
+
+```vue lineNumbers
+<script setup lang="ts">
+import { useForm } from '@ilokesto/form/vue';
+const { form: controller, useField, useRegister, useFormState } = useForm(form);
+const email = useField({ name: 'email', schema: emailSchema });
+const remember = useRegister({ name: 'remember', type: 'checkbox' });
+const [role] = useRegister<HTMLSelectElement>([{ name: 'role' }]);
+const state = useFormState();
+</script>
+
+<template>
+  <form @submit.prevent="controller.submit(save)">
+    <input v-bind="email.props" />
+    <input type="checkbox" v-bind="remember" />
+    <select v-bind="role" multiple />
+    <button :disabled="!state.isDirty || !state.isValid">Save</button>
+  </form>
+</template>
+```
+
+The returned state uses getter-backed reads so templates see fresh values. Field-local schemas are cleaned up with the current Vue effect scope. For custom components, pass through DOM-compatible value, checked, and event behavior.
+
+## Syncing external values
+
+`VueFormOptions` accepts `values` as `MaybeRefOrGetter<T | undefined>` and accepts plain `resetOptions`. The first defined value and each later value with a different `Object.is` identity call `form.reset(values, resetOptions)`. `undefined` pauses synchronization without resetting, and re-emitting the last defined object remains a no-op. `resetOptions` is used only by a value-driven reset.
+
+```vue
+<script setup lang="ts">
+import { ref } from 'vue';
+import { useForm } from '@ilokesto/form/vue';
+
+const serverValues = ref({ email: 'initial@example.com' });
+const { form, useRegister } = useForm({
+  defaultValues: { email: '' },
+  values: serverValues,
+  resetOptions: { keepDirtyValues: true },
+});
+</script>
+```
+
+Pass reactive sources (`ref`/`computed`/getter) directly so Vue can track changes. A plain value is evaluated once. This overload requires an active Vue effect scope and fails before form creation when none exists. The watcher stops with that scope, and `useForm(existingForm)` does not install a values watcher.
+
+## Cautions
+
+Create the core form in a stable place, install the matching peer dependency, and import only from this adapter subpath in framework components. Keep server actions and domain helpers on the root `@ilokesto/form` API when they do not need rendering.

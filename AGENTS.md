@@ -1,27 +1,15 @@
 # @ilokesto/form
 
-This directory contains the `@ilokesto/form` package in the ilokesto pnpm monorepo.
+This repository owns the Form library, its five private examples, and its bilingual local documentation website.
 
-## What this package is
+## Development
 
-Headless form state management: field registration, validation flow, array fields, and submit handling.
+Use Node 22 and pnpm 10.17.1. Install with `pnpm install --frozen-lockfile`. Keep framework-neutral state in `src/core` and adapters in their framework directories. Use only exported Store APIs. Other libraries resolve from the registry, never sibling repositories.
 
-## When modifying this package
+Run `pnpm build`, `pnpm typecheck`, `pnpm test`, `pnpm test:pack`, `pnpm examples:build`, and `pnpm examples:typecheck`. The packed consumer must resolve registry Store without local overrides. Run `pnpm test:tooling` and `pnpm migrate:verify` after tooling changes.
 
-1. Read the root `AGENTS.md`, `PACKAGES.md`, and `ARCHITECTURE.md`.
-2. Load the `ilokesto-form` skill from `.opencode/skills/ilokesto-form/SKILL.md`.
-3. Keep core form state logic framework-agnostic in `src/core/`.
-4. Put React/Vue/Solid/Svelte adapters in `src/<framework>/`.
-5. Run `pnpm typecheck`, `pnpm test`, and `pnpm build` before committing.
-6. Add a changeset with `pnpm changeset` for any consumer-facing change.
+## Documentation and releases
 
-## Release flow
+Canonical content lives in `docs`; `website` owns the renderer and assets. Preserve released snapshots, receipts, original archive refs and runtime identities. Run `docs:publication:verify`, `docs:typecheck`, `docs:build` and `docs:test`. Check English/Korean released/next pages and Form submission in a real browser.
 
-1. Open a PR with a root changeset.
-2. After CI passes on `main`, the root workflow's release job opens a `ci: release` PR.
-3. Merge the release PR to publish to npm.
-
-## Must not do
-
-- Do not add framework-specific code to `src/core/`.
-- Do not import private internals from `@ilokesto/store`.
+Add a root Changeset for consumer-facing changes. Release PRs and publishing remain disabled during bootstrap. Future publishing uses the manual exact-SHA workflow and the current token mechanism; never publish locally. Do not deploy the local website.

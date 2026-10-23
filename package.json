@@ -6,12 +6,28 @@
     "build": "tsup",
     "test:pack": "pnpm run build && node scripts/verify-package.mjs",
     "typecheck": "tsc --noEmit",
-    "test": "vitest run"
+    "test": "vitest run --maxWorkers=2",
+    "test:tooling": "node --test --test-concurrency=1 tests/tooling/*.test.mjs",
+    "docs:prepare": "pnpm build",
+    "docs:dev": "pnpm docs:prepare && pnpm --dir website dev",
+    "docs:build": "pnpm docs:prepare && pnpm --dir website build",
+    "docs:typecheck": "pnpm docs:prepare && pnpm --dir website typecheck",
+    "docs:test": "pnpm --dir website test",
+    "docs:start": "pnpm --dir website start",
+    "docs:publication:verify": "node scripts/docs-publication.mjs verify && node scripts/docs-runtime.mjs verify",
+    "docs:publication:capture": "node scripts/docs-publication.mjs capture",
+    "docs:publication:promote": "node scripts/docs-publication.mjs promote",
+    "migrate:verify": "node scripts/verify-migration.mjs",
+    "release:verify": "node scripts/release-verify.mjs",
+    "changeset": "changeset",
+    "changeset:status": "changeset status",
+    "version-packages": "changeset version && pnpm install --lockfile-only",
+    "examples:build": "pnpm --workspace-concurrency=1 -r --filter './examples/*' run build",
+    "examples:typecheck": "pnpm --workspace-concurrency=1 -r --filter './examples/*' run typecheck"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/ilokesto/ilokesto.git",
-    "directory": "packages/form"
+    "url": "git+https://github.com/ilokesto/form.git"
   },
   "homepage": "https://ilokesto.ayden94.com/en/form",
   "sideEffects": false,
@@ -54,25 +70,27 @@
     "LICENSE"
   ],
   "dependencies": {
-    "@ilokesto/store": "workspace:*",
+    "@ilokesto/store": "2.0.1",
     "immer": "11.1.8"
   },
   "devDependencies": {
-    "@sveltejs/vite-plugin-svelte": "^6.2.4",
-    "@testing-library/react": "^16.3.2",
-    "@types/node": "^22.19.1",
-    "@types/react": "^19.2.15",
-    "@types/react-dom": "^19.2.3",
-    "jsdom": "^27.4.0",
-    "react": "^19.0.0",
-    "react-dom": "^19.2.6",
-    "solid-js": "^1.9.13",
-    "svelte": "^5.55.9",
-    "tsup": "^8.5.1",
-    "typescript": "^6.0.2",
-    "vite": "^7.3.3",
-    "vitest": "^4.1.7",
-    "vue": "^3.5.34"
+    "@sveltejs/vite-plugin-svelte": "6.2.4",
+    "@testing-library/react": "16.3.2",
+    "@types/node": "22.20.1",
+    "@types/react": "19.2.18",
+    "@types/react-dom": "19.2.4",
+    "jsdom": "27.4.0",
+    "react": "19.2.8",
+    "react-dom": "19.2.8",
+    "solid-js": "1.9.14",
+    "svelte": "5.56.9",
+    "tsup": "8.5.1",
+    "typescript": "6.0.3",
+    "vite": "7.3.6",
+    "vitest": "4.1.10",
+    "vue": "3.5.41",
+    "@changesets/cli": "2.31.1",
+    "yaml": "2.8.2"
   },
   "peerDependencies": {
     "react": "^19.0.0",
@@ -96,5 +114,6 @@
   },
   "publishConfig": {
     "access": "public"
-  }
+  },
+  "packageManager": "pnpm@10.17.1"
 }

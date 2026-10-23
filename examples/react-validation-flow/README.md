@@ -18,8 +18,8 @@ Async validation supersedes only overlapping field targets. Stale results are di
 From the repository root:
 
 ```sh
-pnpm --dir packages/form/examples/react-validation-flow install
-pnpm --dir packages/form/examples/react-validation-flow dev
+pnpm install --frozen-lockfile
+pnpm --dir examples/react-validation-flow dev
 ```
 
 The example aliases `@ilokesto/form` and `@ilokesto/form/react` to the local `src/` files, so it can run before the package is built.

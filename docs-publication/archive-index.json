@@ -1,0 +1,25 @@
+{
+  "schemaVersion": 1,
+  "entries": [
+    {
+      "name": "@ilokesto/form",
+      "version": "2.0.0",
+      "channel": "latest",
+      "revision": 1,
+      "releaseCommit": "ecd9709b76d1976ec86865314e85b916f220c818",
+      "docsCommit": "fc8bd4755137b75767284dbe84a0774185dfbdde",
+      "snapshot": "docs-publication/releases/form/2.0.0/r1",
+      "receiptSha256": "ed855cbf688becc2c4145c748363e99ecd182d52ba259af52f23ba9f2c51d8a6"
+    },
+    {
+      "name": "@ilokesto/form",
+      "version": "2.0.0",
+      "channel": "latest",
+      "revision": 2,
+      "releaseCommit": "ecd9709b76d1976ec86865314e85b916f220c818",
+      "docsCommit": "e0e50ec2ec4f4d487b6c9f35ea9ee2f243684c5c",
+      "snapshot": "docs-publication/releases/form/2.0.0/r2",
+      "receiptSha256": "8d57c45b98aff38a9e375364623f7b8f617f3aa84526f2775e060a6ae3c9a8ae"
+    }
+  ]
+}

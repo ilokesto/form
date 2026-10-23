@@ -15,7 +15,7 @@ The package is designed around five ideas:
 ## Documentation
 
 - Full docs: [English](https://ilokesto.ayden94.com/en/form) · [한국어](https://ilokesto.ayden94.com/ko/form)
-- Source: [packages/form](https://github.com/ilokesto/ilokesto/tree/main/packages/form)
+- Source: [@ilokesto/form](https://github.com/ilokesto/form)
 - npm: [@ilokesto/form](https://www.npmjs.com/package/@ilokesto/form)
 
 ## Table of contents
@@ -976,3 +976,13 @@ Good additions would be:
 - A test for `replace()` intentionally dropping child metadata.
 - A test for root-level schema errors.
 - More adapter examples for custom DOM-event-compatible components.
+
+## Standalone repository
+
+Use Node 22 and pnpm 10.17.1 with `pnpm install --frozen-lockfile`.
+
+`pnpm test:pack` installs the Form tarball in an isolated consumer and resolves Store from the registry. `pnpm examples:build` and `pnpm examples:typecheck` validate all five private examples.
+
+The package owns `docs/`, `website/`, and immutable `docs-publication/` archives. Run `pnpm docs:publication:verify`, `pnpm docs:typecheck`, `pnpm docs:build`, `pnpm docs:test`, then `pnpm docs:start --hostname 127.0.0.1 --port 0`. Both English and Korean released and next routes are local; foreign packages link to the retained public site.
+
+Run `pnpm migrate:verify` to verify original history and standalone boundaries. Root Changesets manage future releases; publishing and release-PR generation are disabled during bootstrap. No deployment is part of this migration.

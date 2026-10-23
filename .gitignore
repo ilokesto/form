@@ -41,3 +41,17 @@ next-env.d.ts
 
 # package artifacts
 *.tgz
+
+# standalone documentation and private workspaces
+node_modules/
+dist/
+.sisyphus/
+!docs-publication/releases/**/npm/package.tgz
+OWNERSHIP.json
+.source/
+.next/
+docs-publication/.generated/
+docs-publication/runtime/.generated/
+docs-publication/.publication.lock
+artifacts/
+.qa/

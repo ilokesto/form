@@ -1,0 +1,95 @@
+---
+title: "Quick start"
+description: "Create a form, bind fields, validate on blur and submit, and read the result."
+---
+
+# Quick start
+
+Build a login form that validates when a field loses focus, blocks an invalid submit, and displays the submitted email after valid input. This example uses React; the same core controller works with Vue, Solid, or Svelte through their adapter entrypoints.
+
+## 1. Install
+
+```package-install
+@ilokesto/form react
+```
+
+Use `vue`, `solid-js`, or `svelte` instead of `react` when you follow a different integration page.
+
+## 2. Add the complete component
+
+Create `LoginForm.tsx`:
+
+```tsx lineNumbers
+import { useState } from 'react';
+import { CreateForm, type StandardSchemaV1 } from '@ilokesto/form';
+import { useForm } from '@ilokesto/form/react';
+
+type LoginValues = {
+  email: string;
+  password: string;
+  remember: boolean;
+};
+
+const loginSchema: StandardSchemaV1<unknown, LoginValues> = {
+  '~standard': {
+    version: 1,
+    vendor: 'login-example',
+    validate(value) {
+      const values = value as LoginValues;
+      const issues = [];
+
+      if (!values.email.includes('@')) {
+        issues.push({ message: 'Enter a valid email', path: ['email'] });
+      }
+      if (values.password.length < 8) {
+        issues.push({ message: 'Use at least 8 characters', path: ['password'] });
+      }
+
+      return issues.length > 0 ? { issues } : { value: values };
+    },
+  },
+};
+
+const loginForm = new CreateForm<LoginValues>({
+  defaultValues: {
+    email: '',
+    password: '',
+    remember: false,
+  },
+  schema: loginSchema,
+  validateOn: ['blur', 'submit'],
+});
+
+export function LoginForm() {
+  const [result, setResult] = useState('');
+  const { handleSubmit, useField, useRegister, useFormState } = useForm(loginForm);
+  const email = useField({ name: 'email' });
+  const password = useField({ name: 'password', type: 'password' });
+  const remember = useRegister({ name: 'remember', type: 'checkbox' });
+  const state = useFormState();
+
+  return (
+    <form onSubmit={handleSubmit(async (values) => {
+      setResult(`Signed in as ${values.email}`);
+    })}>
+      <label>Email <input type="email" {...email.props} /></label>
+      {email.errors.map((error) => <p key={error.message}>{error.message}</p>)}
+      <label>Password <input {...password.props} /></label>
+      {password.errors.map((error) => <p key={error.message}>{error.message}</p>)}
+      <label><input type="checkbox" {...remember} /> Remember me</label>
+      <button disabled={state.isSubmitting}>Sign in</button>
+      {result && <p role="status">{result}</p>}
+    </form>
+  );
+}
+```
+
+`defaultValues` establishes the reset baseline. `useField` returns binding props and errors, while `useRegister` returns only binding props. `handleSubmit` prevents the browser submit, validates the form, and calls the callback only for valid values.
+
+## 3. Run it and check the result
+
+Render `<LoginForm />` in your React application. Blur an empty field or submit immediately to see its validation message. Enter an email containing `@` and a password of at least eight characters, then submit. The page displays `Signed in as ada@example.com` (using the email you entered). Each submit attempt increments `submitCount`, so it is `1` after a valid first attempt or `2` after one invalid attempt followed by the valid one.
+
+## Next steps
+
+Read [Core concepts](/en/form/core-concepts) for the model behind this example. Continue with the [React integration](/en/form/integrations/react) for binding variants and external values, or [Build a login form](/en/form/guides/build-a-login-form) for production concerns such as server errors and reset behavior.

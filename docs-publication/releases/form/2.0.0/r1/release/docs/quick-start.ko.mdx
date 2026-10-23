@@ -1,0 +1,95 @@
+---
+title: "빠른 시작"
+description: "폼을 만들고 필드를 바인딩한 뒤 blur와 submit에서 검증하고 결과를 읽습니다."
+---
+
+# 빠른 시작
+
+필드에서 포커스가 빠질 때 검증하고, 올바르지 않은 제출을 막고, 유효한 입력을 제출한 뒤 이메일을 표시하는 로그인 폼을 만듭니다. 이 예시는 React를 사용하지만 같은 코어 컨트롤러를 Vue, Solid, Svelte 어댑터 진입점에서도 사용할 수 있습니다.
+
+## 1. 설치
+
+```package-install
+@ilokesto/form react
+```
+
+다른 통합 문서를 따라간다면 `react` 대신 `vue`, `solid-js`, `svelte`를 설치하세요.
+
+## 2. 완전한 컴포넌트 추가하기
+
+`LoginForm.tsx`를 만드세요.
+
+```tsx lineNumbers
+import { useState } from 'react';
+import { CreateForm, type StandardSchemaV1 } from '@ilokesto/form';
+import { useForm } from '@ilokesto/form/react';
+
+type LoginValues = {
+  email: string;
+  password: string;
+  remember: boolean;
+};
+
+const loginSchema: StandardSchemaV1<unknown, LoginValues> = {
+  '~standard': {
+    version: 1,
+    vendor: 'login-example',
+    validate(value) {
+      const values = value as LoginValues;
+      const issues = [];
+
+      if (!values.email.includes('@')) {
+        issues.push({ message: '올바른 이메일을 입력하세요', path: ['email'] });
+      }
+      if (values.password.length < 8) {
+        issues.push({ message: '8자 이상 입력하세요', path: ['password'] });
+      }
+
+      return issues.length > 0 ? { issues } : { value: values };
+    },
+  },
+};
+
+const loginForm = new CreateForm<LoginValues>({
+  defaultValues: {
+    email: '',
+    password: '',
+    remember: false,
+  },
+  schema: loginSchema,
+  validateOn: ['blur', 'submit'],
+});
+
+export function LoginForm() {
+  const [result, setResult] = useState('');
+  const { handleSubmit, useField, useRegister, useFormState } = useForm(loginForm);
+  const email = useField({ name: 'email' });
+  const password = useField({ name: 'password', type: 'password' });
+  const remember = useRegister({ name: 'remember', type: 'checkbox' });
+  const state = useFormState();
+
+  return (
+    <form onSubmit={handleSubmit(async (values) => {
+      setResult(`${values.email} 계정으로 로그인했습니다`);
+    })}>
+      <label>이메일 <input type="email" {...email.props} /></label>
+      {email.errors.map((error) => <p key={error.message}>{error.message}</p>)}
+      <label>비밀번호 <input {...password.props} /></label>
+      {password.errors.map((error) => <p key={error.message}>{error.message}</p>)}
+      <label><input type="checkbox" {...remember} /> 로그인 유지</label>
+      <button disabled={state.isSubmitting}>로그인</button>
+      {result && <p role="status">{result}</p>}
+    </form>
+  );
+}
+```
+
+`defaultValues`는 reset 기준값을 정합니다. `useField`는 바인딩 속성과 오류를 반환하고, `useRegister`는 바인딩 속성만 반환합니다. `handleSubmit`은 브라우저 제출을 막고 폼을 검증한 뒤 유효한 값에 대해서만 콜백을 호출합니다.
+
+## 3. 실행하고 결과 확인하기
+
+React 애플리케이션에서 `<LoginForm />`을 렌더링하세요. 빈 필드에서 포커스를 빼거나 바로 제출하면 검증 메시지가 나타납니다. `@`가 포함된 이메일과 8자 이상의 비밀번호를 입력해 제출하면 페이지에 `ada@example.com 계정으로 로그인했습니다`처럼 입력한 이메일이 표시됩니다. 제출을 시도할 때마다 `submitCount`가 증가하므로 처음부터 유효하게 제출했다면 `1`, 한 번 실패한 뒤 유효하게 제출했다면 `2`가 됩니다.
+
+## 다음 단계
+
+[핵심 개념](/ko/form/core-concepts)에서 이 예시의 설계 모델을 읽으세요. 바인딩 종류와 외부 값 동기화는 [React 통합](/ko/form/integrations/react), 서버 오류와 reset 같은 실무 고려 사항은 [로그인 폼 만들기](/ko/form/guides/build-a-login-form)에서 이어집니다.

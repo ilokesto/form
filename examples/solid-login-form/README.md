@@ -15,8 +15,8 @@ This Vite + Solid + TypeScript example shows a simple email/password login form 
 From the repository root:
 
 ```sh
-pnpm --dir packages/form/examples/solid-login-form install
-pnpm --dir packages/form/examples/solid-login-form dev
+pnpm install --frozen-lockfile
+pnpm --dir examples/solid-login-form dev
 ```
 
 The example aliases `@ilokesto/form` and `@ilokesto/form/solid` to the local `src/` files, so it can run before the package is built.

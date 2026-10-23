@@ -1,0 +1,2398 @@
+{
+  "schemaVersion": 1,
+  "package": {
+    "name": "@ilokesto/form",
+    "version": "2.0.0",
+    "channel": "latest",
+    "revision": 1,
+    "releaseCommit": "ecd9709b76d1976ec86865314e85b916f220c818",
+    "docsCommit": "fc8bd4755137b75767284dbe84a0774185dfbdde",
+    "snapshot": "docs-publication/releases/form/2.0.0/r1"
+  },
+  "releaseSource": {
+    "commit": "ecd9709b76d1976ec86865314e85b916f220c818",
+    "packageTree": "7e1a91757220fb2ba719afd06b20c8f0a59d370a",
+    "docsTree": "4e259ded6563a50ea41d0ad245ff78a669065554",
+    "files": [
+      {
+        "path": "packages/form/README.ko.md",
+        "mode": "100644",
+        "blob": "fffbfffc6a33025e7465959da09601919ab1ae7d"
+      },
+      {
+        "path": "packages/form/README.md",
+        "mode": "100644",
+        "blob": "48bc92842132f486279fb145da74300acd66b517"
+      },
+      {
+        "path": "packages/form/docs/advanced/array-rebasing.ko.mdx",
+        "mode": "100644",
+        "blob": "e6d2677ef9389a5f86f37c159356256d8e8bfb5e"
+      },
+      {
+        "path": "packages/form/docs/advanced/array-rebasing.mdx",
+        "mode": "100644",
+        "blob": "34d66464ab73772d57092d9857872778687e9996"
+      },
+      {
+        "path": "packages/form/docs/advanced/meta.json",
+        "mode": "100644",
+        "blob": "6076f35200e5a4d2ed0ca4fe7a7167db21930401"
+      },
+      {
+        "path": "packages/form/docs/advanced/normalized-store.ko.mdx",
+        "mode": "100644",
+        "blob": "09ea353d7ebd8737c06482625aeeffcef9ab8488"
+      },
+      {
+        "path": "packages/form/docs/advanced/normalized-store.mdx",
+        "mode": "100644",
+        "blob": "df9a38055eb4ab79da1c5567f53eaae09aaaa3e4"
+      },
+      {
+        "path": "packages/form/docs/advanced/path-semantics.ko.mdx",
+        "mode": "100644",
+        "blob": "a18ad4aa3daabdf717b10e83086897b63fd74ac0"
+      },
+      {
+        "path": "packages/form/docs/advanced/path-semantics.mdx",
+        "mode": "100644",
+        "blob": "ee7ac0ef0931537c75577350732e1c811c6f9971"
+      },
+      {
+        "path": "packages/form/docs/advanced/standard-schema.ko.mdx",
+        "mode": "100644",
+        "blob": "93f954fd06c90b4d3a505fed8c438891fb05a0a9"
+      },
+      {
+        "path": "packages/form/docs/advanced/standard-schema.mdx",
+        "mode": "100644",
+        "blob": "cc3600012e5fca222ef20f28e88f54300ca8e9e4"
+      },
+      {
+        "path": "packages/form/docs/core-concepts.ko.mdx",
+        "mode": "100644",
+        "blob": "b590f795fa860965726d03b44aa1c3e38032d216"
+      },
+      {
+        "path": "packages/form/docs/core-concepts.mdx",
+        "mode": "100644",
+        "blob": "2822845a145f4dd9bb29cc5c88d4b71827135d20"
+      },
+      {
+        "path": "packages/form/docs/guides/array-fields.ko.mdx",
+        "mode": "100644",
+        "blob": "0c5b8e9b67a8a2132a21294b952b24b5404c7be9"
+      },
+      {
+        "path": "packages/form/docs/guides/array-fields.mdx",
+        "mode": "100644",
+        "blob": "6482797f43acf3e6497abe71474ef3bf7307e43c"
+      },
+      {
+        "path": "packages/form/docs/guides/build-a-login-form.ko.mdx",
+        "mode": "100644",
+        "blob": "db3964b7019e86f076ed734ba3a6e93d5cdad31c"
+      },
+      {
+        "path": "packages/form/docs/guides/build-a-login-form.mdx",
+        "mode": "100644",
+        "blob": "75eb0ea24208802fb7e08137978258af4cfde0ce"
+      },
+      {
+        "path": "packages/form/docs/guides/meta.json",
+        "mode": "100644",
+        "blob": "445499d333734d8ae972ad88678fcd1ccc418d2b"
+      },
+      {
+        "path": "packages/form/docs/guides/nested-fields.ko.mdx",
+        "mode": "100644",
+        "blob": "bbca83b1b8454bb26003a63cb756f3d4c7e3fd71"
+      },
+      {
+        "path": "packages/form/docs/guides/nested-fields.mdx",
+        "mode": "100644",
+        "blob": "e22a71c12c464534025a49c8823284381510ee73"
+      },
+      {
+        "path": "packages/form/docs/guides/submit-handling.ko.mdx",
+        "mode": "100644",
+        "blob": "bb432b36c80d95f752a2fe11525c455b22f09420"
+      },
+      {
+        "path": "packages/form/docs/guides/submit-handling.mdx",
+        "mode": "100644",
+        "blob": "e397cd37df12111ca9ea4a7a1c2a647f8d8037c6"
+      },
+      {
+        "path": "packages/form/docs/guides/validation-flow.ko.mdx",
+        "mode": "100644",
+        "blob": "f8a52b76fa7958c0b842d38a0b403770916ad7a8"
+      },
+      {
+        "path": "packages/form/docs/guides/validation-flow.mdx",
+        "mode": "100644",
+        "blob": "04b33b8124f9a18b91bcb54dfc5bd2115e67f5db"
+      },
+      {
+        "path": "packages/form/docs/index.ko.mdx",
+        "mode": "100644",
+        "blob": "fca56aca437c22a85b0b760cbecfc506d2fa359b"
+      },
+      {
+        "path": "packages/form/docs/index.mdx",
+        "mode": "100644",
+        "blob": "65d379801491266a1cf57021856a789526f4692e"
+      },
+      {
+        "path": "packages/form/docs/integrations/meta.json",
+        "mode": "100644",
+        "blob": "62ca496a6b1d2b3ea226e145cc49daa6c72317cd"
+      },
+      {
+        "path": "packages/form/docs/integrations/react.ko.mdx",
+        "mode": "100644",
+        "blob": "5a7c1c2d5059a835faa45100e069a72f4a06295b"
+      },
+      {
+        "path": "packages/form/docs/integrations/react.mdx",
+        "mode": "100644",
+        "blob": "fbf03b42547c92d9960650ade505cccff775aa89"
+      },
+      {
+        "path": "packages/form/docs/integrations/solid.ko.mdx",
+        "mode": "100644",
+        "blob": "1c6f674624ec93512a1d50cb8aefdffce6c03641"
+      },
+      {
+        "path": "packages/form/docs/integrations/solid.mdx",
+        "mode": "100644",
+        "blob": "651fde9d21a14d0091603b543bc7aa079806ca31"
+      },
+      {
+        "path": "packages/form/docs/integrations/svelte.ko.mdx",
+        "mode": "100644",
+        "blob": "f38ad404363b1b6051dcb7614b416a501cbb3821"
+      },
+      {
+        "path": "packages/form/docs/integrations/svelte.mdx",
+        "mode": "100644",
+        "blob": "a9de41a8edc23f72f48f9dddf35f6251b187f8a0"
+      },
+      {
+        "path": "packages/form/docs/integrations/vue.ko.mdx",
+        "mode": "100644",
+        "blob": "faeb7e0bf692ef22e5e6296d19322e3b63612a82"
+      },
+      {
+        "path": "packages/form/docs/integrations/vue.mdx",
+        "mode": "100644",
+        "blob": "e07abcac6429bde8f5b25c2ad47495c6cd16797f"
+      },
+      {
+        "path": "packages/form/docs/meta.json",
+        "mode": "100644",
+        "blob": "695b17e52687428438e44bbc38c84ff575e592ec"
+      },
+      {
+        "path": "packages/form/docs/quick-start.ko.mdx",
+        "mode": "100644",
+        "blob": "3ae959b73ce1dd2ac1ef7901201a981c20ab9ef7"
+      },
+      {
+        "path": "packages/form/docs/quick-start.mdx",
+        "mode": "100644",
+        "blob": "af4658bb3771054efb1fc5475b4da2d432511829"
+      },
+      {
+        "path": "packages/form/docs/reference/adapter-use-form.ko.mdx",
+        "mode": "100644",
+        "blob": "16ca066b6bcf34c4e8bdc36ace56c110c013abda"
+      },
+      {
+        "path": "packages/form/docs/reference/adapter-use-form.mdx",
+        "mode": "100644",
+        "blob": "397e51c791630732601de382869c8b9f34b213e7"
+      },
+      {
+        "path": "packages/form/docs/reference/arrays.ko.mdx",
+        "mode": "100644",
+        "blob": "cc7126a2d16b967bc80f074c0058705ad4cd8fb3"
+      },
+      {
+        "path": "packages/form/docs/reference/arrays.mdx",
+        "mode": "100644",
+        "blob": "f15bead1d55891dbe2260fcf876b222e32c6f557"
+      },
+      {
+        "path": "packages/form/docs/reference/create-form.ko.mdx",
+        "mode": "100644",
+        "blob": "2d2a91ead28c080ba03c8872074977ae4a70574b"
+      },
+      {
+        "path": "packages/form/docs/reference/create-form.mdx",
+        "mode": "100644",
+        "blob": "5403d5d2cf1549a930eb3de1367923a14bf207cc"
+      },
+      {
+        "path": "packages/form/docs/reference/entrypoints.ko.mdx",
+        "mode": "100644",
+        "blob": "026259ef01bdee907d2a88326edf65aa3d27c436"
+      },
+      {
+        "path": "packages/form/docs/reference/entrypoints.mdx",
+        "mode": "100644",
+        "blob": "441fa01ed9c2afffbee61417a6f59ed2e7669156"
+      },
+      {
+        "path": "packages/form/docs/reference/field-paths-and-values.ko.mdx",
+        "mode": "100644",
+        "blob": "86a04d5d417b561e8d280503a1950ec05d4d3a93"
+      },
+      {
+        "path": "packages/form/docs/reference/field-paths-and-values.mdx",
+        "mode": "100644",
+        "blob": "5f4ee5e68af604b2f76940c858cc3901ada76200"
+      },
+      {
+        "path": "packages/form/docs/reference/field-state-and-errors.ko.mdx",
+        "mode": "100644",
+        "blob": "bb981d053d066af37ee31a048d2cce5bfa5e327b"
+      },
+      {
+        "path": "packages/form/docs/reference/field-state-and-errors.mdx",
+        "mode": "100644",
+        "blob": "343283141a09ec98b07d73b943eb6063e68637d2"
+      },
+      {
+        "path": "packages/form/docs/reference/meta.json",
+        "mode": "100644",
+        "blob": "23ee062a03be87eb893c66aff468a8a3130c5cae"
+      },
+      {
+        "path": "packages/form/docs/reference/submit-and-reset.ko.mdx",
+        "mode": "100644",
+        "blob": "4a45979efed92f88a33476a77371831c65641552"
+      },
+      {
+        "path": "packages/form/docs/reference/submit-and-reset.mdx",
+        "mode": "100644",
+        "blob": "4d0f50dfeafc64f09f03a2b9792cf2a2482a0228"
+      },
+      {
+        "path": "packages/form/docs/reference/types.ko.mdx",
+        "mode": "100644",
+        "blob": "40e507499261dd8c7c2b6fd1f1a7cb935d80f3fb"
+      },
+      {
+        "path": "packages/form/docs/reference/types.mdx",
+        "mode": "100644",
+        "blob": "21ab5f86d591c5b3aa8d0c18bd5cdd8b801c3e49"
+      },
+      {
+        "path": "packages/form/docs/reference/validation.ko.mdx",
+        "mode": "100644",
+        "blob": "c9a3f0223eb88cccdf8fbc337e1ff34d95e56b8e"
+      },
+      {
+        "path": "packages/form/docs/reference/validation.mdx",
+        "mode": "100644",
+        "blob": "ffa4281bdca4bdaf876d6bac6397a4b4e79c80d1"
+      },
+      {
+        "path": "packages/form/docs/troubleshooting.ko.mdx",
+        "mode": "100644",
+        "blob": "64286acd4d4285c69133b8af0b663439cc0b0bf6"
+      },
+      {
+        "path": "packages/form/docs/troubleshooting.mdx",
+        "mode": "100644",
+        "blob": "700977a2d192085b3e1d86c763bb7aed068fa3a0"
+      }
+    ]
+  },
+  "docsRevision": {
+    "commit": "fc8bd4755137b75767284dbe84a0774185dfbdde",
+    "packageTree": "7e1a91757220fb2ba719afd06b20c8f0a59d370a",
+    "docsTree": "4e259ded6563a50ea41d0ad245ff78a669065554",
+    "files": [
+      {
+        "path": "packages/form/README.ko.md",
+        "mode": "100644",
+        "blob": "fffbfffc6a33025e7465959da09601919ab1ae7d"
+      },
+      {
+        "path": "packages/form/README.md",
+        "mode": "100644",
+        "blob": "48bc92842132f486279fb145da74300acd66b517"
+      },
+      {
+        "path": "packages/form/docs/advanced/array-rebasing.ko.mdx",
+        "mode": "100644",
+        "blob": "e6d2677ef9389a5f86f37c159356256d8e8bfb5e"
+      },
+      {
+        "path": "packages/form/docs/advanced/array-rebasing.mdx",
+        "mode": "100644",
+        "blob": "34d66464ab73772d57092d9857872778687e9996"
+      },
+      {
+        "path": "packages/form/docs/advanced/meta.json",
+        "mode": "100644",
+        "blob": "6076f35200e5a4d2ed0ca4fe7a7167db21930401"
+      },
+      {
+        "path": "packages/form/docs/advanced/normalized-store.ko.mdx",
+        "mode": "100644",
+        "blob": "09ea353d7ebd8737c06482625aeeffcef9ab8488"
+      },
+      {
+        "path": "packages/form/docs/advanced/normalized-store.mdx",
+        "mode": "100644",
+        "blob": "df9a38055eb4ab79da1c5567f53eaae09aaaa3e4"
+      },
+      {
+        "path": "packages/form/docs/advanced/path-semantics.ko.mdx",
+        "mode": "100644",
+        "blob": "a18ad4aa3daabdf717b10e83086897b63fd74ac0"
+      },
+      {
+        "path": "packages/form/docs/advanced/path-semantics.mdx",
+        "mode": "100644",
+        "blob": "ee7ac0ef0931537c75577350732e1c811c6f9971"
+      },
+      {
+        "path": "packages/form/docs/advanced/standard-schema.ko.mdx",
+        "mode": "100644",
+        "blob": "93f954fd06c90b4d3a505fed8c438891fb05a0a9"
+      },
+      {
+        "path": "packages/form/docs/advanced/standard-schema.mdx",
+        "mode": "100644",
+        "blob": "cc3600012e5fca222ef20f28e88f54300ca8e9e4"
+      },
+      {
+        "path": "packages/form/docs/core-concepts.ko.mdx",
+        "mode": "100644",
+        "blob": "b590f795fa860965726d03b44aa1c3e38032d216"
+      },
+      {
+        "path": "packages/form/docs/core-concepts.mdx",
+        "mode": "100644",
+        "blob": "2822845a145f4dd9bb29cc5c88d4b71827135d20"
+      },
+      {
+        "path": "packages/form/docs/guides/array-fields.ko.mdx",
+        "mode": "100644",
+        "blob": "0c5b8e9b67a8a2132a21294b952b24b5404c7be9"
+      },
+      {
+        "path": "packages/form/docs/guides/array-fields.mdx",
+        "mode": "100644",
+        "blob": "6482797f43acf3e6497abe71474ef3bf7307e43c"
+      },
+      {
+        "path": "packages/form/docs/guides/build-a-login-form.ko.mdx",
+        "mode": "100644",
+        "blob": "db3964b7019e86f076ed734ba3a6e93d5cdad31c"
+      },
+      {
+        "path": "packages/form/docs/guides/build-a-login-form.mdx",
+        "mode": "100644",
+        "blob": "75eb0ea24208802fb7e08137978258af4cfde0ce"
+      },
+      {
+        "path": "packages/form/docs/guides/meta.json",
+        "mode": "100644",
+        "blob": "445499d333734d8ae972ad88678fcd1ccc418d2b"
+      },
+      {
+        "path": "packages/form/docs/guides/nested-fields.ko.mdx",
+        "mode": "100644",
+        "blob": "bbca83b1b8454bb26003a63cb756f3d4c7e3fd71"
+      },
+      {
+        "path": "packages/form/docs/guides/nested-fields.mdx",
+        "mode": "100644",
+        "blob": "e22a71c12c464534025a49c8823284381510ee73"
+      },
+      {
+        "path": "packages/form/docs/guides/submit-handling.ko.mdx",
+        "mode": "100644",
+        "blob": "bb432b36c80d95f752a2fe11525c455b22f09420"
+      },
+      {
+        "path": "packages/form/docs/guides/submit-handling.mdx",
+        "mode": "100644",
+        "blob": "e397cd37df12111ca9ea4a7a1c2a647f8d8037c6"
+      },
+      {
+        "path": "packages/form/docs/guides/validation-flow.ko.mdx",
+        "mode": "100644",
+        "blob": "f8a52b76fa7958c0b842d38a0b403770916ad7a8"
+      },
+      {
+        "path": "packages/form/docs/guides/validation-flow.mdx",
+        "mode": "100644",
+        "blob": "04b33b8124f9a18b91bcb54dfc5bd2115e67f5db"
+      },
+      {
+        "path": "packages/form/docs/index.ko.mdx",
+        "mode": "100644",
+        "blob": "fca56aca437c22a85b0b760cbecfc506d2fa359b"
+      },
+      {
+        "path": "packages/form/docs/index.mdx",
+        "mode": "100644",
+        "blob": "65d379801491266a1cf57021856a789526f4692e"
+      },
+      {
+        "path": "packages/form/docs/integrations/meta.json",
+        "mode": "100644",
+        "blob": "62ca496a6b1d2b3ea226e145cc49daa6c72317cd"
+      },
+      {
+        "path": "packages/form/docs/integrations/react.ko.mdx",
+        "mode": "100644",
+        "blob": "5a7c1c2d5059a835faa45100e069a72f4a06295b"
+      },
+      {
+        "path": "packages/form/docs/integrations/react.mdx",
+        "mode": "100644",
+        "blob": "fbf03b42547c92d9960650ade505cccff775aa89"
+      },
+      {
+        "path": "packages/form/docs/integrations/solid.ko.mdx",
+        "mode": "100644",
+        "blob": "1c6f674624ec93512a1d50cb8aefdffce6c03641"
+      },
+      {
+        "path": "packages/form/docs/integrations/solid.mdx",
+        "mode": "100644",
+        "blob": "651fde9d21a14d0091603b543bc7aa079806ca31"
+      },
+      {
+        "path": "packages/form/docs/integrations/svelte.ko.mdx",
+        "mode": "100644",
+        "blob": "f38ad404363b1b6051dcb7614b416a501cbb3821"
+      },
+      {
+        "path": "packages/form/docs/integrations/svelte.mdx",
+        "mode": "100644",
+        "blob": "a9de41a8edc23f72f48f9dddf35f6251b187f8a0"
+      },
+      {
+        "path": "packages/form/docs/integrations/vue.ko.mdx",
+        "mode": "100644",
+        "blob": "faeb7e0bf692ef22e5e6296d19322e3b63612a82"
+      },
+      {
+        "path": "packages/form/docs/integrations/vue.mdx",
+        "mode": "100644",
+        "blob": "e07abcac6429bde8f5b25c2ad47495c6cd16797f"
+      },
+      {
+        "path": "packages/form/docs/meta.json",
+        "mode": "100644",
+        "blob": "695b17e52687428438e44bbc38c84ff575e592ec"
+      },
+      {
+        "path": "packages/form/docs/quick-start.ko.mdx",
+        "mode": "100644",
+        "blob": "3ae959b73ce1dd2ac1ef7901201a981c20ab9ef7"
+      },
+      {
+        "path": "packages/form/docs/quick-start.mdx",
+        "mode": "100644",
+        "blob": "af4658bb3771054efb1fc5475b4da2d432511829"
+      },
+      {
+        "path": "packages/form/docs/reference/adapter-use-form.ko.mdx",
+        "mode": "100644",
+        "blob": "16ca066b6bcf34c4e8bdc36ace56c110c013abda"
+      },
+      {
+        "path": "packages/form/docs/reference/adapter-use-form.mdx",
+        "mode": "100644",
+        "blob": "397e51c791630732601de382869c8b9f34b213e7"
+      },
+      {
+        "path": "packages/form/docs/reference/arrays.ko.mdx",
+        "mode": "100644",
+        "blob": "cc7126a2d16b967bc80f074c0058705ad4cd8fb3"
+      },
+      {
+        "path": "packages/form/docs/reference/arrays.mdx",
+        "mode": "100644",
+        "blob": "f15bead1d55891dbe2260fcf876b222e32c6f557"
+      },
+      {
+        "path": "packages/form/docs/reference/create-form.ko.mdx",
+        "mode": "100644",
+        "blob": "2d2a91ead28c080ba03c8872074977ae4a70574b"
+      },
+      {
+        "path": "packages/form/docs/reference/create-form.mdx",
+        "mode": "100644",
+        "blob": "5403d5d2cf1549a930eb3de1367923a14bf207cc"
+      },
+      {
+        "path": "packages/form/docs/reference/entrypoints.ko.mdx",
+        "mode": "100644",
+        "blob": "026259ef01bdee907d2a88326edf65aa3d27c436"
+      },
+      {
+        "path": "packages/form/docs/reference/entrypoints.mdx",
+        "mode": "100644",
+        "blob": "441fa01ed9c2afffbee61417a6f59ed2e7669156"
+      },
+      {
+        "path": "packages/form/docs/reference/field-paths-and-values.ko.mdx",
+        "mode": "100644",
+        "blob": "86a04d5d417b561e8d280503a1950ec05d4d3a93"
+      },
+      {
+        "path": "packages/form/docs/reference/field-paths-and-values.mdx",
+        "mode": "100644",
+        "blob": "5f4ee5e68af604b2f76940c858cc3901ada76200"
+      },
+      {
+        "path": "packages/form/docs/reference/field-state-and-errors.ko.mdx",
+        "mode": "100644",
+        "blob": "bb981d053d066af37ee31a048d2cce5bfa5e327b"
+      },
+      {
+        "path": "packages/form/docs/reference/field-state-and-errors.mdx",
+        "mode": "100644",
+        "blob": "343283141a09ec98b07d73b943eb6063e68637d2"
+      },
+      {
+        "path": "packages/form/docs/reference/meta.json",
+        "mode": "100644",
+        "blob": "23ee062a03be87eb893c66aff468a8a3130c5cae"
+      },
+      {
+        "path": "packages/form/docs/reference/submit-and-reset.ko.mdx",
+        "mode": "100644",
+        "blob": "4a45979efed92f88a33476a77371831c65641552"
+      },
+      {
+        "path": "packages/form/docs/reference/submit-and-reset.mdx",
+        "mode": "100644",
+        "blob": "4d0f50dfeafc64f09f03a2b9792cf2a2482a0228"
+      },
+      {
+        "path": "packages/form/docs/reference/types.ko.mdx",
+        "mode": "100644",
+        "blob": "40e507499261dd8c7c2b6fd1f1a7cb935d80f3fb"
+      },
+      {
+        "path": "packages/form/docs/reference/types.mdx",
+        "mode": "100644",
+        "blob": "21ab5f86d591c5b3aa8d0c18bd5cdd8b801c3e49"
+      },
+      {
+        "path": "packages/form/docs/reference/validation.ko.mdx",
+        "mode": "100644",
+        "blob": "c9a3f0223eb88cccdf8fbc337e1ff34d95e56b8e"
+      },
+      {
+        "path": "packages/form/docs/reference/validation.mdx",
+        "mode": "100644",
+        "blob": "ffa4281bdca4bdaf876d6bac6397a4b4e79c80d1"
+      },
+      {
+        "path": "packages/form/docs/troubleshooting.ko.mdx",
+        "mode": "100644",
+        "blob": "64286acd4d4285c69133b8af0b663439cc0b0bf6"
+      },
+      {
+        "path": "packages/form/docs/troubleshooting.mdx",
+        "mode": "100644",
+        "blob": "700977a2d192085b3e1d86c763bb7aed068fa3a0"
+      }
+    ]
+  },
+  "runtimeSource": {
+    "commit": "ecd9709b76d1976ec86865314e85b916f220c818",
+    "files": [
+      {
+        "path": "packages/form/.gitignore",
+        "bytes": 465,
+        "sha256": "4483dc90ff9b9773dd54e559fef4c6383c426fd12d6f5f4f28a9476e8977d1a9",
+        "blob": "798972ddd11e948f54d2ca06e6efce5f7ba38828",
+        "mode": "100644"
+      },
+      {
+        "path": "packages/form/.prettierrc",
+        "bytes": 126,
+        "sha256": "7e6cedbc6729b76baaa11139e6a19955da86fe62af3fc061549c01f07db0c1e2",
+        "blob": "8784f6950cfd30297215e2b3b0a52785119b80f9",
+        "mode": "100644"
+      },
+      {
+        "path": "packages/form/AGENTS.md",
+        "bytes": 1002,
+        "sha256": "85080f94cc6f1a4604add0d9642908aa070d23906a8b9a2567118962c1711a91",
+        "blob": "23af2756eb8abe5d97c398014342d1c297cd6360",
+        "mode": "100644"
+      },
+      {
+        "path": "packages/form/CHANGELOG.md",
+        "bytes": 4585,
+        "sha256": "8db61461644df1a332151649b185d7df938484221e119255aa90c5469c7316d0",
+        "blob": "c7cdcadbe4e39cdfcca4e7e50d6f0bb1bf0b6138",
+        "mode": "100644"
+      },
+      {
+        "path": "packages/form/LICENSE",
+        "bytes": 1102,
+        "sha256": "d255f6d4da7a0102e9a74a0c30b4b883e7245058133a0f979a5f719908f05317",
+        "blob": "a9bc92aa344fba9017d2fabac057a3ac2b9e6e9c",
+        "mode": "100644"
+      },
+      {
+        "path": "packages/form/examples/react-array-register/README.md",
+        "bytes": 1992,
+        "sha256": "93ca481eba322ec7a035a9f161537069eed4695a65ad579d600baa3b3e79da80",
+        "blob": "17ad3dc08682e3f9c4c32db7440699834a65e4c9",
+        "mode": "100644"
+      },
+      {
+        "path": "packages/form/examples/react-array-register/index.html",
+        "bytes": 333,
+        "sha256": "506e0eaffd54e4736d454913b971c69812afedb1784cb7401fc5794eaad5baab",
+        "blob": "fa8128ef46acefc4be88e0e163ca4259fc2a6f3b",
+        "mode": "100644"
+      },
+      {
+        "path": "packages/form/examples/react-array-register/package.json",
+        "bytes": 614,
+        "sha256": "7cab8cc648b974ee7abfd5615a71d7b29fee252987f8c29be5f47810b905b1b5",
+        "blob": "1372cb177fe48c1fbe7cfab405eef2fe3a054896",
+        "mode": "100644"
+      },
+      {
+        "path": "packages/form/examples/react-array-register/src/main.tsx",
+        "bytes": 4033,
+        "sha256": "b4a5fa70b2f4565ef1907bdd3274228bae7dd1a0c84e0480b71445dcc6c4f19b",
+        "blob": "f10a73b5e6314e311aa5db9b72ec65ba61f620dd",
+        "mode": "100644"
+      },
+      {
+        "path": "packages/form/examples/react-array-register/src/styles.css",
+        "bytes": 2257,
+        "sha256": "04cb94af2f989e4961b7766fcf67bb7f76ff12e26d7d29bc0c8fd04c8d6313ce",
+        "blob": "1bed9fae4f3f3e77bace71b907e564db0ff52d72",
+        "mode": "100644"
+      },
+      {
+        "path": "packages/form/examples/react-array-register/src/vite-env.d.ts",
+        "bytes": 38,
+        "sha256": "65996936fbb042915f7b74a200fcdde7e410f32a669b1ab9597cfaa4b0faddb5",
+        "blob": "11f02fe2a0061d6e6e1f271b21da95423b448b32",
+        "mode": "100644"
+      },
+      {
+        "path": "packages/form/examples/react-array-register/tsconfig.json",
+        "bytes": 654,
+        "sha256": "68bdc1ce46f174da294e9067362825617e5a8e07cfcc4c67476e4b9f954b6ff6",
+        "blob": "52176a0ddfa36e1f01c930561a8cf9df1cc97ed5",
+        "mode": "100644"
+      },
+      {
+        "path": "packages/form/examples/react-array-register/vite.config.ts",
+        "bytes": 493,
+        "sha256": "9606fdc9b9f9ae794555e8fc62f5a90e409724f33d9018ce9974c6cb4e971de2",
+        "blob": "bb43333db32523be5cffeb4f9c9c9c02934306fa",
+        "mode": "100644"
+      },
+      {
+        "path": "packages/form/examples/react-validation-flow/README.md",
+        "bytes": 1122,
+        "sha256": "7cc4916c1f25d449620dc1aef1f32fabea983225ef320d5d1643d3c7fa0b00ae",
+        "blob": "fcb2d136646bb212553ee9de55dda6806ed36588",
+        "mode": "100644"
+      },
+      {
+        "path": "packages/form/examples/react-validation-flow/index.html",
+        "bytes": 330,
+        "sha256": "b9612fb423ce6bfe01df53040ea8ced444bd2d2981449c2903997b25377060e9",
+        "blob": "0e3690254d35b71bba3f7207a56643da31f76453",
+        "mode": "100644"
+      },
+      {
+        "path": "packages/form/examples/react-validation-flow/package.json",
+        "bytes": 681,
+        "sha256": "ec68d28e21bcda08d929c46e5a069ece32ba3db14fd37b337f2436bf0bda7f34",
+        "blob": "166b3f3cd14f3871bc4905403d041eac2ffaa208",
+        "mode": "100644"
+      },
+      {
+        "path": "packages/form/examples/react-validation-flow/src/App.tsx",
+        "bytes": 4517,
+        "sha256": "9809e1a2ffd01832b3f21c4143b9fa725a6c6bb54255998546de297e19264aa7",
+        "blob": "8933cb8edd27c70a5c51e859e1b68fce503e4206",
+        "mode": "100644"
+      },
+      {
+        "path": "packages/form/examples/react-validation-flow/src/main.tsx",
+        "bytes": 231,
+        "sha256": "025bd1bc820ccd5d21e06af4b7176d52e9756fda884f8995c10c296b743dac47",
+        "blob": "d4bd0654a883bdf248a272b53f22ef908d949d65",
+        "mode": "100644"
+      },
+      {
+        "path": "packages/form/examples/react-validation-flow/src/styles.css",
+        "bytes": 2399,
+        "sha256": "9c1b9b1b644349c53e7cfd1cfbb4c8d6de7368dc8624d783d980aa5075cc16cd",
+        "blob": "2ba39767db322f96689a9c1f7cc70a8ad010fd87",
+        "mode": "100644"
+      },
+      {
+        "path": "packages/form/examples/react-validation-flow/src/vite-env.d.ts",
+        "bytes": 37,
+        "sha256": "b440b802c2cfeac6a24eda510bd63c1f23c6ab5c52bcfe3a32a918dbad6b46c8",
+        "blob": "151aa6856ffb617099a80f5633b9415ed9c45566",
+        "mode": "100644"
+      },
+      {
+        "path": "packages/form/examples/react-validation-flow/tsconfig.json",
+        "bytes": 653,
+        "sha256": "9915e98e73f904dc379e897e0dfeaace5b0c75ba3ef23a388be1c512ae8d5ebd",
+        "blob": "2be538734ec3293c800cb0c002de9088aae8b4eb",
+        "mode": "100644"
+      },
+      {
+        "path": "packages/form/examples/react-validation-flow/vite.config.ts",
+        "bytes": 492,
+        "sha256": "a0cb7d3ffcc834a391bcf82136d3646e7d929ccde1213411066d8eb47339d8ff",
+        "blob": "602b97ebd4f521cf2e4882b9b1a97415711eaadc",
+        "mode": "100644"
+      },
+      {
+        "path": "packages/form/examples/solid-login-form/README.md",
+        "bytes": 775,
+        "sha256": "cb034ff37cc68e9be0167b43e28cb4a0bb47bb98cc7d7d10799a884bf5041ee0",
+        "blob": "4967eb9172e95305dc57dbde8508d2d5512fd05f",
+        "mode": "100644"
+      },
+      {
+        "path": "packages/form/examples/solid-login-form/index.html",
+        "bytes": 320,
+        "sha256": "623971e66fa08f71f9826bfb3592669c1fe4bb742deef8f767af4444b7f01650",
+        "blob": "0fe1fab1fe069b02645c07bc63566f1e83210728",
+        "mode": "100644"
+      },
+      {
+        "path": "packages/form/examples/solid-login-form/package.json",
+        "bytes": 410,
+        "sha256": "9831d24ab315ae295aebf4172f7088b45514d29122f91ba70321ea8e31b5032b",
+        "blob": "e6929b847a92016f0022f35ba397f0e296a7a48a",
+        "mode": "100644"
+      },
+      {
+        "path": "packages/form/examples/solid-login-form/src/App.tsx",
+        "bytes": 3180,
+        "sha256": "f48c3d6c56f1f3bc74754f1d70b4337f238727904a0ff1bc4beb5eee59232093",
+        "blob": "6b10b65696b302dce61dff78237418bf4200fa73",
+        "mode": "100644"
+      },
+      {
+        "path": "packages/form/examples/solid-login-form/src/main.tsx",
+        "bytes": 217,
+        "sha256": "1e128b1078d9486c26536f23b93aca2fb54e1725ceb6ed69cd00c34f83ea5942",
+        "blob": "57cde46c8f7b3cb3e9fecf8b05dcccdd24757708",
+        "mode": "100644"
+      },
+      {
+        "path": "packages/form/examples/solid-login-form/src/styles.css",
+        "bytes": 1536,
+        "sha256": "7122854e2f3704af12fe3c81ea0d46f6eeb5f22b3338f5f57aa588d58a3b64f6",
+        "blob": "c48d84387fc4b0e5b788e5eadb6f15a70cc7e887",
+        "mode": "100644"
+      },
+      {
+        "path": "packages/form/examples/solid-login-form/src/vite-env.d.ts",
+        "bytes": 37,
+        "sha256": "b440b802c2cfeac6a24eda510bd63c1f23c6ab5c52bcfe3a32a918dbad6b46c8",
+        "blob": "151aa6856ffb617099a80f5633b9415ed9c45566",
+        "mode": "100644"
+      },
+      {
+        "path": "packages/form/examples/solid-login-form/tsconfig.json",
+        "bytes": 687,
+        "sha256": "5794ab851164cd7e5558f7136b26c05473a3ce80cf69a19ece01efbb884d63a5",
+        "blob": "4c5e46c94c8912d60c1a41040ea183e0bc099936",
+        "mode": "100644"
+      },
+      {
+        "path": "packages/form/examples/solid-login-form/vite.config.ts",
+        "bytes": 351,
+        "sha256": "f23184d83863e66e085ec8c6564ba728c5369a2dc97b71a19dfceef27d159060",
+        "blob": "13f4a3dc754fe6062aba740a295e78adc0af6117",
+        "mode": "100644"
+      },
+      {
+        "path": "packages/form/examples/svelte-login-form/README.md",
+        "bytes": 765,
+        "sha256": "116c5f71db5bfb6d94b3426907fac3a6f6195c73f134dd4dbc91b27c550d820d",
+        "blob": "111caf43c731f1341a90c3b4c834a09b41a15bf3",
+        "mode": "100644"
+      },
+      {
+        "path": "packages/form/examples/svelte-login-form/index.html",
+        "bytes": 319,
+        "sha256": "4b7f78ba1d2e3bf73a88b7e4a06cf26957c0e2f9babd0247bd6cd20b03931e48",
+        "blob": "e855367d6c5dedb0f026815584aaf0002cb56328",
+        "mode": "100644"
+      },
+      {
+        "path": "packages/form/examples/svelte-login-form/package.json",
+        "bytes": 511,
+        "sha256": "917078f02d5a3f255abcc21c8cdca33cc5de2d8c499a3c18a443c4c8ba0e563f",
+        "blob": "683985e4ad11c4ac9c7cdc264aec4c2547ac8b56",
+        "mode": "100644"
+      },
+      {
+        "path": "packages/form/examples/svelte-login-form/src/App.svelte",
+        "bytes": 4423,
+        "sha256": "d53a7f0303a2cbc49fb149188227305ddb3558427488ef62db57cbba6063cf5c",
+        "blob": "595bcc13b49299e7ae6dcad7fb9cdcb518dbee0f",
+        "mode": "100644"
+      },
+      {
+        "path": "packages/form/examples/svelte-login-form/src/main.ts",
+        "bytes": 154,
+        "sha256": "eaddf97726aaa4bf3bfc08eb36c77b79432326a2749eaede006c6eaeba03788f",
+        "blob": "1d07ef06de4b1b13a22d7ef521aad34692cd0390",
+        "mode": "100644"
+      },
+      {
+        "path": "packages/form/examples/svelte-login-form/src/vite-env.d.ts",
+        "bytes": 37,
+        "sha256": "b440b802c2cfeac6a24eda510bd63c1f23c6ab5c52bcfe3a32a918dbad6b46c8",
+        "blob": "151aa6856ffb617099a80f5633b9415ed9c45566",
+        "mode": "100644"
+      },
+      {
+        "path": "packages/form/examples/svelte-login-form/tsconfig.json",
+        "bytes": 619,
+        "sha256": "ef750d0944c59663b6b5a51acf95566286ac7555fe23c5226ddf5f2e3f570e87",
+        "blob": "4a66a2ffb8e7f54c780c43a91a486ca9b5c0515c",
+        "mode": "100644"
+      },
+      {
+        "path": "packages/form/examples/svelte-login-form/vite.config.ts",
+        "bytes": 370,
+        "sha256": "6aaf54677d8524106bfa905e0998a4d1c49daab763993dbcb446d0409c4a0520",
+        "blob": "500ff3f1f72dabe9e48d968f71918580da8dd9ca",
+        "mode": "100644"
+      },
+      {
+        "path": "packages/form/examples/vue-login-form/README.md",
+        "bytes": 742,
+        "sha256": "13321c6a8417510eeae49fd455f8fb8aacdbad9d138b080a85eb1f19b7a19184",
+        "blob": "2bec833e1c153d788afa42428fc772ea5e2785c4",
+        "mode": "100644"
+      },
+      {
+        "path": "packages/form/examples/vue-login-form/index.html",
+        "bytes": 316,
+        "sha256": "0f0d22ec4878e22009385ddd46f90b0f7ae4bf15e790391cae7181608faa2a8b",
+        "blob": "f616b16c46fada76ff55e923459b4fd4deaa9b0c",
+        "mode": "100644"
+      },
+      {
+        "path": "packages/form/examples/vue-login-form/package.json",
+        "bytes": 452,
+        "sha256": "d2c5d695984a79d0a2fb11f0318b46a9117db34350d14686ca840a22565df5a0",
+        "blob": "37a3bf68253b4ac6dc08752bcf25ddbe2bd59b16",
+        "mode": "100644"
+      },
+      {
+        "path": "packages/form/examples/vue-login-form/src/App.vue",
+        "bytes": 3106,
+        "sha256": "ae9961c32988a509a4bba428b1d93302b6c746ba5c01b611532073dedb87c690",
+        "blob": "ffd6307088a4854cc3a561fb26b9b5c27445080a",
+        "mode": "100644"
+      },
+      {
+        "path": "packages/form/examples/vue-login-form/src/env.d.ts",
+        "bytes": 200,
+        "sha256": "7ed9ef0651797597e8143dba97dc80f7847bef922c7745bb90663432e9e569f5",
+        "blob": "e7e95cee16741fe7e0d1f25042ad5be865eaaaab",
+        "mode": "100644"
+      },
+      {
+        "path": "packages/form/examples/vue-login-form/src/main.ts",
+        "bytes": 1386,
+        "sha256": "650ef5bf3486ed8ee547caad5d52632b056d8f7895e0f6ad0543a33dd07b48d3",
+        "blob": "7b61c345d18ee370be2417393c51e74fd1f9f0fa",
+        "mode": "100644"
+      },
+      {
+        "path": "packages/form/examples/vue-login-form/tsconfig.json",
+        "bytes": 648,
+        "sha256": "cfa41b158ffe1a8add0b1138e6ac64187b6d05f30c1a165bc0dda8844df0757d",
+        "blob": "0cbda166ed05c6a331a55f39467b7409cfebcdd2",
+        "mode": "100644"
+      },
+      {
+        "path": "packages/form/examples/vue-login-form/vite.config.ts",
+        "bytes": 344,
+        "sha256": "8f558e45fa5cbc1853ca048dc4a80e7a77be41780843195b0ef5b635066d504d",
+        "blob": "f3d37736733e1b8156356eed1a89c3c8cee9201f",
+        "mode": "100644"
+      },
+      {
+        "path": "packages/form/package.json",
+        "bytes": 2233,
+        "sha256": "23b5429cc301ad9b7e20e8b4857c21b749f34c438956f0e22cf6145126e36f33",
+        "blob": "cca0994c0ed8d4f493d8c908ab2b161626ff63aa",
+        "mode": "100644"
+      },
+      {
+        "path": "packages/form/scripts/verify-package.mjs",
+        "bytes": 5743,
+        "sha256": "042db6cbf95b23bc2dd7966148a0d97ed350a7dba3986765f96660fdf28000f6",
+        "blob": "29bf5d96da6d94493f882bb72bb40b5b2ca125cc",
+        "mode": "100644"
+      },
+      {
+        "path": "packages/form/src/adapters/FormInput.ts",
+        "bytes": 1223,
+        "sha256": "31e765cef58bb5c4f59ce8feac399467af6b1ae493723e323bd9cbfb78a32631",
+        "blob": "e4317e1aa6cf422c8df770cee1da5627c695cb5f",
+        "mode": "100644"
+      },
+      {
+        "path": "packages/form/src/adapters/FormStateSummary.ts",
+        "bytes": 2727,
+        "sha256": "beb2e6e02591a4c86740ee0656466a80350a7662980cea3f3c0f446531d44ba0",
+        "blob": "ed412918f28e1f236160fcbc15c85e8388ea6f79",
+        "mode": "100644"
+      },
+      {
+        "path": "packages/form/src/adapters/dom/FieldValue.ts",
+        "bytes": 1437,
+        "sha256": "025b5fde3ec451ce671fc021b36ff658d22d4c16732d94534f6ecbcf522f65ef",
+        "blob": "7bbc9e4dfbf513326c33d2977e4a6c735a5feb2c",
+        "mode": "100644"
+      },
+      {
+        "path": "packages/form/src/adapters/dom/RegisterBinding.ts",
+        "bytes": 4615,
+        "sha256": "a773e19e62f93c785088a453f522dec9ed2a5108798dec58e8f9805b6ec3ac4e",
+        "blob": "d35083fd2c0c1879cab8d85165a2e5ddb01f393e",
+        "mode": "100644"
+      },
+      {
+        "path": "packages/form/src/adapters/dom/SubmitHandler.ts",
+        "bytes": 908,
+        "sha256": "aaabe63c34e4a510bcb35153b05dd7440dcbf39893e6969e75655dec1db27819",
+        "blob": "9b48bd0a9248570944337f47b2e96ff554bb90aa",
+        "mode": "100644"
+      },
+      {
+        "path": "packages/form/src/adapters/dom/index.ts",
+        "bytes": 403,
+        "sha256": "87cd0cb5d6f095a5cbfbe546e446846f80e7bf62e008c28ed9c497078f3975a8",
+        "blob": "2594d3d7710f917c706619493e36d42cbda01d4b",
+        "mode": "100644"
+      },
+      {
+        "path": "packages/form/src/adapters/dom/types.ts",
+        "bytes": 1457,
+        "sha256": "99d177ffe207e4e9a709e71b216a1cdaf577b29132552965ee46b503a0d0dcc3",
+        "blob": "34440d4dab8182a2f3f2692236d0124a077eb60e",
+        "mode": "100644"
+      },
+      {
+        "path": "packages/form/src/core/array/ArrayItemReorder.ts",
+        "bytes": 2268,
+        "sha256": "a166a3081055270f8b91e50541ba96c236baa28c55e46f3267164959a5e38c37",
+        "blob": "75609d22006ed693014cf71f82623e83cc399a63",
+        "mode": "100644"
+      },
+      {
+        "path": "packages/form/src/core/array/ArrayKeyGenerator.ts",
+        "bytes": 614,
+        "sha256": "863f2b54a81f11c98e68a8bca4c1beed1eef6f6e0fde860f4bc24876180bd194",
+        "blob": "8cfb5cbeb9573cc06f45648f05e1f40183ca60a6",
+        "mode": "100644"
+      },
+      {
+        "path": "packages/form/src/core/array/FormArrayController.ts",
+        "bytes": 5666,
+        "sha256": "2fed46a5a9b43340b2a3ae9df1a3025c0bac64ce22de7b3eab2f43844d1735cf",
+        "blob": "2cb4d7cf74ee31f87d50a5e552212747a482d388",
+        "mode": "100644"
+      },
+      {
+        "path": "packages/form/src/core/array/FormArrayFactory.ts",
+        "bytes": 1340,
+        "sha256": "613447ae75d1dc074f3dc8f73266ae98b7e6fd56bd3462e87bf2e8e020e77f43",
+        "blob": "ffcadac7f4840e9b9305506417e188ee0b82c99d",
+        "mode": "100644"
+      },
+      {
+        "path": "packages/form/src/core/array/FormArrayMutationPlanner.ts",
+        "bytes": 6016,
+        "sha256": "9f86099cae36dbb172d0d9080520b5f2a95c475fce7a75b0ddd18c2663c00070",
+        "blob": "dba0172b45a942ccffe9bb99df725438793d22c6",
+        "mode": "100644"
+      },
+      {
+        "path": "packages/form/src/core/array/FormArrayPath.ts",
+        "bytes": 1683,
+        "sha256": "9ec79a2969782bcee5df440ec7f0a41c29ed191954201d50f0aeae06bbc678e7",
+        "blob": "e91758611fc45b6c6b0656782b8de882a322185e",
+        "mode": "100644"
+      },
+      {
+        "path": "packages/form/src/core/array/FormArrayRebaser.ts",
+        "bytes": 4939,
+        "sha256": "ea51c71440016b1cb0e28ec6f16374c6327366f4c990e66f60e22fd91f43330b",
+        "blob": "4ec4d1e5a296129c02de60d396ce8e8edfeae213",
+        "mode": "100644"
+      },
+      {
+        "path": "packages/form/src/core/array/index.ts",
+        "bytes": 55,
+        "sha256": "dd2516b9544e6cc7f320a5047f600d961c11e9df3d2defd517f9e0142efe8277",
+        "blob": "d43a41a15517fff973281017c932de5ff6043109",
+        "mode": "100644"
+      },
+      {
+        "path": "packages/form/src/core/form/CreateForm.ts",
+        "bytes": 5503,
+        "sha256": "6dc8b557b2cd5331b71271f0335cbcf3870d6144d835c5d9a4cbcf3a7f4f236e",
+        "blob": "aedea72b45f9d1494a9f2f2d1db0bad28da0fca1",
+        "mode": "100644"
+      },
+      {
+        "path": "packages/form/src/core/form/FormFieldCommands.ts",
+        "bytes": 4086,
+        "sha256": "68ea3b0f5df02f7d651608f42434103209a300ba99e0491a2e1429b3bb06e3fa",
+        "blob": "18e2844b550547c6076e8fb9e4046d7d68ed4be4",
+        "mode": "100644"
+      },
+      {
+        "path": "packages/form/src/core/form/FormSubmitter.ts",
+        "bytes": 2620,
+        "sha256": "bb18631655bac77d28ecd32c8b96d66f4d7f3692df02b825165e665723adfb0f",
+        "blob": "4ee05dcd1638e0dccb6ac1a9f6c470d48d9e698e",
+        "mode": "100644"
+      },
+      {
+        "path": "packages/form/src/core/form/index.ts",
+        "bytes": 43,
+        "sha256": "6709f8fd8c641fd716fb44fd16d9899cfe6894fde54d638f039a665a2e4a4c45",
+        "blob": "00f208766c0fe4d8ac1145ca6f2aac3ea947c9ba",
+        "mode": "100644"
+      },
+      {
+        "path": "packages/form/src/core/index.ts",
+        "bytes": 407,
+        "sha256": "46309c4427f6c91eb38d910f1b1e70c467c82df207251ee0addd6bcfb773d399",
+        "blob": "1b84d007058ab6cecd7d408a8aed220b17454290",
+        "mode": "100644"
+      },
+      {
+        "path": "packages/form/src/core/path/FormPath.ts",
+        "bytes": 3078,
+        "sha256": "5f7b9f78d1892f33bce4adf425073a10425fc310fecfc1f77ade15e0becfb615",
+        "blob": "e103911cac8008040679187b705f26bfebf6c72d",
+        "mode": "100644"
+      },
+      {
+        "path": "packages/form/src/core/path/index.ts",
+        "bytes": 39,
+        "sha256": "7618a6cbabd1f81d082cf5ba90899a60a8c9687717834f0f623a3a47f5d04965",
+        "blob": "f706daec4edcedebc9b6db46d4274101799142b0",
+        "mode": "100644"
+      },
+      {
+        "path": "packages/form/src/core/state/FieldStateFactory.ts",
+        "bytes": 1110,
+        "sha256": "db9fd6d0ecf46879ace139ed3df9adf5d1f420fff116a73f678e1b8171d52946",
+        "blob": "36178f8630bdb69d1e7028c456e491ebee067059",
+        "mode": "100644"
+      },
+      {
+        "path": "packages/form/src/core/state/FormStateInitializer.ts",
+        "bytes": 3825,
+        "sha256": "5431808c01a88c7cd0ba565068bc87c12e3474a6a142070bf28f55c2692fd2bf",
+        "blob": "4ccb0c7febad1ff2c4499c1aa1d68d00c0f28d62",
+        "mode": "100644"
+      },
+      {
+        "path": "packages/form/src/core/state/FormStateReader.ts",
+        "bytes": 2310,
+        "sha256": "73fddff0557d394f08064df4a78199eba20be77831cdcc51b1cbb93359b801ea",
+        "blob": "5b34075cb279931a1ba2224be6512c4fa4b47af6",
+        "mode": "100644"
+      },
+      {
+        "path": "packages/form/src/core/state/FormStateStore.ts",
+        "bytes": 5383,
+        "sha256": "c85c1e4a585164cdeca17d530b03580da862ca5ec819b64de2ef87c84b4a66e3",
+        "blob": "011587700595d35b8bb054e8c436d4968bc1c12f",
+        "mode": "100644"
+      },
+      {
+        "path": "packages/form/src/core/state/FormStateWriter.ts",
+        "bytes": 7893,
+        "sha256": "a322c1e9d45f754c914e405e515d03a4a583dade0a78a6da7e6ac326e8457fc0",
+        "blob": "5bb4db08579bfcddc5b3bd8e47f648570a3cea5e",
+        "mode": "100644"
+      },
+      {
+        "path": "packages/form/src/core/state/index.ts",
+        "bytes": 51,
+        "sha256": "646035105828861e1cf8b9510e3f6194223e608ec68772af8f46b2f7dcef6e3f",
+        "blob": "1169dd1e65f1d3d10f056ecf05d9fc71ad2a65b2",
+        "mode": "100644"
+      },
+      {
+        "path": "packages/form/src/core/types.ts",
+        "bytes": 12169,
+        "sha256": "e3cbe9ddb953630728175b2b55b1a041db558d14f8928b7c5aca223b9bcf2d40",
+        "blob": "9c05544bd70e1f5715ef9733872ecb14bb375ba0",
+        "mode": "100644"
+      },
+      {
+        "path": "packages/form/src/core/validation/StandardSchemaValidator.ts",
+        "bytes": 4086,
+        "sha256": "f0bf0348dd1b80f1995b0fc9575acdb0ec187c6f19d7307ec108bef05346f9f7",
+        "blob": "280f21314453a9a64a23c56ab44a3b2d47402949",
+        "mode": "100644"
+      },
+      {
+        "path": "packages/form/src/core/validation/ValidationEngine.ts",
+        "bytes": 11835,
+        "sha256": "8e407505737066e931774f7550659fecba5752d8b4ef2a2b37480c4cdfabacc5",
+        "blob": "2bc44ceeb02c50bb5f95bca83ecfae35b199d04f",
+        "mode": "100644"
+      },
+      {
+        "path": "packages/form/src/core/validation/ValidationSequencer.ts",
+        "bytes": 1788,
+        "sha256": "066102b32c655e6b843facf21669b74341bdba17b86aca8d5b69094a38459c07",
+        "blob": "0a919ad1857566954b379d3c0762395d82576656",
+        "mode": "100644"
+      },
+      {
+        "path": "packages/form/src/core/validation/index.ts",
+        "bytes": 116,
+        "sha256": "478040b4ec6b3d37605a7a8ccce1282c115659ed810339955e8e953fdad8d259",
+        "blob": "c24276c1d7aa2a566afed9e55b6a488884d0c0f7",
+        "mode": "100644"
+      },
+      {
+        "path": "packages/form/src/core/value/ValueHelper.ts",
+        "bytes": 4255,
+        "sha256": "8e3f1f7368bacaadebdec40a063106dcb19bdaa99bf5e3d741b40230c1226671",
+        "blob": "982ec6f17f2815e69de4758578de9bdab1119475",
+        "mode": "100644"
+      },
+      {
+        "path": "packages/form/src/core/value/index.ts",
+        "bytes": 45,
+        "sha256": "e125d3efd0eb68cfaf3e23d5aa31f227472f2ae814a9320837c89654e3e9e7d2",
+        "blob": "e3804998810888da2bf10868dfc013d1deb125f7",
+        "mode": "100644"
+      },
+      {
+        "path": "packages/form/src/index.ts",
+        "bytes": 237,
+        "sha256": "839dad32d3e79c107e6a12805469ab6a45ca68bbc0c23bdfc8111f2e1d472843",
+        "blob": "8b2a577948fce4e6f6d16a3c60eb02eca8384f29",
+        "mode": "100644"
+      },
+      {
+        "path": "packages/form/src/react/RegisterBinding.ts",
+        "bytes": 1146,
+        "sha256": "e37e1d7f7b09e6e735ab3acc6972c39692a90d49e83aafeb8ea2dffe14174810",
+        "blob": "93608db470c9b0aa089caac956d0f48b11b54c2c",
+        "mode": "100644"
+      },
+      {
+        "path": "packages/form/src/react/index.ts",
+        "bytes": 131,
+        "sha256": "7ba9cf4a270d32cc89e092791d8ddcb1a8c5a18366693c70c360ed8ff4928f5f",
+        "blob": "647b0c6af7de615d14e465e5bad1a77ad30e6fc7",
+        "mode": "100644"
+      },
+      {
+        "path": "packages/form/src/react/types.ts",
+        "bytes": 4987,
+        "sha256": "e3a141372522ba04e83a128ea4302ea110dc8c70013a638109a0b21bbf44d5a1",
+        "blob": "4960d5ea531782e0207a3389b4d44227e65ee4e4",
+        "mode": "100644"
+      },
+      {
+        "path": "packages/form/src/react/useField.ts",
+        "bytes": 1387,
+        "sha256": "761939824955319371c010c75be5a81baa1290e869cfae160521e798d8ea3244",
+        "blob": "df226acb032268d057847321384c9d6bc6a962c9",
+        "mode": "100644"
+      },
+      {
+        "path": "packages/form/src/react/useFieldSchemaRegistration.ts",
+        "bytes": 1352,
+        "sha256": "53dbfe7890b1a00f4ddb076e55ac5941d2f44c7993578693af439552581417fd",
+        "blob": "267860f9ff9819ec039e95bbf090636dff85932e",
+        "mode": "100644"
+      },
+      {
+        "path": "packages/form/src/react/useFieldState.ts",
+        "bytes": 569,
+        "sha256": "4d26f4aa572a8905178534575a85e5b145909ffdfe644e31be6970523b6eb382",
+        "blob": "a3b09b1a093c796e6d860db59df677e74e38d918",
+        "mode": "100644"
+      },
+      {
+        "path": "packages/form/src/react/useForm.ts",
+        "bytes": 2295,
+        "sha256": "50dd861959cdb9d5bb7a5e938958802fe41ff2fa5aa7f436572ba04952c4b3d8",
+        "blob": "4049303242f99b1ba8bf95c9ba80005bdf81610c",
+        "mode": "100644"
+      },
+      {
+        "path": "packages/form/src/react/useFormSnapshot.ts",
+        "bytes": 409,
+        "sha256": "a6de093ab1bd4f8fd187e10c830932474a5a4a58cb1128990a3a50de6157e93a",
+        "blob": "c0b4dc5ea2cd43412bf37185c30a5b6026968ccd",
+        "mode": "100644"
+      },
+      {
+        "path": "packages/form/src/react/useFormState.ts",
+        "bytes": 508,
+        "sha256": "98812a3fdaba6f36f8ff87a52306393595ff8f3ffc359190862f020953082712",
+        "blob": "680e69d4139f58c65b6ef95d964f3b5a8348a279",
+        "mode": "100644"
+      },
+      {
+        "path": "packages/form/src/react/useRegister.ts",
+        "bytes": 2599,
+        "sha256": "d4ec1fc554a6ef57ee3da67f4f89c33e4f04fc10b0e541a323865f1a59ee86cb",
+        "blob": "7c2bd93e925002a634cdaec3ce78557793980647",
+        "mode": "100644"
+      },
+      {
+        "path": "packages/form/src/solid/RegisterBinding.ts",
+        "bytes": 1285,
+        "sha256": "12ac9b9f9f95f1797c358f9960117d2cc96ea5a37c0428a4b535fa36d5b251fe",
+        "blob": "9934ce7c45be6779e12ad0650d88d4b2e1b28aa9",
+        "mode": "100644"
+      },
+      {
+        "path": "packages/form/src/solid/index.ts",
+        "bytes": 108,
+        "sha256": "d356bc3d15582e4330be7088f18aa9f24d5a80f33e68958fe6156ae01f6170c3",
+        "blob": "64a4948cd5d0a3ea37637981fea2bfb2543e2303",
+        "mode": "100644"
+      },
+      {
+        "path": "packages/form/src/solid/types.ts",
+        "bytes": 4776,
+        "sha256": "743e323917ef188fcfb0655d18c0e96a1d7ced9c92ebcc71662f245a016dd70c",
+        "blob": "70cae5054fc9936b8ffaf06867872cdfd3d0dee6",
+        "mode": "100644"
+      },
+      {
+        "path": "packages/form/src/solid/useField.ts",
+        "bytes": 1343,
+        "sha256": "76e6ecfdc2cb40faf0555dd3f102f8480fe23fd7140564452a06608c20a085f7",
+        "blob": "f64c04ba4b2b4d50a27051bc1c2fda6a78ca4879",
+        "mode": "100644"
+      },
+      {
+        "path": "packages/form/src/solid/useFieldSchemaRegistration.ts",
+        "bytes": 664,
+        "sha256": "27f1d2d47a8c3c48b63dc2042a09985f4f342dc05d29fde06b7aa48eeced8395",
+        "blob": "212172735cacd97c8b01965aa0dc2f2db6f5bf11",
+        "mode": "100644"
+      },
+      {
+        "path": "packages/form/src/solid/useForm.ts",
+        "bytes": 2047,
+        "sha256": "2ac14a507185b4b1c2dd04cedb5eecd1c303ca598123fc8861b2feef5c8d39ec",
+        "blob": "854343bad09b9c14106cb8bed5f30a323cf44e15",
+        "mode": "100644"
+      },
+      {
+        "path": "packages/form/src/solid/useFormSnapshot.ts",
+        "bytes": 533,
+        "sha256": "62c679b70e8952529c8079ac62ee68ecb131930a353fb00c97828baf4e286c9b",
+        "blob": "84fe5c69e2104c7dbd4487c94655b2ef8feb95f9",
+        "mode": "100644"
+      },
+      {
+        "path": "packages/form/src/solid/useFormState.ts",
+        "bytes": 1282,
+        "sha256": "76d258a9d558231e9aca245b4df53be58c9bf82e168ebe88df152a0452344e34",
+        "blob": "58e21daf26eedabc74ebd68ee328a9c118cb0d9f",
+        "mode": "100644"
+      },
+      {
+        "path": "packages/form/src/solid/useRegister.ts",
+        "bytes": 2555,
+        "sha256": "32ec89449b86a888802962f9baba8217ee75d89d87d462a060073026027e2e80",
+        "blob": "99eb8b5d6fcadc8b8927668ddf0ec5d1148e7bb7",
+        "mode": "100644"
+      },
+      {
+        "path": "packages/form/src/svelte/RegisterAction.ts",
+        "bytes": 4730,
+        "sha256": "90a4f7cf6fe76390160c7565383f39c4ddd8af01ed9c128b4f0a4e2769f5089c",
+        "blob": "988dbf930a1ac82e211d087420eb9e9fdebab54a",
+        "mode": "100644"
+      },
+      {
+        "path": "packages/form/src/svelte/index.ts",
+        "bytes": 153,
+        "sha256": "e104bcbeacc4329224f95f799b9c05cf6c7543adf40129b06e902a6e7d0d469e",
+        "blob": "093baeccea8c5f12146403f5e5e5bb48bf259ed4",
+        "mode": "100644"
+      },
+      {
+        "path": "packages/form/src/svelte/types.ts",
+        "bytes": 2354,
+        "sha256": "433f5ce62ad863df9d08c3a95759b85ccfe22c88ada88166ad31c11ce03d9350",
+        "blob": "9f73605539df1866c512758079272c739835f15a",
+        "mode": "100644"
+      },
+      {
+        "path": "packages/form/src/svelte/useField.ts",
+        "bytes": 1392,
+        "sha256": "7871c56b5c543cde06d099bd0788629df76c3edbff8a509ab44179d7a6eb5b23",
+        "blob": "a8cbe3537cc0dc73592c305c8da2d32f38fde990",
+        "mode": "100644"
+      },
+      {
+        "path": "packages/form/src/svelte/useForm.ts",
+        "bytes": 1637,
+        "sha256": "1ae9183436aac5d9a764cc0899e969b431731b2fff985607fc3822b21640a4e9",
+        "blob": "ed88c827b4f0300ee321f352137d1d2a07bb5178",
+        "mode": "100644"
+      },
+      {
+        "path": "packages/form/src/svelte/useFormState.ts",
+        "bytes": 598,
+        "sha256": "d5461a5701baaa75f0b981f3140280d174981b79dc0a64e665c45f59134bbcfd",
+        "blob": "be852a2295e99f00e66cd1b47644b7b0e74ca788",
+        "mode": "100644"
+      },
+      {
+        "path": "packages/form/src/vue/RegisterBinding.ts",
+        "bytes": 1198,
+        "sha256": "4c0e87f5650e5779c888ca56abf89bed2e54d6d0ae18bab78f26741304536061",
+        "blob": "e0010b184a5d139ad7644f528f9e57fc05fdae31",
+        "mode": "100644"
+      },
+      {
+        "path": "packages/form/src/vue/index.ts",
+        "bytes": 106,
+        "sha256": "f95a78d8dcdc35731478227688a372863ca2b8c23def9230cab98f63ad1f89ea",
+        "blob": "a4681c4a49274c29696cb3467101025bc63e8ffd",
+        "mode": "100644"
+      },
+      {
+        "path": "packages/form/src/vue/types.ts",
+        "bytes": 4941,
+        "sha256": "661efa02a28f97c62bcb6944103d22f248a1ee6b58131e671c054b06768d7d17",
+        "blob": "d42f474e8c3445bcced70f73741b898f86344286",
+        "mode": "100644"
+      },
+      {
+        "path": "packages/form/src/vue/useField.ts",
+        "bytes": 1335,
+        "sha256": "4bc1764636767bd6fb9d1d0136a1eb88a982a0c18328163593638e48db6ba40b",
+        "blob": "fb4cc71dea7627140fc22381b955bf1d2f3f4290",
+        "mode": "100644"
+      },
+      {
+        "path": "packages/form/src/vue/useFieldSchemaRegistration.ts",
+        "bytes": 731,
+        "sha256": "d23575de33b675024df75336bc54a60ecbe23cec1a12a1e827bd098f85dfcba5",
+        "blob": "5fa25419f83eab33ff1d4935181e217d10fb0dbc",
+        "mode": "100644"
+      },
+      {
+        "path": "packages/form/src/vue/useForm.ts",
+        "bytes": 2500,
+        "sha256": "e6e2d13d81f338f4968efe60ac47d00878cf1a23874e8c74d3a01bcffb0a74c1",
+        "blob": "dfa72d2031691f79572fe098dcd8d9164113e961",
+        "mode": "100644"
+      },
+      {
+        "path": "packages/form/src/vue/useFormSnapshot.ts",
+        "bytes": 574,
+        "sha256": "6aeb546561b46e3648dc9115284b1bd093e1e453ead198322a536992b2e9ca31",
+        "blob": "efb4b5d147f9a30ed30d1f3cce2296afda8b45d5",
+        "mode": "100644"
+      },
+      {
+        "path": "packages/form/src/vue/useFormState.ts",
+        "bytes": 1284,
+        "sha256": "0be36c088fca9521d9973071d8a15d008f24de524ce9bffe7425491d2135af83",
+        "blob": "764d58c4d0354d1df22030411fea56ddff9ca2ae",
+        "mode": "100644"
+      },
+      {
+        "path": "packages/form/src/vue/useRegister.ts",
+        "bytes": 2523,
+        "sha256": "cf8f6d80e1c4a3acfed192bfcc66da31fdf99a4ec50a66d7fc244078ead6f754",
+        "blob": "be8a682b2e6ed9755c2fd59634bf558a0f5a274c",
+        "mode": "100644"
+      },
+      {
+        "path": "packages/form/test/array-keys.test.ts",
+        "bytes": 1374,
+        "sha256": "840bc1eebe25e573f04c1e6720812608eff61a5d16fdd8b25d9bdaff24a0f06f",
+        "blob": "871614bbf6d718d203b3d21fef88cbaa38fff336",
+        "mode": "100644"
+      },
+      {
+        "path": "packages/form/test/core.test.ts",
+        "bytes": 12372,
+        "sha256": "91e324dc2a0d914036f72796c602818cec2f6098cca624f355cec8f41e5b2e45",
+        "blob": "af2e4eeeb3801802872c5d507eb1128e8ce71cab",
+        "mode": "100644"
+      },
+      {
+        "path": "packages/form/test/core/FormArrayMutationPlanner.test.ts",
+        "bytes": 3603,
+        "sha256": "96615322ff12e43afeb6cb423a05d15c3804b91b63feb22bfd67d856bf8dfebc",
+        "blob": "c86ad7f201892f90e464fe4ca13060056f3fc633",
+        "mode": "100644"
+      },
+      {
+        "path": "packages/form/test/core/FormArrayRebaser.test.ts",
+        "bytes": 4020,
+        "sha256": "aeb09754e9ec01e703b7d13a0847f68049da6098bdde13bf3943ced7573f25fb",
+        "blob": "8ce3329c712cb2191001875d80812f62459ef619",
+        "mode": "100644"
+      },
+      {
+        "path": "packages/form/test/core/FormPath.test.ts",
+        "bytes": 1691,
+        "sha256": "0ea4114847f3f3826c14d101a9385a7ae2e823d7958dd75925d5a56788c6afbc",
+        "blob": "bf666403c8470c8636d8c4b678ee7716422729d1",
+        "mode": "100644"
+      },
+      {
+        "path": "packages/form/test/core/FormStateInitializer.test.ts",
+        "bytes": 2560,
+        "sha256": "53fe2e41bb746647a45f38ae96c56cd1875368b0ff03826ae33712b246a54e7a",
+        "blob": "e07b2f808d806af9ccfb0d8c548368d5c1324099",
+        "mode": "100644"
+      },
+      {
+        "path": "packages/form/test/core/ValueHelper.test.ts",
+        "bytes": 3066,
+        "sha256": "1f2b1b93064a3a3f762e3dae268c44f46746dbf33c8192ed9396e30ad4d98b7f",
+        "blob": "78227aa5dfb0a93fbf8863676044b0da9e0a847f",
+        "mode": "100644"
+      },
+      {
+        "path": "packages/form/test/fixtures/SvelteFieldConsumer.svelte",
+        "bytes": 531,
+        "sha256": "728670dcae6b3ef2e521911133b963e319ecf3b1a10d8108d5b913940115622a",
+        "blob": "e7381ae6b43ba072edfd2e81b2f78d3448484af8",
+        "mode": "100644"
+      },
+      {
+        "path": "packages/form/test/fixtures/SvelteReactiveValuesConsumer.svelte",
+        "bytes": 674,
+        "sha256": "3338f1c2cb81e6133d3807fa63ac8946768dfd867d0df95e3f7dfadff011a151",
+        "blob": "4137dcf8243260d72a81a3f02f354ce828fbdfaa",
+        "mode": "100644"
+      },
+      {
+        "path": "packages/form/test/form-input.test.ts",
+        "bytes": 708,
+        "sha256": "9a38998f51cdf3c9dcbecbe2f57fcac376f3f9908c28e4a4dcd308aa60524160",
+        "blob": "553d51bbdec8de42fb894ddd9fe233973ae12fb9",
+        "mode": "100644"
+      },
+      {
+        "path": "packages/form/test/helpers/controlledValidation.ts",
+        "bytes": 1935,
+        "sha256": "38e1918c1767e93ab6eab70eb9b634a8ea81ca3c99ff81c4a41ce1ed7e82fc03",
+        "blob": "7a3218ff4808abbc6e6a9afd9b0e954161c0a7fd",
+        "mode": "100644"
+      },
+      {
+        "path": "packages/form/test/react-reactive-values.test.tsx",
+        "bytes": 3801,
+        "sha256": "193fa566b7e67c305014efbc71b9bfb7f9ce8b484a1c3eb7457711570d8b7dae",
+        "blob": "d2afe421212c2131068c77480ec48d230f9321cc",
+        "mode": "100644"
+      },
+      {
+        "path": "packages/form/test/react.test.tsx",
+        "bytes": 18366,
+        "sha256": "cfccbd464b5454cbd9304d3b570b5f21ff13e8f96e28eaad98b435aa01ac53cf",
+        "blob": "6f413a3020e3113fbbc8f7519cdc8b3d0221fbd2",
+        "mode": "100644"
+      },
+      {
+        "path": "packages/form/test/solid-reactive-values.test.ts",
+        "bytes": 2002,
+        "sha256": "b21e7663c4490db0b6eed8322709d09024dd0486f0f2fd0afade833e05517204",
+        "blob": "f78f4f7a30467e07f3d520a3cdcf38ccb10c2fe4",
+        "mode": "100644"
+      },
+      {
+        "path": "packages/form/test/solid.test.ts",
+        "bytes": 6418,
+        "sha256": "95c170a08f7b241633782db81e94ed2fd1f8ce357d514b1a3cb8a80b0b182bc5",
+        "blob": "aae98e7f19fcbd5c5ae8d94d275eadcd40a74abd",
+        "mode": "100644"
+      },
+      {
+        "path": "packages/form/test/submit-validation-races.test.ts",
+        "bytes": 4386,
+        "sha256": "87c4c293d63a9fc82f946adc7c20ca6cc07ccfcb317b48a7e0c2de5a05ef0843",
+        "blob": "d2d4696bea894ecfdfcf96af37182603f623b906",
+        "mode": "100644"
+      },
+      {
+        "path": "packages/form/test/svelte-component.test.ts",
+        "bytes": 1700,
+        "sha256": "5c207a76e8f1278015aef1e45ea053220c7a41b38e6ab97ff19ca4f609cc34c2",
+        "blob": "93b7d47768e7f5505434a1eb53523fd57b549e8c",
+        "mode": "100644"
+      },
+      {
+        "path": "packages/form/test/svelte-reactive-values.test.ts",
+        "bytes": 3001,
+        "sha256": "6e76f302d5ea05e2062632774efacbde1febb87d03de3aa717d19c50e7235978",
+        "blob": "9883241a3d95cd72f282c30767cdbf376a4e2ca5",
+        "mode": "100644"
+      },
+      {
+        "path": "packages/form/test/svelte.test.ts",
+        "bytes": 9541,
+        "sha256": "d998dc1c1e242d80a41e4819a3aaa8752275b762f087fc1733d285fb01ae8791",
+        "blob": "e0c6232f84e32feadc122b7e148d5f570c318bbd",
+        "mode": "100644"
+      },
+      {
+        "path": "packages/form/test/validation-races.test.ts",
+        "bytes": 1997,
+        "sha256": "91ccd9f177ff6655565ddfc48622a35b14b112653522f5a792bfe713df85ee99",
+        "blob": "33833e4e98bcc72883646fbe8f8cf2285d2d3440",
+        "mode": "100644"
+      },
+      {
+        "path": "packages/form/test/vue-reactive-values.test.ts",
+        "bytes": 2159,
+        "sha256": "b7ca94657806d0233e6c001ba4aa01238cc22fa2024dab1952d1d1b00410be1b",
+        "blob": "fcd03c545cc85cb00bfe8d9d174fdf448b3446a5",
+        "mode": "100644"
+      },
+      {
+        "path": "packages/form/test/vue.test.ts",
+        "bytes": 9116,
+        "sha256": "4d65305e174ed7391e7ba09cb991e474bcc7221fc035e382f9c3ed50b316d212",
+        "blob": "cdaf5d68d6e2af40346bf890a2236dde68914ee8",
+        "mode": "100644"
+      },
+      {
+        "path": "packages/form/tsconfig.json",
+        "bytes": 491,
+        "sha256": "ce79d3cbe32fb4a9eb9885c031f410a9831c9912accbbad3c251a701152958df",
+        "blob": "d14e731c12ca17e8a52d181e6bc59c4fdf7eca05",
+        "mode": "100644"
+      },
+      {
+        "path": "packages/form/tsup.config.ts",
+        "bytes": 569,
+        "sha256": "dd4841d59d86a12b667c7f1afc76b19a93c733d4e6cc68f90335f9c898e8edc3",
+        "blob": "6e3b9ef5dd11192da1970917af5ee6ea9be6ace5",
+        "mode": "100644"
+      },
+      {
+        "path": "packages/form/vite.config.ts",
+        "bytes": 490,
+        "sha256": "97a112297dc0eece11564d328a3f35d5e6e591be306d7c9299d6faf2786214f4",
+        "blob": "9da686a33c1aad792067f77e61bb79dce57bfa48",
+        "mode": "100644"
+      }
+    ]
+  },
+  "exampleSource": {
+    "commit": "ecd9709b76d1976ec86865314e85b916f220c818",
+    "files": [
+      {
+        "path": "apps/docs/components/demos/form-demo.tsx",
+        "mode": "100644",
+        "blob": "a65e9aa59369421f942932fc2c6abc4f24a95b16"
+      }
+    ]
+  },
+  "registry": {
+    "tarball": "https://registry.npmjs.org/@ilokesto/form/-/form-2.0.0.tgz",
+    "integrity": "sha512-+cwHb++t/kuCd8j1IHngHzlTx79GLKlaAjPJPyCvyl96FogzGkV+PYU7zWHntMj0i9RXumGYsw3fC4X6EPwMuQ==",
+    "shasum": "287cef128bf55fdce2864f39c0f644f2a45fc179",
+    "gitHead": null,
+    "attestations": null,
+    "files": [
+      {
+        "path": "LICENSE",
+        "bytes": 1102,
+        "sha256": "d255f6d4da7a0102e9a74a0c30b4b883e7245058133a0f979a5f719908f05317"
+      },
+      {
+        "path": "README.ko.md",
+        "bytes": 50194,
+        "sha256": "9dd3b1af4481f2c5666940f78d769936ae85815612e678ce738df89e59540695"
+      },
+      {
+        "path": "README.md",
+        "bytes": 47240,
+        "sha256": "50f521e4094473b0d9cacd4d208beb584a4e17240c6dc3b9a2e830b6dba25249"
+      },
+      {
+        "path": "dist/FormInput-DuT7QFe-.d.ts",
+        "bytes": 2022,
+        "sha256": "e2004de75895f33606dccd89f6616173760c236fda41d0037e4a4c041a08c6b9"
+      },
+      {
+        "path": "dist/chunk-EPQC3LKB.js",
+        "bytes": 61330,
+        "sha256": "6d927a4685637f52c5aeb17bec6f7200d36899b396b4b664e35fb7572e5315c1"
+      },
+      {
+        "path": "dist/chunk-EPQC3LKB.js.map",
+        "bytes": 123451,
+        "sha256": "fdffcfafd976ff63680f2fa5f9c2fe9f4f4e9f1f4a67174b403fce8589539f32"
+      },
+      {
+        "path": "dist/chunk-OBMSHDV2.js",
+        "bytes": 6693,
+        "sha256": "3494ceee922ba3b040fae6eae8aff22f6aab731ca5836f1e3055fc45b541ed9f"
+      },
+      {
+        "path": "dist/chunk-OBMSHDV2.js.map",
+        "bytes": 18571,
+        "sha256": "364dd7381b67e5c42f7b0dffbe99e363954c8b48fc3a4111fdd467727b0cb7f8"
+      },
+      {
+        "path": "dist/index.d.ts",
+        "bytes": 4230,
+        "sha256": "926957c754825e0c9020cdfeaed50a831cf3ce53cdf02a231255a33e17c876a0"
+      },
+      {
+        "path": "dist/index.js",
+        "bytes": 117,
+        "sha256": "da1e13b60b10b85cd3bd7a42e6c44096500d1dc45645df8f20b170670da27d7c"
+      },
+      {
+        "path": "dist/index.js.map",
+        "bytes": 69,
+        "sha256": "615a59e10461438901638fb5c2a1f5ba0510947938b682b73fc6c4014daf86f9"
+      },
+      {
+        "path": "dist/react/index.d.ts",
+        "bytes": 5206,
+        "sha256": "87e7596b45a7867810019a7bfdeafdf74a3ef0c4c7c6ce509073137c376bc895"
+      },
+      {
+        "path": "dist/react/index.js",
+        "bytes": 4731,
+        "sha256": "41bcec54b7896d41fb2dd19961f3e38d497f07dded73983a5f9a1397f614b4fe"
+      },
+      {
+        "path": "dist/react/index.js.map",
+        "bytes": 15782,
+        "sha256": "1cdb214b0e2804a255d5b15f69311e3d95baa0425eefe118ad5ed9d361f3dd52"
+      },
+      {
+        "path": "dist/solid/index.d.ts",
+        "bytes": 5029,
+        "sha256": "c08bb97f6136731bbe4a4d33b937100c02f4cbdb99a851156dd8ab99aa81e8e1"
+      },
+      {
+        "path": "dist/solid/index.js",
+        "bytes": 4972,
+        "sha256": "a145146488ca5db4bbf20218ed063ca4ad95e6c9d711d211d1d991983a4847bf"
+      },
+      {
+        "path": "dist/solid/index.js.map",
+        "bytes": 15297,
+        "sha256": "410cdc7b2c38eb8c9869f0de4696c414f3f560540d25acb0d133f9be5c2a6363"
+      },
+      {
+        "path": "dist/svelte/index.d.ts",
+        "bytes": 3760,
+        "sha256": "50c990746505027c46d542dbeb18510ef42976875ae14663dbd231b8a7a3daa7"
+      },
+      {
+        "path": "dist/svelte/index.js",
+        "bytes": 5993,
+        "sha256": "bf653b6c4b5441c42fa8eb8d08301cf5ef0e7fc2e47ef84048a385258f6e6f6d"
+      },
+      {
+        "path": "dist/svelte/index.js.map",
+        "bytes": 15133,
+        "sha256": "1ebc0f9e83b45a8f0c10b8a79f13c499647c8f769dbe3a68f7899cb88cb39de3"
+      },
+      {
+        "path": "dist/types-DBlvL6AC.d.ts",
+        "bytes": 12534,
+        "sha256": "0038c200dd3b905d896ef69e4422ef98e2aee7b2c162a24e2ee7476c6dfd1b1c"
+      },
+      {
+        "path": "dist/vue/index.d.ts",
+        "bytes": 5136,
+        "sha256": "0df38cfd4166f51112d661cdfac1915d1c8153538f1eb44e3c62cdc8ae77da80"
+      },
+      {
+        "path": "dist/vue/index.js",
+        "bytes": 5366,
+        "sha256": "24e584d227e43c94d508cd802b24d97f95cefd123644c3e28c020cba5b7183ff"
+      },
+      {
+        "path": "dist/vue/index.js.map",
+        "bytes": 16129,
+        "sha256": "7edc1b1a419fc4dd483510b6963b165466373143cd6c89c4fedb484bd1e71ee3"
+      },
+      {
+        "path": "package.json",
+        "bytes": 2226,
+        "sha256": "a3cb64c4fdc83ee04e80c8648a7a6f17d417f9b15bcbd4b49c00908f1b5fc851"
+      }
+    ]
+  },
+  "provenance": {
+    "kind": "operational-evidence-not-cryptographic-source-provenance",
+    "report": "release-provenance.md",
+    "observedAt": "2026-09-27",
+    "publishRun": "https://github.com/ilokesto/ilokesto/actions/runs/36302267041",
+    "publishCheckout": "ecd9709b76d1976ec86865314e85b916f220c818",
+    "npmGitHead": null,
+    "npmAttestations": null,
+    "evidence": [
+      "The successful workflow checked out this commit; all eight annotated release tags peel to it.",
+      "Both shipped READMEs match source blobs; packed manifests differ only by workspace protocol rewrites.",
+      "The audit compared all published dist bytes with matching builds, including a fresh Fetcher build."
+    ],
+    "limitation": "npm exposes neither gitHead nor source provenance attestations for these versions. Workflow, tags, and byte comparisons support the source association but do not cryptographically prove it.",
+    "reportSha256": "374af7f4df1dd24d2e34aefb96656f779dbbbae0f6890cc817239b975fb29343",
+    "tag": "@ilokesto/form@2.0.0",
+    "tagTarget": "ecd9709b76d1976ec86865314e85b916f220c818"
+  },
+  "files": [
+    {
+      "path": "examples/apps/docs/components/demos/form-demo.tsx",
+      "bytes": 5075,
+      "sha256": "7c24e42821f1260a8993a5cf8318f0b8a73cab2f4060a8d110bc824b8f80fc81"
+    },
+    {
+      "path": "npm/package.tgz",
+      "bytes": 99442,
+      "sha256": "fd59052afbad9102e39e89a6efb050702c47ee3d242acb9cc8c21a8c8dbdf124"
+    },
+    {
+      "path": "provenance/release-provenance.md",
+      "bytes": 21178,
+      "sha256": "374af7f4df1dd24d2e34aefb96656f779dbbbae0f6890cc817239b975fb29343"
+    },
+    {
+      "path": "release/README.ko.md",
+      "bytes": 50194,
+      "sha256": "9dd3b1af4481f2c5666940f78d769936ae85815612e678ce738df89e59540695"
+    },
+    {
+      "path": "release/README.md",
+      "bytes": 47240,
+      "sha256": "50f521e4094473b0d9cacd4d208beb584a4e17240c6dc3b9a2e830b6dba25249"
+    },
+    {
+      "path": "release/docs/advanced/array-rebasing.ko.mdx",
+      "bytes": 1460,
+      "sha256": "0b7f73a1e28a51516da32d39a55dfc1093ae8db36a88ef5537e32d9e0081abf6"
+    },
+    {
+      "path": "release/docs/advanced/array-rebasing.mdx",
+      "bytes": 1146,
+      "sha256": "eb75d0e31d2348ff8a6a6cb066ed0bd1652c945aafeacbc3853c11141f9b716d"
+    },
+    {
+      "path": "release/docs/advanced/meta.json",
+      "bytes": 181,
+      "sha256": "288e1349d71d7f456eaee940a39e38b3b09dea6bb6ca392279c26c44c5399209"
+    },
+    {
+      "path": "release/docs/advanced/normalized-store.ko.mdx",
+      "bytes": 1543,
+      "sha256": "afc8fd02f70e50a3550aa91b1c2b9758eff3a03225dd9209a642310b8018ce05"
+    },
+    {
+      "path": "release/docs/advanced/normalized-store.mdx",
+      "bytes": 1280,
+      "sha256": "558d2ed5b2d76f8762d224740dd50aca59b70f6f22f0e5c69b0c8dbc838c6a87"
+    },
+    {
+      "path": "release/docs/advanced/path-semantics.ko.mdx",
+      "bytes": 1380,
+      "sha256": "b3b62bc1fdbf7adf33744e412f029d06bf84f44c146a5900006430c618ed0eae"
+    },
+    {
+      "path": "release/docs/advanced/path-semantics.mdx",
+      "bytes": 1145,
+      "sha256": "b749583d3a2e8f64832aba010c31bc0fc21c31fdf18e58240cf1b7ab95944a14"
+    },
+    {
+      "path": "release/docs/advanced/standard-schema.ko.mdx",
+      "bytes": 1764,
+      "sha256": "f345acf451ef27ecc1281247b15741bf9dea8fa59cb1d96741f09414efebdc9e"
+    },
+    {
+      "path": "release/docs/advanced/standard-schema.mdx",
+      "bytes": 1451,
+      "sha256": "bfd513017810458774fb9a493b896187ca314a645ea489dab466b9d2f0b8be82"
+    },
+    {
+      "path": "release/docs/core-concepts.ko.mdx",
+      "bytes": 3303,
+      "sha256": "a0e35ba596e9a2a0f1805892aa77641fb49873feb2b4ba5c13274e79bf1d808a"
+    },
+    {
+      "path": "release/docs/core-concepts.mdx",
+      "bytes": 2731,
+      "sha256": "709ce838a6ffa29306742575f1899118ee94745b012d5e473ce273d8013e7191"
+    },
+    {
+      "path": "release/docs/guides/array-fields.ko.mdx",
+      "bytes": 1661,
+      "sha256": "a8f546b4fc420a7f35c95359d4f76c5de65b60f9cf456db4fbf9986a953a9158"
+    },
+    {
+      "path": "release/docs/guides/array-fields.mdx",
+      "bytes": 1433,
+      "sha256": "f8759cef6453dec5ded974f045f1ad6d133570ee05fc641a4ebc684c5a09156b"
+    },
+    {
+      "path": "release/docs/guides/build-a-login-form.ko.mdx",
+      "bytes": 2001,
+      "sha256": "8becb527ea7f4aa003cd3a4a3e2944d4283dc76617c456662e60d9d8dffd622c"
+    },
+    {
+      "path": "release/docs/guides/build-a-login-form.mdx",
+      "bytes": 1804,
+      "sha256": "e55ee79720771cbe4ca76ad299708f34d4d569b210c16f3f93a1923d02407f21"
+    },
+    {
+      "path": "release/docs/guides/meta.json",
+      "bytes": 154,
+      "sha256": "5bb4d634f53c31c20c3ae9a092bedf9ebd06595ee407409192c231af9618deaa"
+    },
+    {
+      "path": "release/docs/guides/nested-fields.ko.mdx",
+      "bytes": 1484,
+      "sha256": "dc869d87085249d50b0a1aa34b177eefd489560419207cb55df6649a481bb149"
+    },
+    {
+      "path": "release/docs/guides/nested-fields.mdx",
+      "bytes": 1280,
+      "sha256": "3e4f3a721b7ef644e5a9e74e5595253dc1905382acc0c10fd0207923e1ef1d86"
+    },
+    {
+      "path": "release/docs/guides/submit-handling.ko.mdx",
+      "bytes": 1585,
+      "sha256": "6865c6c396fe198049f809bd7aa17c9ac339f4be3bf667a9545860c0380f3522"
+    },
+    {
+      "path": "release/docs/guides/submit-handling.mdx",
+      "bytes": 1424,
+      "sha256": "b8b8f9fab949b1e113f5d64fdc7808744b84d6eff4fe7267a6bfbbf82f1efeda"
+    },
+    {
+      "path": "release/docs/guides/validation-flow.ko.mdx",
+      "bytes": 1508,
+      "sha256": "446259509217d25481d91741ca00fb90a66515368bc438e91ab3f97ceea04ebb"
+    },
+    {
+      "path": "release/docs/guides/validation-flow.mdx",
+      "bytes": 1354,
+      "sha256": "b221d5df56cc8275068696783e8f169848c53687bf40d0ae2690fdc8ecc0f20a"
+    },
+    {
+      "path": "release/docs/index.ko.mdx",
+      "bytes": 3285,
+      "sha256": "966d1cde1fb1faa72ce774d4b6622ffdc63cdd75989b0064231c601eddf6c0ec"
+    },
+    {
+      "path": "release/docs/index.mdx",
+      "bytes": 2708,
+      "sha256": "96caf635ec83324532c510f21650cf1057d712498160efc0fb70b413b1606fb4"
+    },
+    {
+      "path": "release/docs/integrations/meta.json",
+      "bytes": 98,
+      "sha256": "b7a5111f832b330c7c1ab227dd20ca883a6df233949d4facc583fed6780a3b1d"
+    },
+    {
+      "path": "release/docs/integrations/react.ko.mdx",
+      "bytes": 2829,
+      "sha256": "4444c4c01a4776c77b15b9e9c6cd956eab348472cfbd0d68e0ef39cd46e51636"
+    },
+    {
+      "path": "release/docs/integrations/react.mdx",
+      "bytes": 2539,
+      "sha256": "41abdfd41259f4b01cdde5d983d9bc8002f9f9b54c90437ea2b29991af56881d"
+    },
+    {
+      "path": "release/docs/integrations/solid.ko.mdx",
+      "bytes": 2598,
+      "sha256": "7bb4ee0e2ff81f80636278d85fe17f6b9b57baa7f1a79bdfa75a04bdcac718de"
+    },
+    {
+      "path": "release/docs/integrations/solid.mdx",
+      "bytes": 2301,
+      "sha256": "3f566704d1da9867085091dcea815fa0efd3eb2c1ab85fed6a5fa06673fa2a2d"
+    },
+    {
+      "path": "release/docs/integrations/svelte.ko.mdx",
+      "bytes": 2738,
+      "sha256": "ad5e073a71fd254191d64674d0ad0cf71cd9215469b1f0eafb9024b8fe8c27c3"
+    },
+    {
+      "path": "release/docs/integrations/svelte.mdx",
+      "bytes": 2492,
+      "sha256": "8fe8a62ace06b477a76083c78499deea28e7b3fc28dcad7f09c93ff8e0df7a90"
+    },
+    {
+      "path": "release/docs/integrations/vue.ko.mdx",
+      "bytes": 2902,
+      "sha256": "5a3d62842289bf3d3ecfb881d28fb4bf98838cb7089932f2ff07163f4dfa3aa7"
+    },
+    {
+      "path": "release/docs/integrations/vue.mdx",
+      "bytes": 2578,
+      "sha256": "4a76135128daf6cb9f88b6a85a8a7ad90382aea270a52071fe2ed13b0d6179a2"
+    },
+    {
+      "path": "release/docs/meta.json",
+      "bytes": 327,
+      "sha256": "c258cc7a406f963ce94a158219f5334ef4d2d7834ad03d9aecf25396ea6b1402"
+    },
+    {
+      "path": "release/docs/quick-start.ko.mdx",
+      "bytes": 3988,
+      "sha256": "60bc39ff73cd758e328e942f8802f4f75e59f20e162b848027e06161b167d47e"
+    },
+    {
+      "path": "release/docs/quick-start.mdx",
+      "bytes": 3658,
+      "sha256": "0041bebdc0d704ec4ce677b301e3808af5a4a4a3aa5b6876d2af7b4398c69762"
+    },
+    {
+      "path": "release/docs/reference/adapter-use-form.ko.mdx",
+      "bytes": 1733,
+      "sha256": "911a2d537cbe435e9246d92f9f129f1b86ea262f8e4adbcdf80da0a5f54b8401"
+    },
+    {
+      "path": "release/docs/reference/adapter-use-form.mdx",
+      "bytes": 1452,
+      "sha256": "77a35fc1f174bdd39b4fd30b91ba582f898fcef2d35091caf8488f3f9b0367e0"
+    },
+    {
+      "path": "release/docs/reference/arrays.ko.mdx",
+      "bytes": 1634,
+      "sha256": "37637993e63f0a203f6c2f76224553fd9bbc4fe8dda06a01c209d82599ca3271"
+    },
+    {
+      "path": "release/docs/reference/arrays.mdx",
+      "bytes": 1312,
+      "sha256": "fc859002b4c9b75651b5b10e46f721dd05b4a4d7b365f980aae915c806ceb2be"
+    },
+    {
+      "path": "release/docs/reference/create-form.ko.mdx",
+      "bytes": 1861,
+      "sha256": "269b0e8483c8d9f073e5c8dea9c192443abe0bd0dd2d945ccb4aba1a80ffaf2e"
+    },
+    {
+      "path": "release/docs/reference/create-form.mdx",
+      "bytes": 1526,
+      "sha256": "4cec16f9fdf82a20c9b10a5bce707995c16dea97eef397ba487f3516bfe6944f"
+    },
+    {
+      "path": "release/docs/reference/entrypoints.ko.mdx",
+      "bytes": 2159,
+      "sha256": "604eaa295bf3d6a169613654bbe647a3fe42bd693f4761687cb9be59dbba850d"
+    },
+    {
+      "path": "release/docs/reference/entrypoints.mdx",
+      "bytes": 1822,
+      "sha256": "bfba1c9dfe315b6a2f23f6294c5cc1015f5411a230cc15891cd47090e8f86533"
+    },
+    {
+      "path": "release/docs/reference/field-paths-and-values.ko.mdx",
+      "bytes": 1667,
+      "sha256": "9eea0eb0915f70257c9d80bc1484824a8b493221c19fde460d8190968ce9654f"
+    },
+    {
+      "path": "release/docs/reference/field-paths-and-values.mdx",
+      "bytes": 1360,
+      "sha256": "827dd086ee785ef48fc731cbb27ea3b8f2932a684c042f40b3de8dcbbb1c0d26"
+    },
+    {
+      "path": "release/docs/reference/field-state-and-errors.ko.mdx",
+      "bytes": 1724,
+      "sha256": "36d2107883707933ce5eaab79955df41d6d9d315b1815eb570889295f6f4d656"
+    },
+    {
+      "path": "release/docs/reference/field-state-and-errors.mdx",
+      "bytes": 1445,
+      "sha256": "a75b7408248111e9cc5b9206614416474ef0bb09832346efbe0a66d31efb531e"
+    },
+    {
+      "path": "release/docs/reference/meta.json",
+      "bytes": 235,
+      "sha256": "abff34436087de8f7760fef02e6024f8dc492b1a4e31025bdca3fb8da10ed088"
+    },
+    {
+      "path": "release/docs/reference/submit-and-reset.ko.mdx",
+      "bytes": 2005,
+      "sha256": "2431960c26920a97601de2037593a63256fe84b94e6b7b322cdc49ded16e75de"
+    },
+    {
+      "path": "release/docs/reference/submit-and-reset.mdx",
+      "bytes": 1663,
+      "sha256": "ceb95d1fa7f89aa32e318d211f341ec9648bce6d8195f05f3dbf94ed1dcde333"
+    },
+    {
+      "path": "release/docs/reference/types.ko.mdx",
+      "bytes": 1682,
+      "sha256": "2aaf4716a19d4f54d15b3f62e71b6bac3c515bef5874d8e48cb8cc8f201ecef6"
+    },
+    {
+      "path": "release/docs/reference/types.mdx",
+      "bytes": 1440,
+      "sha256": "c23857098d2194e936f42e72cf11324c108cf35e61f3d86699b6c8ebab105ad5"
+    },
+    {
+      "path": "release/docs/reference/validation.ko.mdx",
+      "bytes": 1633,
+      "sha256": "544e51e57d57df35c5cde15a6bc84a11b338192f5a0df1f9be613459404cb417"
+    },
+    {
+      "path": "release/docs/reference/validation.mdx",
+      "bytes": 1382,
+      "sha256": "8cef0da78f68e7a4a14048697c05fe69fcc05492c10dfe3573883c26d4bd4321"
+    },
+    {
+      "path": "release/docs/troubleshooting.ko.mdx",
+      "bytes": 2031,
+      "sha256": "ed3c167d7ac819ddd76a5a31cd64dd5e061897f043ed5c0e620ea8fb145a4cfb"
+    },
+    {
+      "path": "release/docs/troubleshooting.mdx",
+      "bytes": 1589,
+      "sha256": "7d8d73249357349abb0cf80167fdc72d6ce59018941d2755ec96b9e1f9e3b1a5"
+    },
+    {
+      "path": "revision/README.ko.md",
+      "bytes": 50194,
+      "sha256": "9dd3b1af4481f2c5666940f78d769936ae85815612e678ce738df89e59540695"
+    },
+    {
+      "path": "revision/README.md",
+      "bytes": 47240,
+      "sha256": "50f521e4094473b0d9cacd4d208beb584a4e17240c6dc3b9a2e830b6dba25249"
+    },
+    {
+      "path": "revision/docs/advanced/array-rebasing.ko.mdx",
+      "bytes": 1460,
+      "sha256": "0b7f73a1e28a51516da32d39a55dfc1093ae8db36a88ef5537e32d9e0081abf6"
+    },
+    {
+      "path": "revision/docs/advanced/array-rebasing.mdx",
+      "bytes": 1146,
+      "sha256": "eb75d0e31d2348ff8a6a6cb066ed0bd1652c945aafeacbc3853c11141f9b716d"
+    },
+    {
+      "path": "revision/docs/advanced/meta.json",
+      "bytes": 181,
+      "sha256": "288e1349d71d7f456eaee940a39e38b3b09dea6bb6ca392279c26c44c5399209"
+    },
+    {
+      "path": "revision/docs/advanced/normalized-store.ko.mdx",
+      "bytes": 1543,
+      "sha256": "afc8fd02f70e50a3550aa91b1c2b9758eff3a03225dd9209a642310b8018ce05"
+    },
+    {
+      "path": "revision/docs/advanced/normalized-store.mdx",
+      "bytes": 1280,
+      "sha256": "558d2ed5b2d76f8762d224740dd50aca59b70f6f22f0e5c69b0c8dbc838c6a87"
+    },
+    {
+      "path": "revision/docs/advanced/path-semantics.ko.mdx",
+      "bytes": 1380,
+      "sha256": "b3b62bc1fdbf7adf33744e412f029d06bf84f44c146a5900006430c618ed0eae"
+    },
+    {
+      "path": "revision/docs/advanced/path-semantics.mdx",
+      "bytes": 1145,
+      "sha256": "b749583d3a2e8f64832aba010c31bc0fc21c31fdf18e58240cf1b7ab95944a14"
+    },
+    {
+      "path": "revision/docs/advanced/standard-schema.ko.mdx",
+      "bytes": 1764,
+      "sha256": "f345acf451ef27ecc1281247b15741bf9dea8fa59cb1d96741f09414efebdc9e"
+    },
+    {
+      "path": "revision/docs/advanced/standard-schema.mdx",
+      "bytes": 1451,
+      "sha256": "bfd513017810458774fb9a493b896187ca314a645ea489dab466b9d2f0b8be82"
+    },
+    {
+      "path": "revision/docs/core-concepts.ko.mdx",
+      "bytes": 3303,
+      "sha256": "a0e35ba596e9a2a0f1805892aa77641fb49873feb2b4ba5c13274e79bf1d808a"
+    },
+    {
+      "path": "revision/docs/core-concepts.mdx",
+      "bytes": 2731,
+      "sha256": "709ce838a6ffa29306742575f1899118ee94745b012d5e473ce273d8013e7191"
+    },
+    {
+      "path": "revision/docs/guides/array-fields.ko.mdx",
+      "bytes": 1661,
+      "sha256": "a8f546b4fc420a7f35c95359d4f76c5de65b60f9cf456db4fbf9986a953a9158"
+    },
+    {
+      "path": "revision/docs/guides/array-fields.mdx",
+      "bytes": 1433,
+      "sha256": "f8759cef6453dec5ded974f045f1ad6d133570ee05fc641a4ebc684c5a09156b"
+    },
+    {
+      "path": "revision/docs/guides/build-a-login-form.ko.mdx",
+      "bytes": 2001,
+      "sha256": "8becb527ea7f4aa003cd3a4a3e2944d4283dc76617c456662e60d9d8dffd622c"
+    },
+    {
+      "path": "revision/docs/guides/build-a-login-form.mdx",
+      "bytes": 1804,
+      "sha256": "e55ee79720771cbe4ca76ad299708f34d4d569b210c16f3f93a1923d02407f21"
+    },
+    {
+      "path": "revision/docs/guides/meta.json",
+      "bytes": 154,
+      "sha256": "5bb4d634f53c31c20c3ae9a092bedf9ebd06595ee407409192c231af9618deaa"
+    },
+    {
+      "path": "revision/docs/guides/nested-fields.ko.mdx",
+      "bytes": 1484,
+      "sha256": "dc869d87085249d50b0a1aa34b177eefd489560419207cb55df6649a481bb149"
+    },
+    {
+      "path": "revision/docs/guides/nested-fields.mdx",
+      "bytes": 1280,
+      "sha256": "3e4f3a721b7ef644e5a9e74e5595253dc1905382acc0c10fd0207923e1ef1d86"
+    },
+    {
+      "path": "revision/docs/guides/submit-handling.ko.mdx",
+      "bytes": 1585,
+      "sha256": "6865c6c396fe198049f809bd7aa17c9ac339f4be3bf667a9545860c0380f3522"
+    },
+    {
+      "path": "revision/docs/guides/submit-handling.mdx",
+      "bytes": 1424,
+      "sha256": "b8b8f9fab949b1e113f5d64fdc7808744b84d6eff4fe7267a6bfbbf82f1efeda"
+    },
+    {
+      "path": "revision/docs/guides/validation-flow.ko.mdx",
+      "bytes": 1508,
+      "sha256": "446259509217d25481d91741ca00fb90a66515368bc438e91ab3f97ceea04ebb"
+    },
+    {
+      "path": "revision/docs/guides/validation-flow.mdx",
+      "bytes": 1354,
+      "sha256": "b221d5df56cc8275068696783e8f169848c53687bf40d0ae2690fdc8ecc0f20a"
+    },
+    {
+      "path": "revision/docs/index.ko.mdx",
+      "bytes": 3285,
+      "sha256": "966d1cde1fb1faa72ce774d4b6622ffdc63cdd75989b0064231c601eddf6c0ec"
+    },
+    {
+      "path": "revision/docs/index.mdx",
+      "bytes": 2708,
+      "sha256": "96caf635ec83324532c510f21650cf1057d712498160efc0fb70b413b1606fb4"
+    },
+    {
+      "path": "revision/docs/integrations/meta.json",
+      "bytes": 98,
+      "sha256": "b7a5111f832b330c7c1ab227dd20ca883a6df233949d4facc583fed6780a3b1d"
+    },
+    {
+      "path": "revision/docs/integrations/react.ko.mdx",
+      "bytes": 2829,
+      "sha256": "4444c4c01a4776c77b15b9e9c6cd956eab348472cfbd0d68e0ef39cd46e51636"
+    },
+    {
+      "path": "revision/docs/integrations/react.mdx",
+      "bytes": 2539,
+      "sha256": "41abdfd41259f4b01cdde5d983d9bc8002f9f9b54c90437ea2b29991af56881d"
+    },
+    {
+      "path": "revision/docs/integrations/solid.ko.mdx",
+      "bytes": 2598,
+      "sha256": "7bb4ee0e2ff81f80636278d85fe17f6b9b57baa7f1a79bdfa75a04bdcac718de"
+    },
+    {
+      "path": "revision/docs/integrations/solid.mdx",
+      "bytes": 2301,
+      "sha256": "3f566704d1da9867085091dcea815fa0efd3eb2c1ab85fed6a5fa06673fa2a2d"
+    },
+    {
+      "path": "revision/docs/integrations/svelte.ko.mdx",
+      "bytes": 2738,
+      "sha256": "ad5e073a71fd254191d64674d0ad0cf71cd9215469b1f0eafb9024b8fe8c27c3"
+    },
+    {
+      "path": "revision/docs/integrations/svelte.mdx",
+      "bytes": 2492,
+      "sha256": "8fe8a62ace06b477a76083c78499deea28e7b3fc28dcad7f09c93ff8e0df7a90"
+    },
+    {
+      "path": "revision/docs/integrations/vue.ko.mdx",
+      "bytes": 2902,
+      "sha256": "5a3d62842289bf3d3ecfb881d28fb4bf98838cb7089932f2ff07163f4dfa3aa7"
+    },
+    {
+      "path": "revision/docs/integrations/vue.mdx",
+      "bytes": 2578,
+      "sha256": "4a76135128daf6cb9f88b6a85a8a7ad90382aea270a52071fe2ed13b0d6179a2"
+    },
+    {
+      "path": "revision/docs/meta.json",
+      "bytes": 327,
+      "sha256": "c258cc7a406f963ce94a158219f5334ef4d2d7834ad03d9aecf25396ea6b1402"
+    },
+    {
+      "path": "revision/docs/quick-start.ko.mdx",
+      "bytes": 3988,
+      "sha256": "60bc39ff73cd758e328e942f8802f4f75e59f20e162b848027e06161b167d47e"
+    },
+    {
+      "path": "revision/docs/quick-start.mdx",
+      "bytes": 3658,
+      "sha256": "0041bebdc0d704ec4ce677b301e3808af5a4a4a3aa5b6876d2af7b4398c69762"
+    },
+    {
+      "path": "revision/docs/reference/adapter-use-form.ko.mdx",
+      "bytes": 1733,
+      "sha256": "911a2d537cbe435e9246d92f9f129f1b86ea262f8e4adbcdf80da0a5f54b8401"
+    },
+    {
+      "path": "revision/docs/reference/adapter-use-form.mdx",
+      "bytes": 1452,
+      "sha256": "77a35fc1f174bdd39b4fd30b91ba582f898fcef2d35091caf8488f3f9b0367e0"
+    },
+    {
+      "path": "revision/docs/reference/arrays.ko.mdx",
+      "bytes": 1634,
+      "sha256": "37637993e63f0a203f6c2f76224553fd9bbc4fe8dda06a01c209d82599ca3271"
+    },
+    {
+      "path": "revision/docs/reference/arrays.mdx",
+      "bytes": 1312,
+      "sha256": "fc859002b4c9b75651b5b10e46f721dd05b4a4d7b365f980aae915c806ceb2be"
+    },
+    {
+      "path": "revision/docs/reference/create-form.ko.mdx",
+      "bytes": 1861,
+      "sha256": "269b0e8483c8d9f073e5c8dea9c192443abe0bd0dd2d945ccb4aba1a80ffaf2e"
+    },
+    {
+      "path": "revision/docs/reference/create-form.mdx",
+      "bytes": 1526,
+      "sha256": "4cec16f9fdf82a20c9b10a5bce707995c16dea97eef397ba487f3516bfe6944f"
+    },
+    {
+      "path": "revision/docs/reference/entrypoints.ko.mdx",
+      "bytes": 2159,
+      "sha256": "604eaa295bf3d6a169613654bbe647a3fe42bd693f4761687cb9be59dbba850d"
+    },
+    {
+      "path": "revision/docs/reference/entrypoints.mdx",
+      "bytes": 1822,
+      "sha256": "bfba1c9dfe315b6a2f23f6294c5cc1015f5411a230cc15891cd47090e8f86533"
+    },
+    {
+      "path": "revision/docs/reference/field-paths-and-values.ko.mdx",
+      "bytes": 1667,
+      "sha256": "9eea0eb0915f70257c9d80bc1484824a8b493221c19fde460d8190968ce9654f"
+    },
+    {
+      "path": "revision/docs/reference/field-paths-and-values.mdx",
+      "bytes": 1360,
+      "sha256": "827dd086ee785ef48fc731cbb27ea3b8f2932a684c042f40b3de8dcbbb1c0d26"
+    },
+    {
+      "path": "revision/docs/reference/field-state-and-errors.ko.mdx",
+      "bytes": 1724,
+      "sha256": "36d2107883707933ce5eaab79955df41d6d9d315b1815eb570889295f6f4d656"
+    },
+    {
+      "path": "revision/docs/reference/field-state-and-errors.mdx",
+      "bytes": 1445,
+      "sha256": "a75b7408248111e9cc5b9206614416474ef0bb09832346efbe0a66d31efb531e"
+    },
+    {
+      "path": "revision/docs/reference/meta.json",
+      "bytes": 235,
+      "sha256": "abff34436087de8f7760fef02e6024f8dc492b1a4e31025bdca3fb8da10ed088"
+    },
+    {
+      "path": "revision/docs/reference/submit-and-reset.ko.mdx",
+      "bytes": 2005,
+      "sha256": "2431960c26920a97601de2037593a63256fe84b94e6b7b322cdc49ded16e75de"
+    },
+    {
+      "path": "revision/docs/reference/submit-and-reset.mdx",
+      "bytes": 1663,
+      "sha256": "ceb95d1fa7f89aa32e318d211f341ec9648bce6d8195f05f3dbf94ed1dcde333"
+    },
+    {
+      "path": "revision/docs/reference/types.ko.mdx",
+      "bytes": 1682,
+      "sha256": "2aaf4716a19d4f54d15b3f62e71b6bac3c515bef5874d8e48cb8cc8f201ecef6"
+    },
+    {
+      "path": "revision/docs/reference/types.mdx",
+      "bytes": 1440,
+      "sha256": "c23857098d2194e936f42e72cf11324c108cf35e61f3d86699b6c8ebab105ad5"
+    },
+    {
+      "path": "revision/docs/reference/validation.ko.mdx",
+      "bytes": 1633,
+      "sha256": "544e51e57d57df35c5cde15a6bc84a11b338192f5a0df1f9be613459404cb417"
+    },
+    {
+      "path": "revision/docs/reference/validation.mdx",
+      "bytes": 1382,
+      "sha256": "8cef0da78f68e7a4a14048697c05fe69fcc05492c10dfe3573883c26d4bd4321"
+    },
+    {
+      "path": "revision/docs/troubleshooting.ko.mdx",
+      "bytes": 2031,
+      "sha256": "ed3c167d7ac819ddd76a5a31cd64dd5e061897f043ed5c0e620ea8fb145a4cfb"
+    },
+    {
+      "path": "revision/docs/troubleshooting.mdx",
+      "bytes": 1589,
+      "sha256": "7d8d73249357349abb0cf80167fdc72d6ce59018941d2755ec96b9e1f9e3b1a5"
+    }
+  ]
+}

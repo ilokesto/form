@@ -1,19 +1,27 @@
 import { execFileSync } from 'node:child_process';
+import assert from 'node:assert/strict';
+import { createRequire } from 'node:module';
 import {
   accessSync,
+  mkdirSync,
   mkdtempSync,
   readFileSync,
+  realpathSync,
   readdirSync,
   rmSync,
   writeFileSync,
 } from 'node:fs';
-import { tmpdir } from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { parse } from 'yaml';
 
 const packageDirectory = fileURLToPath(new URL('..', import.meta.url));
-const storeDirectory = path.resolve(packageDirectory, '../store');
-const consumerDirectory = mkdtempSync(path.join(tmpdir(), 'ilokesto-form-pack-'));
+const sourceManifest = JSON.parse(readFileSync(path.join(packageDirectory, 'package.json'), 'utf8'));
+const qaDirectory = path.join(packageDirectory, '.qa');
+mkdirSync(qaDirectory, { recursive: true });
+assert.ok(realpathSync(qaDirectory).startsWith(realpathSync(packageDirectory) + path.sep),
+  'Packed consumer QA directory escaped the package checkout');
+const consumerDirectory = mkdtempSync(path.join(qaDirectory, 'packed-consumer-'));
 const artifactsDirectory = path.join(consumerDirectory, 'artifacts');
 
 const run = (command, args, cwd) => {
@@ -27,33 +35,27 @@ const requireTarball = (packageName) => {
 };
 
 try {
-  run('pnpm', ['build'], storeDirectory);
-  run('pnpm', ['pack', '--pack-destination', artifactsDirectory], storeDirectory);
   run('pnpm', ['pack', '--pack-destination', artifactsDirectory], packageDirectory);
 
-  const storeTarball = requireTarball('ilokesto-store-');
   const formTarball = requireTarball('ilokesto-form-');
+  // The consumer must not join the owning library's workspace.
+  writeFileSync(
+    path.join(consumerDirectory, 'pnpm-workspace.yaml'),
+    "packages:\n  - .\nlinkWorkspacePackages: false\n",
+  );
   writeFileSync(
     path.join(consumerDirectory, 'package.json'),
     JSON.stringify({
-      packageManager: JSON.parse(
-        readFileSync(path.resolve(packageDirectory, '../../package.json'), 'utf8'),
-      ).packageManager,
+      packageManager: sourceManifest.packageManager,
       dependencies: {
         '@ilokesto/form': `file:${formTarball}`,
-        '@ilokesto/store': `file:${storeTarball}`,
-        '@types/react': '^19.2.15',
+        '@types/react': sourceManifest.devDependencies['@types/react'],
         immer: '11.1.8',
-        react: '^19.0.0',
-        'solid-js': '^1.9.0',
-        svelte: '^5.0.0',
-        typescript: '^6.0.2',
-        vue: '^3.5.0',
-      },
-      pnpm: {
-        overrides: {
-          '@ilokesto/store': `file:${storeTarball}`,
-        },
+        react: sourceManifest.devDependencies.react,
+        'solid-js': sourceManifest.devDependencies['solid-js'],
+        svelte: sourceManifest.devDependencies.svelte,
+        typescript: sourceManifest.devDependencies.typescript,
+        vue: sourceManifest.devDependencies.vue,
       },
       private: true,
       type: 'module',
@@ -141,7 +143,7 @@ void vueOptions;
     }),
   );
 
-  run('pnpm', ['install', '--prefer-offline', '--ignore-scripts'], consumerDirectory);
+  run('pnpm', ['install', '--ignore-scripts', '--store-dir', path.join(consumerDirectory, '.pnpm-store')], consumerDirectory);
   run('node', ['verify.mjs'], consumerDirectory);
   run('pnpm', ['exec', 'tsc', '--noEmit'], consumerDirectory);
 
@@ -165,9 +167,45 @@ void vueOptions;
     readFileSync(path.join(installedFormDirectory, 'package.json'), 'utf8'),
   );
   const storeRange = installedManifest?.dependencies?.['@ilokesto/store'];
-  if (typeof storeRange !== 'string' || storeRange.startsWith('workspace:')) {
-    throw new TypeError('Packed manifest contains an invalid @ilokesto/store dependency');
-  }
+  assert.equal(storeRange, sourceManifest.dependencies['@ilokesto/store']);
+  assert.match(storeRange, /^\d+\.\d+\.\d+$/, 'Store must resolve an exact registry version');
+  assert.deepEqual(installedManifest.exports, sourceManifest.exports);
+  assert.deepEqual(installedManifest.files, sourceManifest.files);
+  assert.equal(installedManifest.version, sourceManifest.version);
+  const physicalForm = realpathSync(installedFormDirectory);
+  assert.ok(physicalForm.startsWith(path.join(realpathSync(consumerDirectory), 'node_modules') + path.sep),
+    'Form escaped the isolated consumer');
+  const locations = createRequire(path.join(physicalForm, 'package.json'))
+    .resolve.paths('@ilokesto/store');
+  const storeDirectory = locations.map(location => path.join(location, '@ilokesto/store'))
+    .find(directory => {
+      try { accessSync(path.join(directory, 'package.json')); return true; }
+      catch (error) { if (error.code === 'ENOENT') return false; throw error; }
+    });
+  assert.ok(storeDirectory, 'Store did not resolve from the packed Form consumer');
+  const physicalStore = realpathSync(storeDirectory);
+  assert.ok(physicalStore.startsWith(path.join(realpathSync(consumerDirectory), 'node_modules') + path.sep),
+    'Store escaped the isolated consumer');
+  const storeManifest = JSON.parse(readFileSync(path.join(physicalStore, 'package.json'), 'utf8'));
+  assert.equal(storeManifest.version, storeRange);
+  const lock = parse(readFileSync(path.join(consumerDirectory, 'pnpm-lock.yaml'), 'utf8'));
+  assert.deepEqual(Object.keys(lock.importers), ['.'], 'Consumer joined another workspace');
+  const registryResolution = lock.packages[`@ilokesto/store@${storeRange}`]?.resolution;
+  assert.match(registryResolution?.integrity ?? '', /^sha512-/, 'Store lacks registry integrity');
+  assert.equal(registryResolution.tarball, undefined, 'Store must not use a tarball override');
+  assert.equal(lock.overrides, undefined, 'Consumer overrides are forbidden');
+  console.log(JSON.stringify({
+    status: 'PACKED_CONSUMER_VERIFIED',
+    package: installedManifest.name,
+    version: installedManifest.version,
+    adapters: ['core', 'react', 'solid', 'svelte', 'vue'],
+    consumerDirectory,
+    formDirectory: physicalForm,
+    workspaceImporters: Object.keys(lock.importers),
+    store: { version: storeManifest.version, directory: physicalStore, integrity: registryResolution.integrity },
+    runtime: 'passed',
+    types: 'passed',
+  }));
 } finally {
   rmSync(consumerDirectory, { force: true, recursive: true });
 }
