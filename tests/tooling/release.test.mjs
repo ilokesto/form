@@ -122,6 +122,18 @@ test('release verification: real pack and exact downloaded artifact -> read-only
   assert.equal(fixture.state.mainReads, 2);
 });
 
+test('release pack: gzip OS byte is normalized and saved bytes match returned digest', async t => {
+  const temporary = await mkdtemp(path.join(os.tmpdir(), 'form-pack-gzip-test-'));
+  t.after(() => rm(temporary, { recursive: true, force: true }));
+  const artifacts = path.join(temporary, 'artifacts');
+  await mkdir(artifacts);
+  const packed = await packRelease(rootDir, artifacts);
+  assert.equal(packed.bytes[9], 3, 'Cross-host gzip OS byte');
+  const saved = await readFile(path.join(artifacts, packed.file));
+  assert.deepEqual(saved, packed.bytes);
+  assert.equal(hash(packed.bytes), packed.packSha256);
+});
+
 test('release verification: main advances after packing -> no stale eligibility', async t => {
   const fixture = await releaseFixture(t);
   fixture.state.advance = true;
