@@ -12,4 +12,4 @@ Run `pnpm build`, `pnpm typecheck`, `pnpm test`, `pnpm test:pack`, `pnpm example
 
 Canonical content lives in `docs`; `website` owns the renderer and assets. Preserve released snapshots, receipts, original archive refs and runtime identities. Run `docs:publication:verify`, `docs:typecheck`, `docs:build` and `docs:test`. Check English/Korean released/next pages and Form submission in a real browser.
 
-Add a root Changeset for consumer-facing changes. Release PRs and publishing remain disabled during bootstrap. Future publishing uses the manual exact-SHA workflow and the current token mechanism; never publish locally. Do not deploy the local website.
+Add a root Changeset for consumer-facing changes. Pull requests run Verify CI. Main merges create or update a Changesets release PR; merging that PR publishes only the exact successful Verify artifact through GitHub Actions. Enable `Allow GitHub Actions to create and approve pull requests` and configure `NPM_TOKEN` in the `Production` environment before rollout. Never publish locally or deploy documentation.
