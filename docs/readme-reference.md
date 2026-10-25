@@ -1,3 +1,8 @@
+---
+title: Core implementation reference
+description: Internal architecture, runtime flows, and source-reading guide for Form.
+---
+
 # Core implementation reference
 
 [README](../README.md) | [한국어](./readme-reference.ko.md)

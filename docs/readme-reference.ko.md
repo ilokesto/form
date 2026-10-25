@@ -1,3 +1,8 @@
+---
+title: 코어 구현 참고
+description: Form 내부 구조, 실행 흐름과 소스 코드 읽기 안내.
+---
+
 # 코어 구현 참고
 
 [README](../README.ko.md) | [English](./readme-reference.md)
