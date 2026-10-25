@@ -102,7 +102,11 @@ Store; the example commands check all five private examples. After building the
 private documentation site, `pnpm docs:start` serves it locally.
 
 Canonical bilingual content lives in `docs/`; `website/` owns the renderer.
-Preserve immutable publication archives and migration history. Publishing and
-release PRs remain disabled during bootstrap; do not publish locally or deploy docs.
+Preserve immutable publication archives and migration history.
+
+Pull requests run Verify CI. Main merges create or update a Changesets release PR; merging
+that PR publishes only the exact successful Verify artifact through GitHub Actions. Enable
+`Allow GitHub Actions to create and approve pull requests` and configure `NPM_TOKEN` in the
+`Production` environment before rollout. Never publish locally or deploy documentation.
 
 </details>
