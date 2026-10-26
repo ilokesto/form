@@ -79,7 +79,7 @@ external `values` synchronization.
 <details>
 <summary>Development</summary>
 
-Use Node 22 and pnpm 10.17.1. Run these commands from this repository root:
+Use Node 24.22.1 and pnpm 10.17.1. Run these commands from this repository root:
 
 ```sh
 pnpm install --frozen-lockfile
