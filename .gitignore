@@ -11,9 +11,6 @@ examples/*/node_modules
 /coverage
 /pages/test.tsx
 
-# next.js
-/.next/
-/out/
 
 # production
 /build
@@ -32,26 +29,17 @@ yarn-error.log*
 # local env files
 .env*.local
 
-# vercel
-.vercel
 
 # typescript
 *.tsbuildinfo
-next-env.d.ts
 
 # package artifacts
 *.tgz
 
-# standalone documentation and private workspaces
+# private workspaces
 node_modules/
 dist/
 .sisyphus/
-!docs-publication/releases/**/npm/package.tgz
 OWNERSHIP.json
-.source/
-.next/
-docs-publication/.generated/
-docs-publication/runtime/.generated/
-docs-publication/.publication.lock
 artifacts/
 .qa/

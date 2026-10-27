@@ -6,7 +6,7 @@ import path from 'node:path';
 import { test } from 'node:test';
 
 const repository = path.resolve(import.meta.dirname, '../..');
-const privateManifests = ["website/package.json","docs-publication/runtime/package.json","examples/vue-login-form/package.json","examples/react-validation-flow/package.json","examples/solid-login-form/package.json","examples/svelte-login-form/package.json","examples/react-array-register/package.json"];
+const privateManifests = ["examples/vue-login-form/package.json","examples/react-validation-flow/package.json","examples/solid-login-form/package.json","examples/svelte-login-form/package.json","examples/react-array-register/package.json"];
 
 test('Changesets: public root with private workspaces -> versions only the owning library', async t => {
   const root = await mkdtemp(path.join(os.tmpdir(), 'form-changesets-'));
