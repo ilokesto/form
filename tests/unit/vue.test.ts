@@ -1,8 +1,8 @@
 import { computed, effectScope, nextTick, ref } from 'vue';
 import { expect, test } from 'vitest';
 
-import { CreateForm } from '../src/index';
-import { useForm } from '../src/vue/index';
+import { CreateForm } from '../../src/index';
+import { useForm } from '../../src/vue/index';
 
 const standardSchema = (validate: (value: any) => any) => ({
   '~standard': {

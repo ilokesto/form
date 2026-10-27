@@ -1,6 +1,6 @@
 import { test, expect } from 'vitest';
 
-import { FormArrayMutationPlanner } from '../../src/core/array/FormArrayMutationPlanner';
+import { FormArrayMutationPlanner } from '../../../src/core/array/FormArrayMutationPlanner';
 
 test('push adds a new item at the end', () => {
   const mutation = FormArrayMutationPlanner.push(['a', 'b'], ['k0', 'k1'], 'c', 'k2');

@@ -3,8 +3,8 @@ import React from 'react';
 import { cleanup, render, waitFor } from '@testing-library/react';
 import { afterEach, expect, test } from 'vitest';
 
-import type { Form, ResetOptions } from '../src/index';
-import { useForm } from '../src/react/index';
+import type { Form, ResetOptions } from '../../src/index';
+import { useForm } from '../../src/react/index';
 
 type Values = {
   readonly email: string;

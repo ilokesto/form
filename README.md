@@ -74,14 +74,11 @@ Use Node 24.22.1 and pnpm 10.17.1. Run these commands from this repository root:
 
 ```sh
 pnpm install --frozen-lockfile
-pnpm build
 pnpm typecheck
 pnpm test
-pnpm test:pack
-pnpm examples:build
-pnpm examples:typecheck
-pnpm test:tooling
 ```
+
+`typecheck` checks library code. `test` builds once and runs `test:unit` and `test:tooling`, `test:pack`, and all five example build/type checks. Runtime tests live in `tests/unit`, fixtures/setup in `tests/fixtures`, and Node tooling tests in `tests/tooling`. Run `pnpm build` before standalone `pnpm test:pack`.
 
 Build output goes to `dist/`. `test:pack` checks an isolated consumer using registry
 Store; the example commands check all five private examples.

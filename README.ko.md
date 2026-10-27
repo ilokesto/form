@@ -74,14 +74,11 @@ Node 24.22.1과 pnpm 10.17.1을 사용하고 저장소 루트에서 실행하세
 
 ```sh
 pnpm install --frozen-lockfile
-pnpm build
 pnpm typecheck
 pnpm test
-pnpm test:pack
-pnpm examples:build
-pnpm examples:typecheck
-pnpm test:tooling
 ```
+
+`typecheck`는 라이브러리 코드를 검사합니다. `test`는 한 번 빌드한 뒤 `test:unit`, `test:tooling`, `test:pack`, 다섯 예제의 빌드·타입 검사를 실행합니다. 런타임 테스트는 `tests/unit`, fixture·setup은 `tests/fixtures`, Node 도구 테스트는 `tests/tooling`에 있습니다. `test:pack`을 단독 실행할 때는 먼저 `pnpm build`를 실행하세요.
 
 빌드 결과는 `dist/`에 생성됩니다. `test:pack`은 레지스트리 Store를 사용하는 격리된
 소비자를 검사하고 예제 명령은 다섯 private 예제를 모두 확인합니다.

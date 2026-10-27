@@ -2,9 +2,9 @@
 import { flushSync, mount, unmount } from 'svelte';
 import { expect, test } from 'vitest';
 
-import { CreateForm } from '../src/index';
-import { useForm } from '../src/svelte/index';
-import SvelteFieldConsumer from './fixtures/SvelteFieldConsumer.svelte';
+import { CreateForm } from '../../src/index';
+import { useForm } from '../../src/svelte/index';
+import SvelteFieldConsumer from '../fixtures/SvelteFieldConsumer.svelte';
 
 const readOutput = (target: HTMLElement, testId: string): string => {
   const output = target.querySelector(`[data-testid="${testId}"]`);

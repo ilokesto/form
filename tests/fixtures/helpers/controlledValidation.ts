@@ -1,5 +1,5 @@
-import { CreateForm } from '../../src/index';
-import type { StandardSchemaV1 } from '../../src/index';
+import { CreateForm } from '../../../src/index';
+import type { StandardSchemaV1 } from '../../../src/index';
 
 export type Values = {
   readonly email: string;

@@ -3,8 +3,8 @@ import React from 'react';
 import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { afterEach, expect, expectTypeOf, test } from 'vitest';
 
-import { CreateForm } from '../src/index';
-import { useForm } from '../src/react/index';
+import { CreateForm } from '../../src/index';
+import { useForm } from '../../src/react/index';
 
 afterEach(() => {
   cleanup();

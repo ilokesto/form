@@ -1,6 +1,6 @@
 import { expect, test } from 'vitest';
 
-import { createControlledForm, createControlledSchema } from './helpers/controlledValidation';
+import { createControlledForm, createControlledSchema } from '../fixtures/helpers/controlledValidation';
 
 test.each(['field', 'full'] as const)(
   'Given %s validation with local overrides, when schemas settle, then execution and per-field notifications retain their order',

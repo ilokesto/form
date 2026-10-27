@@ -1,7 +1,7 @@
 import { expect, test } from 'vitest';
 
-import { CreateForm } from '../src/index';
-import type { FormArray } from '../src/core/types';
+import { CreateForm } from '../../src/index';
+import type { FormArray } from '../../src/core/types';
 
 test('preserves runtime keys for a sibling array when another array is mutated', () => {
   const form = new CreateForm({

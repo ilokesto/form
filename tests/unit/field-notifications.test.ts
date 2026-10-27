@@ -1,6 +1,6 @@
 import { expect, test } from 'vitest';
 
-import { CreateForm } from '../src/index';
+import { CreateForm } from '../../src/index';
 
 test('blur: focused field -> subscribers observe unfocus before touch', async () => {
   const form = new CreateForm({ defaultValues: { email: '' } });

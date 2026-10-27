@@ -1,7 +1,7 @@
 import { expect, test } from 'vitest';
 
-import { createFormFromOptions } from '../src/adapters/FormInput';
-import type { ResetOptions } from '../src/index';
+import { createFormFromOptions } from '../../src/adapters/FormInput';
+import type { ResetOptions } from '../../src/index';
 
 test('Given adapter-only option getters, when a core form is created, then those options are not read or forwarded', () => {
   type Values = { readonly email: string };

@@ -15,7 +15,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { parse } from 'yaml';
 
-const packageDirectory = fileURLToPath(new URL('..', import.meta.url));
+const packageDirectory = fileURLToPath(new URL('../..', import.meta.url));
 const sourceManifest = JSON.parse(readFileSync(path.join(packageDirectory, 'package.json'), 'utf8'));
 const qaDirectory = path.join(packageDirectory, '.qa');
 mkdirSync(qaDirectory, { recursive: true });

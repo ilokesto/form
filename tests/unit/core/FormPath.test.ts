@@ -1,6 +1,6 @@
 import { test, expect } from 'vitest';
 
-import { FormPath } from '../../src/core/path/FormPath';
+import { FormPath } from '../../../src/core/path/FormPath';
 
 test('pathToKey returns root key for empty path', () => {
   expect(FormPath.pathToKey([])).toBe('$');
