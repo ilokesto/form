@@ -5,7 +5,7 @@ A framework-independent TypeScript form core for values, field metadata, validat
 [![npm](https://img.shields.io/npm/v/@ilokesto/form?style=flat&color=555)](https://www.npmjs.com/package/@ilokesto/form)
 [![MIT](https://img.shields.io/badge/license-MIT-555?style=flat)](./LICENSE)
 
-[Docs](./docs/index.mdx) | [API](./docs/reference/create-form.mdx) | [한국어](./README.ko.md)
+[한국어](./README.ko.md)
 
 - Manage nested fields with explicit tuple paths and normalized field state.
 - Validate with Standard Schema v1, including field-local schemas and async results.
@@ -65,16 +65,7 @@ and does not await change validation. Use `trigger()` for awaited validation.
 Array `move()` and `swap()` retain item metadata; `replace()` intentionally drops it.
 
 Adapters live at `/react`, `/vue`, `/solid`, and `/svelte`, keeping the root free
-of framework and DOM imports. See their guides for lifecycle ownership and
-external `values` synchronization.
-
-## Further reading
-
-- [Core concepts and field state](./docs/core-concepts.mdx)
-- [Framework adapter API](./docs/reference/adapter-use-form.mdx)
-- [Validation and field-local schemas](./docs/reference/validation.mdx)
-- [Array keys and metadata rebasing](./docs/advanced/array-rebasing.mdx)
-- [Core walkthrough, runtime flows, and framework guides](./docs/readme-reference.md)
+of framework and DOM imports. Dispose adapter subscriptions when their owner unmounts.
 
 <details>
 <summary>Development</summary>
@@ -90,22 +81,14 @@ pnpm test:pack
 pnpm examples:build
 pnpm examples:typecheck
 pnpm test:tooling
-pnpm docs:publication:verify
-pnpm docs:typecheck
-pnpm docs:build
-pnpm docs:test
 ```
 
 Build output goes to `dist/`. `test:pack` checks an isolated consumer using registry
-Store; the example commands check all five private examples. After building the
-private documentation site, `pnpm docs:start` serves it locally.
-
-Canonical bilingual content lives in `docs/`; `website/` owns the renderer.
-Preserve immutable publication archives and migration history.
+Store; the example commands check all five private examples.
 
 Pull requests run Verify CI. Main merges create or update a Changesets release PR; merging
 that PR publishes only the exact successful Verify artifact through GitHub Actions. Enable
 `Allow GitHub Actions to create and approve pull requests` and configure `NPM_TOKEN` in the
-`Production` environment before rollout. Never publish locally or deploy documentation.
+`Production` environment before rollout. Never publish locally.
 
 </details>

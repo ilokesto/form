@@ -5,7 +5,7 @@
 [![npm](https://img.shields.io/npm/v/@ilokesto/form?style=flat&color=555)](https://www.npmjs.com/package/@ilokesto/form)
 [![MIT](https://img.shields.io/badge/license-MIT-555?style=flat)](./LICENSE)
 
-[문서](./docs/index.ko.mdx) | [API](./docs/reference/create-form.ko.mdx) | [English](./README.md)
+[English](./README.md)
 
 - 명시적인 tuple 경로와 정규화된 필드 상태로 중첩 필드를 관리합니다.
 - 필드별 스키마와 비동기 결과를 포함한 Standard Schema v1 검증을 지원합니다.
@@ -65,16 +65,7 @@ change 검증을 기다리지 않습니다. 검증 완료를 기다리려면 `tr
 배열의 `move()`와 `swap()`은 메타데이터를 유지하고 `replace()`는 의도적으로 버립니다.
 
 어댑터는 `/react`, `/vue`, `/solid`, `/svelte`에 있으므로 루트는 프레임워크와
-DOM을 import하지 않습니다. 생명주기 소유권과 외부 `values` 동기화는
-각 프레임워크 가이드에서 확인하세요.
-
-## 더 알아보기
-
-- [핵심 개념과 필드 상태](./docs/core-concepts.ko.mdx)
-- [프레임워크 어댑터 API](./docs/reference/adapter-use-form.ko.mdx)
-- [검증과 필드별 스키마](./docs/reference/validation.ko.mdx)
-- [배열 키와 메타데이터 재배치](./docs/advanced/array-rebasing.ko.mdx)
-- [코어 코드 읽기, 실행 흐름과 프레임워크 가이드](./docs/readme-reference.ko.md)
+DOM을 import하지 않습니다. 어댑터 소유자가 해제될 때 구독도 정리하세요.
 
 <details>
 <summary>개발</summary>
@@ -90,21 +81,13 @@ pnpm test:pack
 pnpm examples:build
 pnpm examples:typecheck
 pnpm test:tooling
-pnpm docs:publication:verify
-pnpm docs:typecheck
-pnpm docs:build
-pnpm docs:test
 ```
 
 빌드 결과는 `dist/`에 생성됩니다. `test:pack`은 레지스트리 Store를 사용하는 격리된
 소비자를 검사하고 예제 명령은 다섯 private 예제를 모두 확인합니다.
-전용 문서 사이트를 빌드한 뒤 `pnpm docs:start`로 로컬에서 실행합니다.
-
-공식 영문·한국어 문서는 `docs/`에, 렌더러는 `website/`에 있습니다.
-변경 불가능한 문서 기록과 마이그레이션 이력을 보존하세요.
 PR은 Verify CI를 실행합니다. main 병합은 Changesets 릴리스 PR을 생성·갱신하며,
 릴리스 PR을 병합하면 GitHub Actions가 성공한 Verify의 정확한 아티팩트만 게시합니다.
 적용 전에 `Allow GitHub Actions to create and approve pull requests`를 켜고
-`Production` 환경에 `NPM_TOKEN`을 설정하세요. 로컬 게시나 문서 배포는 하지 않습니다.
+`Production` 환경에 `NPM_TOKEN`을 설정하세요. 로컬에서는 게시하지 않습니다.
 
 </details>
