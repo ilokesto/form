@@ -1,8 +1,8 @@
 import { createRoot } from 'solid-js';
 import { expect, test } from 'vitest';
 
-import { CreateForm } from '../src/index';
-import { useForm } from '../src/solid/index';
+import { CreateForm } from '../../src/index';
+import { useForm } from '../../src/solid/index';
 
 const standardSchema = (validate: (value: any) => any) => ({
   '~standard': {

@@ -1,8 +1,8 @@
 import { effectScope, nextTick, shallowRef } from 'vue';
 import { expect, test } from 'vitest';
 
-import type { Form } from '../src/index';
-import { useForm } from '../src/vue/index';
+import type { Form } from '../../src/index';
+import { useForm } from '../../src/vue/index';
 
 type Values = {
   readonly email: string;

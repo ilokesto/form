@@ -1,8 +1,8 @@
 import { test, expect } from 'vitest';
 
-import { ValueHelper } from '../../src/core/value/ValueHelper';
-import { FormPath } from '../../src/core/path/FormPath';
-import { FormStateInitializer } from '../../src/core/state/FormStateInitializer';
+import { ValueHelper } from '../../../src/core/value/ValueHelper';
+import { FormPath } from '../../../src/core/path/FormPath';
+import { FormStateInitializer } from '../../../src/core/state/FormStateInitializer';
 
 test('getValueAtPath reads nested object values', () => {
   const source = { user: { name: 'Ada', role: 'admin' } };

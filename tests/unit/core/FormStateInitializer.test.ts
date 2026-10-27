@@ -1,7 +1,7 @@
 import { test, expect } from 'vitest';
 
-import { FormStateInitializer } from '../../src/core/state/FormStateInitializer';
-import { FormPath } from '../../src/core/path/FormPath';
+import { FormStateInitializer } from '../../../src/core/state/FormStateInitializer';
+import { FormPath } from '../../../src/core/path/FormPath';
 
 test('initialize with primitive values creates leaf fields', () => {
   const state = FormStateInitializer.initialize({ name: 'Ada', count: 42, active: true });

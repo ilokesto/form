@@ -1,6 +1,6 @@
 import { test, expect } from 'vitest';
 
-import { CreateForm } from '../src/index';
+import { CreateForm } from '../../src/index';
 
 const standardSchema = (validate: (value: any) => any) => ({
   '~standard': {

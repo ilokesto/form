@@ -3,9 +3,9 @@ import { flushSync, mount, unmount } from 'svelte';
 import type { Readable, Subscriber, Unsubscriber } from 'svelte/store';
 import { expect, test } from 'vitest';
 
-import type { Form } from '../src/index';
-import { useForm } from '../src/svelte/index';
-import SvelteReactiveValuesConsumer from './fixtures/SvelteReactiveValuesConsumer.svelte';
+import type { Form } from '../../src/index';
+import { useForm } from '../../src/svelte/index';
+import SvelteReactiveValuesConsumer from '../fixtures/SvelteReactiveValuesConsumer.svelte';
 
 type Values = {
   readonly email: string;

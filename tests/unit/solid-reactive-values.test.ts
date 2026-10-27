@@ -1,7 +1,7 @@
 import { createRoot, createSignal } from 'solid-js';
 import { expect, test } from 'vitest';
 
-import { useForm } from '../src/solid/index';
+import { useForm } from '../../src/solid/index';
 
 type Values = {
   readonly email: string;

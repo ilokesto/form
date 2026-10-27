@@ -1,10 +1,10 @@
 import { test, expect } from 'vitest';
 
-import { FormArrayRebaser } from '../../src/core/array/FormArrayRebaser';
-import { FormArrayMutationPlanner } from '../../src/core/array/FormArrayMutationPlanner';
-import { FormStateReader } from '../../src/core/state/FormStateReader';
-import { FormStateStore } from '../../src/core/state/FormStateStore';
-import { FormPath } from '../../src/core/path/FormPath';
+import { FormArrayRebaser } from '../../../src/core/array/FormArrayRebaser';
+import { FormArrayMutationPlanner } from '../../../src/core/array/FormArrayMutationPlanner';
+import { FormStateReader } from '../../../src/core/state/FormStateReader';
+import { FormStateStore } from '../../../src/core/state/FormStateStore';
+import { FormPath } from '../../../src/core/path/FormPath';
 
 test('rebase preserves non-array fields', () => {
   const store = new FormStateStore({ email: 'a@example.com', items: [{ name: 'x' }] });

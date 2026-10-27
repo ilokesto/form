@@ -7,9 +7,10 @@
   "type": "module",
   "scripts": {
     "build": "tsup",
-    "test:pack": "pnpm run build && node scripts/verify-package.mjs",
+    "test:pack": "node tests/tooling/verify-package.mjs",
     "typecheck": "tsc --noEmit",
-    "test": "vitest run --maxWorkers=2",
+    "test": "pnpm build && pnpm test:unit && pnpm test:tooling && pnpm test:pack && pnpm examples:build && pnpm examples:typecheck",
+    "test:unit": "vitest run tests/unit --maxWorkers=2",
     "test:tooling": "node --test --test-concurrency=1 tests/tooling/*.test.mjs",
     "release:verify": "node scripts/release-verify.mjs",
     "changeset": "changeset",

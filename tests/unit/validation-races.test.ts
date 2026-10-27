@@ -1,6 +1,6 @@
 import { expect, test } from 'vitest';
 
-import { createControlledForm, createControlledSchema } from './helpers/controlledValidation';
+import { createControlledForm, createControlledSchema } from '../fixtures/helpers/controlledValidation';
 
 test('Given independent field validations, when they resolve out of order, then both apply their own errors', async () => {
   const { form, nextValidation } = createControlledForm();

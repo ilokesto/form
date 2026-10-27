@@ -1,7 +1,7 @@
 import { expect, test } from 'vitest';
 
-import { CreateForm } from '../src/index';
-import { createControlledForm, createControlledSchema } from './helpers/controlledValidation';
+import { CreateForm } from '../../src/index';
+import { createControlledForm, createControlledSchema } from '../fixtures/helpers/controlledValidation';
 
 test.each(['value', 'field count', 'array identity', 'array count'] as const)(
   'Given pending validation, when %s changes, then the captured result cannot write errors',

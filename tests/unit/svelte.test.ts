@@ -2,8 +2,8 @@
 import { get } from 'svelte/store';
 import { expect, test } from 'vitest';
 
-import { CreateForm } from '../src/index';
-import { useForm } from '../src/svelte/index';
+import { CreateForm } from '../../src/index';
+import { useForm } from '../../src/svelte/index';
 
 const standardSchema = (validate: (value: any) => any) => ({
   '~standard': {

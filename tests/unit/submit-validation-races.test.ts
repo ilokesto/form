@@ -3,8 +3,8 @@ import { expect, test } from 'vitest';
 import {
   createControlledForm,
   createDeferred,
-} from './helpers/controlledValidation';
-import type { Values } from './helpers/controlledValidation';
+} from '../fixtures/helpers/controlledValidation';
+import type { Values } from '../fixtures/helpers/controlledValidation';
 
 test('Given submit validation made stale by change validation, when the old result is valid, then submit waits for authoritative invalid validation', async () => {
   const { form, nextValidation } = createControlledForm();
