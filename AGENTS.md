@@ -6,7 +6,7 @@ This repository owns the Form library, its five private examples, and its biling
 
 Use Node 24.22.1 and pnpm 10.17.1. Install with `pnpm install --frozen-lockfile`. Keep framework-neutral state in `src/core` and adapters in their framework directories. Use only exported Store APIs. Other libraries resolve from the registry, never sibling repositories.
 
-Run `pnpm build`, `pnpm typecheck`, `pnpm test`, `pnpm test:pack`, `pnpm examples:build`, and `pnpm examples:typecheck`. The packed consumer must resolve registry Store without local overrides. Run `pnpm test:tooling` and `pnpm migrate:verify` after tooling changes.
+Run `pnpm build`, `pnpm typecheck`, `pnpm test`, `pnpm test:pack`, `pnpm examples:build`, and `pnpm examples:typecheck`. The packed consumer must resolve registry Store without local overrides. Run `pnpm test:tooling` after tooling changes.
 
 ## Documentation and releases
 

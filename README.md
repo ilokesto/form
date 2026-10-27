@@ -90,7 +90,6 @@ pnpm test:pack
 pnpm examples:build
 pnpm examples:typecheck
 pnpm test:tooling
-pnpm migrate:verify
 pnpm docs:publication:verify
 pnpm docs:typecheck
 pnpm docs:build
