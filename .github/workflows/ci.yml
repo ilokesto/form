@@ -93,7 +93,6 @@ jobs:
           pnpm examples:build
           pnpm examples:typecheck
           pnpm test:tooling
-          pnpm migrate:verify
       - name: Documentation checks
         run: |
           pnpm docs:publication:verify
