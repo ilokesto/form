@@ -8,7 +8,7 @@ import { ArrayItemReorder, type IndexMapper } from './ArrayItemReorder';
  * 어느 새 index로 옮길지 FormArrayRebaser에 알려 준다.
  */
 export type FormArrayMutation = {
-  /** Replacement values; defined reference changes reset the form. */
+  /** Array values after this mutation, in the same order as the stable keys. */
   values: readonly unknown[];
   /** Stable item keys in array order. */
   keys: readonly string[];
