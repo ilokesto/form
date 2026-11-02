@@ -23,11 +23,17 @@ export type RegisterOptions = FieldHookOptions & {
 };
 
 export type FieldEventTarget = HTMLElement & {
+  /** Input kind; checkbox and radio use checked semantics, otherwise defaults to text. */
   type?: string;
+  /** Current field value. */
   value?: unknown;
+  /** Whether this checkbox or radio represents the current field value. */
   checked?: boolean;
+  /** Whether the control permits multiple selections. */
   multiple?: boolean;
-  selectedOptions?: Iterable<{ value: string }>;
+  /** Selected option values for a multiple select. */
+  selectedOptions?: Iterable<{ /** Current field value. */
+  value: string }>;
 };
 
 export type DomValue = string | number | readonly string[];

@@ -5,17 +5,19 @@ import type { FormStateStore } from '../state/index';
 import type { CreateFormOptions, FieldSchemaOptions, FormError, PathKey, ValidationTrigger } from '../types';
 
 export type ValidationOutcome =
-  | { readonly kind: 'invalid' }
-  | { readonly kind: 'stale' }
-  | { readonly kind: 'valid' };
+  | { /** Discriminant identifying the validation scope or valid, invalid, or stale outcome. */
+  readonly kind: 'invalid' }
+  | { /** Discriminant identifying the validation scope or valid, invalid, or stale outcome. */
+  readonly kind: 'stale' }
+  | { /** Discriminant identifying the validation scope or valid, invalid, or stale outcome. */
+  readonly kind: 'valid' };
 
 /**
- * Standard Schema validation 실행을 담당하는 엔진이다.
- *
- * @remarks
- * 이 form core는 검증 규칙을 직접 갖지 않는다.
- * Standard Schema compatible schema가 있으면 {@link StandardSchemaValidator}를 통해 전체 form values를 검증하고,
- * 결과 issue를 field errors로 기록한다.
+ * @description Runs form and field-local Standard Schema validators and rejects stale asynchronous results.
+ * @example
+ * ```ts
+ * const validation = new ValidationEngine(store, { defaultValues: { email: "" } });
+ * ```
  */
 export class ValidationEngine<TValues> {
   /** validateOn이 지정되지 않았을 때 submit에서만 자동 검증하도록 하는 기본값이다. */
@@ -34,10 +36,25 @@ export class ValidationEngine<TValues> {
   private readonly sequencer = new ValidationSequencer();
 
   /**
-   * validation engine을 만든다.
-   *
-   * @param store - schema가 읽고 error를 기록할 form state store.
-   * @param options - schema와 validateOn 설정을 포함한 form 생성 옵션.
+   * @description Create a validation engine with optional form schema and configured automatic triggers.
+   * @param {FormStateStore<TValues>} store - Shared form state store to read and update.
+   * @param {CreateFormOptions<TValues>} options - Default values, optional form schema, and automatic validation triggers.
+   * @param {TValues} options.defaultValues - Initial values and the baseline used for dirty checks and reset.
+   * @param {StandardSchemaV1<unknown, TValues> | undefined} [options.schema] - Standard Schema validator; a field-local schema takes precedence over the form schema.
+   * @param {StandardSchemaV1.Props<unknown, TValues>} [options.schema.~standard] - Standard Schema version, vendor, type metadata, and validation entry point.
+   * @param {1} [options.schema.~standard.version] - Standard Schema major version, which must be 1.
+   * @param {string} [options.schema.~standard.vendor] - Name of the schema library implementation.
+   * @param {StandardSchemaV1.Types<unknown, TValues> | undefined} [options.schema.~standard.types] - Optional compile-time input and output metadata.
+   * @param {unknown} [options.schema.~standard.types.input] - Schema input type metadata.
+   * @param {TValues} [options.schema.~standard.types.output] - Schema output type metadata.
+   * @param {(value: unknown, options?: StandardSchemaV1.Options | undefined) => StandardSchemaV1.Result<TValues> | Promise<StandardSchemaV1.Result<TValues>>} [options.schema.~standard.validate] - Validate unknown input and return accepted values or issues, synchronously or asynchronously.
+   * @param {StandardSchemaV1.Options | undefined} [options.schemaOptions] - Options forwarded to the Standard Schema validator.
+   * @param {Record<string, unknown> | undefined} [options.schemaOptions.libraryOptions] - Library-specific validation options; keys are defined by the schema library.
+   * @param {readonly ValidationTrigger[] | undefined} [options.validateOn] - Triggers that run automatic validation; defaults to submit.
+   * @example
+   * ```ts
+   * const validation = new ValidationEngine(store, { defaultValues: { email: "" } });
+   * ```
    */
   public constructor(store: FormStateStore<TValues>, options: CreateFormOptions<TValues>) {
     this.store = store;
@@ -46,21 +63,37 @@ export class ValidationEngine<TValues> {
   }
 
   /**
-   * 특정 trigger에서 자동 검증을 실행해야 하는지 확인한다.
-   *
-   * @param trigger - change, blur, submit, manual 중 검사할 trigger.
-   * @returns validateOn에 trigger가 포함되어 있으면 true.
+   * @description Check whether the configured automatic-validation triggers include this trigger.
+   * @param {ValidationTrigger} trigger - Reason validation was requested; not passed to the schema.
+   * @returns {boolean} Whether this trigger is enabled for automatic validation.
+   * @example
+   * ```ts
+   * validation.shouldValidateOn("manual");
+   * ```
    */
   public shouldValidateOn(trigger: ValidationTrigger): boolean {
     return this.validateOn.includes(trigger);
   }
 
   /**
-   * field-local schema를 등록한다.
-   *
-   * @remarks
-   * 같은 field에 새 schema가 등록되면 마지막 등록이 우선한다.
-   * 반환된 cleanup은 자신이 등록한 schema가 여전히 최신일 때만 제거한다.
+   * @description Register a field-local schema; the returned cleanup removes only this registration if it is still current.
+   * @param {string} fieldKey - Normalized path key of the target field.
+   * @param {FieldSchemaOptions} options - Field-local schema and validation settings.
+   * @param {StandardSchemaV1<unknown, unknown>} options.schema - Standard Schema validator; a field-local schema takes precedence over the form schema.
+   * @param {StandardSchemaV1.Props<unknown, unknown>} options.schema.~standard - Standard Schema version, vendor, type metadata, and validation entry point.
+   * @param {1} options.schema.~standard.version - Standard Schema major version, which must be 1.
+   * @param {string} options.schema.~standard.vendor - Name of the schema library implementation.
+   * @param {StandardSchemaV1.Types<unknown, unknown> | undefined} [options.schema.~standard.types] - Optional compile-time input and output metadata.
+   * @param {unknown} [options.schema.~standard.types.input] - Schema input type metadata.
+   * @param {unknown} [options.schema.~standard.types.output] - Schema output type metadata.
+   * @param {(value: unknown, options?: StandardSchemaV1.Options | undefined) => StandardSchemaV1.Result<unknown> | Promise<StandardSchemaV1.Result<unknown>>} options.schema.~standard.validate - Validate unknown input and return accepted values or issues, synchronously or asynchronously.
+   * @param {StandardSchemaV1.Options | undefined} [options.schemaOptions] - Options forwarded to the Standard Schema validator.
+   * @param {Record<string, unknown> | undefined} [options.schemaOptions.libraryOptions] - Library-specific validation options; keys are defined by the schema library.
+   * @returns {() => void} Cleanup callback for this subscription or registration.
+   * @example
+   * ```ts
+   * validation.registerFieldSchema(FormPath.pathToKey(["email"]), { schema });
+   * ```
    */
   public registerFieldSchema(fieldKey: PathKey, options: FieldSchemaOptions): () => void {
     const id = ++this.nextFieldSchemaId;
@@ -80,22 +113,28 @@ export class ValidationEngine<TValues> {
   }
 
   /**
-   * 전체 schema를 실행한 뒤 한 field의 error만 갱신한다.
-   *
-   * @param fieldKey - 검증할 field의 내부 PathKey.
-   * @param trigger - validation trigger. schema에는 전달하지 않고 호출 의도 기록용으로만 받는다.
-   * @returns 해당 field에 errors가 하나도 없으면 true.
+   * @description Validate one field with local-schema precedence and reject stale results.
+   * @param {string} fieldKey - Normalized path key of the target field.
+   * @param {ValidationTrigger} _trigger - Reason validation was requested; not passed to the schema.
+   * @returns {Promise<boolean>} Promise resolving true only when the current validation result is valid.
+   * @example
+   * ```ts
+   * await validation.validateField(FormPath.pathToKey(["email"]), "manual");
+   * ```
    */
   public async validateField(fieldKey: PathKey, _trigger: ValidationTrigger): Promise<boolean> {
     return this.validateFields([fieldKey], _trigger);
   }
 
   /**
-   * 전체 schema를 실행한 뒤 요청된 field들의 error만 갱신한다.
-   *
-   * @param fieldKeys - 검증할 field key 목록.
-   * @param trigger - validation trigger. schema에는 전달하지 않고 호출 의도 기록용으로만 받는다.
-   * @returns 요청된 field들이 모두 valid이면 true.
+   * @description Validate selected fields with local-schema precedence; an empty list validates the full form.
+   * @param {readonly string[]} fieldKeys - Normalized path keys to target.
+   * @param {ValidationTrigger} _trigger - Reason validation was requested; not passed to the schema.
+   * @returns {Promise<boolean>} Promise resolving true only when the current validation result is valid.
+   * @example
+   * ```ts
+   * await validation.validateFields([FormPath.pathToKey(["email"])], "manual");
+   * ```
    */
   public async validateFields(fieldKeys: readonly PathKey[], _trigger: ValidationTrigger): Promise<boolean> {
     const targetFieldKeys = ValidationEngine.unique(fieldKeys);
@@ -131,16 +170,29 @@ export class ValidationEngine<TValues> {
   }
 
   /**
-   * 전체 schema를 실행하고 관련 field errors를 모두 갱신한다.
-   *
-   * @param trigger - validation trigger. schema에는 전달하지 않고 호출 의도 기록용으로만 받는다.
-   * @returns schema validation이 성공하면 true.
+   * @description Validate the form and local overrides, returning false for invalid or stale results.
+   * @param {ValidationTrigger} _trigger - Reason validation was requested; not passed to the schema.
+   * @returns {Promise<boolean>} Promise resolving true only when the current validation result is valid.
+   * @example
+   * ```ts
+   * await validation.validateRegisteredFields("manual");
+   * ```
    */
   public async validateRegisteredFields(_trigger: ValidationTrigger): Promise<boolean> {
     const outcome = await this.validateRegisteredFieldsOutcome(_trigger);
     return outcome.kind === 'valid';
   }
 
+  /**
+   * @description Validate the form and local overrides, distinguishing accepted, invalid, and stale results.
+   * @param {ValidationTrigger} _trigger - Reason validation was requested; not passed to the schema.
+   * @returns {Promise<ValidationOutcome>} Promise of a valid, invalid, or stale validation outcome.
+   * - kind `"invalid" | "stale" | "valid"` - Validation outcome: valid, invalid, or stale.
+   * @example
+   * ```ts
+   * await validation.validateRegisteredFieldsOutcome("manual");
+   * ```
+   */
   public async validateRegisteredFieldsOutcome(
     _trigger: ValidationTrigger,
   ): Promise<ValidationOutcome> {

@@ -6,12 +6,12 @@ import { FormArrayRebaser } from './FormArrayRebaser';
 import type { FieldPath, FormArray } from '../types';
 
 /**
- * 한 배열 field에 대한 public 명령 객체다.
- *
- * @remarks
- * 이 클래스는 배열 조작 요청을 받고 현재 배열 값/키를 읽은 뒤,
- * 실제 다음 배열 계산은 {@link FormArrayMutationPlanner}에 맡긴다.
- * 계산된 결과는 {@link FormArrayRebaser}를 통해 fields, values, arrayKeys가 함께 맞춰진다.
+ * @description Applies array commands with shared item keys and rebases child field metadata with each change.
+ * @example
+ * ```ts
+ * const items = new FormArrayController(store, new ArrayKeyGenerator(), ["users"]);
+ * items.push({ email: "" });
+ * ```
  */
 export class FormArrayController<TValues> implements FormArray {
   /** 배열 값과 arrayKeys를 읽고, 최종 FormState를 교체할 store다. */
@@ -22,11 +22,14 @@ export class FormArrayController<TValues> implements FormArray {
   private readonly fieldPath: FieldPath;
 
   /**
-   * 배열 controller를 만든다.
-   *
-   * @param store - form state store.
-   * @param keys - 같은 form의 controller들이 공유하는 item key 생성기.
-   * @param fieldPath - 제어할 배열 field path.
+   * @description Create an array controller for one tuple path with the shared form key generator.
+   * @param {FormStateStore<TValues>} store - Shared form state store to read and update.
+   * @param {ArrayKeyGenerator} keys - Item key generator shared by controllers in this form.
+   * @param {FieldPath} fieldPath - Tuple path identifying the target field or value.
+   * @example
+   * ```ts
+   * const items = new FormArrayController(store, new ArrayKeyGenerator(), ["users"]);
+   * ```
    */
   public constructor(store: FormStateStore<TValues>, keys: ArrayKeyGenerator, fieldPath: FieldPath) {
     this.store = store;
@@ -35,69 +38,87 @@ export class FormArrayController<TValues> implements FormArray {
   }
 
   /**
-   * 현재 배열 item들의 안정적인 render key를 반환한다.
-   *
-   * @returns UI list key 등으로 사용할 수 있는 문자열 배열.
+   * @description Read stable rendering keys in current item order.
+   * @returns {readonly string[]} Stable rendering keys corresponding to current array items.
+   * @example
+   * ```ts
+   * items.keys();
+   * ```
    */
   public keys(): readonly string[] {
     return this.getKeys();
   }
 
   /**
-   * 배열 중간에 item을 삽입한다.
-   *
-   * @param index - 삽입할 위치. 범위를 벗어나면 0과 length 사이로 보정된다.
-   * @param value - 삽입할 item value.
+   * @description Insert an item at a bounded index and allocate its stable key.
+   * @param {number} index - Zero-based item index.
+   * @param {unknown} value - Value to store or inspect.
+   * @example
+   * ```ts
+   * items.insert(0, "Ada");
+   * ```
    */
   public insert(index: number, value: unknown): void {
     this.applyMutation(FormArrayMutationPlanner.insert(this.getArray(), this.getKeys(), index, value, this.keyGenerator.create()));
   }
 
   /**
-   * 배열 끝에 item을 추가한다.
-   *
-   * @param value - 추가할 item value.
+   * @description Append an item and allocate its stable key.
+   * @param {unknown} value - Value to store or inspect.
+   * @example
+   * ```ts
+   * items.push("Ada");
+   * ```
    */
   public push(value: unknown): void {
     this.applyMutation(FormArrayMutationPlanner.push(this.getArray(), this.getKeys(), value, this.keyGenerator.create()));
   }
 
   /**
-   * 지정 index의 item을 제거한다.
-   *
-   * @param index - 제거할 item index. 유효하지 않으면 아무 일도 하지 않는다.
+   * @description Remove a valid item and its child state; an invalid index leaves the state unchanged.
+   * @param {number} index - Zero-based item index.
+   * @example
+   * ```ts
+   * items.remove(0);
+   * ```
    */
   public remove(index: number): void {
     this.applyMutation(FormArrayMutationPlanner.remove(this.getArray(), this.getKeys(), index));
   }
 
   /**
-   * item을 한 위치에서 다른 위치로 이동한다.
-   *
-   * @param fromIndex - 이동할 기존 index.
-   * @param toIndex - 이동 후 index.
+   * @description Move an item and its metadata; invalid or identical indexes leave the state unchanged.
+   * @param {number} fromIndex - Original index of the item to move.
+   * @param {number} toIndex - Destination index of the moved item.
+   * @example
+   * ```ts
+   * items.move(0, 1);
+   * ```
    */
   public move(fromIndex: number, toIndex: number): void {
     this.applyMutation(FormArrayMutationPlanner.move(this.getArray(), this.getKeys(), fromIndex, toIndex));
   }
 
   /**
-   * 두 item의 위치를 맞바꾼다.
-   *
-   * @param leftIndex - 첫 번째 item index.
-   * @param rightIndex - 두 번째 item index.
+   * @description Swap two items with their keys and metadata; invalid or identical indexes leave the state unchanged.
+   * @param {number} leftIndex - First item index.
+   * @param {number} rightIndex - Second item index.
+   * @example
+   * ```ts
+   * items.swap(0, 1);
+   * ```
    */
   public swap(leftIndex: number, rightIndex: number): void {
     this.applyMutation(FormArrayMutationPlanner.swap(this.getArray(), this.getKeys(), leftIndex, rightIndex));
   }
 
   /**
-   * 배열 전체를 새 values로 교체한다.
-   *
-   * @remarks
-   * 기존 child field 상태는 재사용하지 않는다. 모든 item key도 새로 만든다.
-   *
-   * @param values - 새 배열 값.
+   * @description Replace all items and regenerate their keys and child field state.
+   * @param {readonly unknown[]} values - Replacement or current form values.
+   * @example
+   * ```ts
+   * items.replace(["Ada", "Lin"]);
+   * ```
    */
   public replace(values: readonly unknown[]): void {
     this.applyMutation(FormArrayMutationPlanner.replace(values, values.map(() => this.keyGenerator.create())));

@@ -3,22 +3,28 @@ import { FormPath } from '../path/index';
 import type { ArrayKeys, FieldPath, FieldState, FormState } from '../types';
 
 /**
-  * defaultValues를 내부 FormState로 변환한다.
- *
- * @remarks
- * core는 nested values를 그대로 저장하지 않고 leaf field 목록과 array container key 목록으로 나눠 저장한다.
- * 이 initializer는 form 생성과 reset 시점에 그 첫 snapshot을 만든다.
+ * @description Normalizes default values into leaf field snapshots and array-container keys.
+ * @example
+ * ```ts
+ * const state = FormStateInitializer.initialize({ email: "" });
+ * ```
  */
 export class FormStateInitializer {
   /**
-   * defaultValues에서 첫 FormState snapshot을 만든다.
-   *
-   * @remarks
-   * 배열 자체는 field leaf가 아니라 container로 취급되어 arrayKeys에 저장된다.
-   * primitive, 빈 객체, Date, class instance 같은 leaf 값은 fields에 FieldState로 저장된다.
-   *
-   * @param defaultValues - form을 시작할 기본 values.
-   * @returns fields, arrayKeys, submitCount를 포함한 초기 FormState.
+   * @description Normalize default values; arrays become key containers, plain objects recurse, and other values become leaves.
+   * @param {TValues} defaultValues - Initial values and the baseline used for dirty checks and reset.
+   * @returns {FormState<TValues>} Initial normalized state with deterministic initial-N array keys.
+   * - defaultValues `TValues` - Initial values and the baseline used for dirty checks and reset.
+   * - fields `Record<string, FieldState<unknown>>` - Field snapshots indexed by normalized path keys.
+   * - submitCount `number` - Number of submission attempts started by the form.
+   * - isSubmitting `boolean` - Whether queued validation or a submit callback is still pending.
+   * - isSubmitted `boolean` - Whether a submission has completed at least once.
+   * - isSubmitSuccessful `boolean` - Whether the latest completed submission reached a successful valid callback.
+   * - arrayKeys `ArrayKeys` - Stable rendering keys indexed by array path.
+   * @example
+   * ```ts
+   * FormStateInitializer.initialize({ email: "" });
+   * ```
    */
   public static initialize<TValues>(defaultValues: TValues): FormState<TValues> {
     const fields: Record<string, FieldState> = {};

@@ -37,6 +37,7 @@ export type SvelteFieldReturn = Readable<SvelteFieldSnapshot> & {
 
 /** `useForm(form)`이 반환하는 Svelte action 중심 surface다. */
 export type SvelteForm<TValues> = {
+  /** Core form instance shared by all bound helpers. */
   form: Form<TValues>;
   /** `<input use:register={{ name: 'email' }} />`처럼 사용하는 Svelte action이다. */
   register: SvelteRegisterAction;

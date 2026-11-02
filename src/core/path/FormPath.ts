@@ -1,11 +1,11 @@
 import type { FieldPath, FieldPathInput, PathKey } from '../types';
 
 /**
- * public path input과 내부 PathKey 사이의 변환 규칙을 담당한다.
- *
- * @remarks
- * string path는 dot path로 파싱하지 않고 하나의 field 이름으로 취급한다.
- * tuple path만 nested path를 표현한다. 이렇게 해야 실제 key에 `.` 문자가 있어도 충돌하지 않는다.
+ * @description Converts literal names and tuple paths to collision-free normalized keys; only tuples represent nested paths.
+ * @example
+ * ```ts
+ * const key = FormPath.pathInputToKey(["users", 0, "email"]);
+ * ```
  */
 export class FormPath {
   /**
@@ -17,20 +17,26 @@ export class FormPath {
   public static readonly ROOT_PATH_KEY = '$';
 
   /**
-   * tuple path를 편하게 만들기 위한 helper다.
-   *
-   * @param segments - path segment 목록.
-   * @returns FieldPath tuple.
+   * @description Return the supplied segments as a tuple path without parsing strings.
+   * @param {FieldPath} segments - Path segments; numeric segments identify array indexes.
+   * @returns {FieldPath} Tuple containing the supplied path segments.
+   * @example
+   * ```ts
+   * FormPath.path("users", 0, "email");
+   * ```
    */
   public static path(...segments: FieldPath): FieldPath {
     return segments;
   }
 
   /**
-   * public API가 받은 path input을 내부 FieldPath로 정규화한다.
-   *
-   * @param fieldPath - string field 이름 또는 tuple path.
-   * @returns 내부에서 사용하는 tuple path.
+   * @description Wrap a string as one literal field name or preserve the supplied tuple path.
+   * @param {FieldPathInput} fieldPath - Literal field name or tuple path; strings are not split on dots.
+   * @returns {FieldPath} Tuple path; a string becomes exactly one segment.
+   * @example
+   * ```ts
+   * FormPath.toFieldPath(["email"]);
+   * ```
    */
   public static toFieldPath(fieldPath: FieldPathInput): FieldPath {
     if (typeof fieldPath === 'string') {
@@ -42,20 +48,26 @@ export class FormPath {
   }
 
   /**
-   * public path input을 바로 store key로 변환한다.
-   *
-   * @param fieldPath - public API path input.
-   * @returns FormState.fields에서 사용할 PathKey.
+   * @description Normalize a literal name or tuple into a field-store key.
+   * @param {FieldPathInput} fieldPath - Literal field name or tuple path; strings are not split on dots.
+   * @returns {string} Normalized key for field and array-key lookup.
+   * @example
+   * ```ts
+   * FormPath.pathInputToKey(["email"]);
+   * ```
    */
   public static pathInputToKey(fieldPath: FieldPathInput): PathKey {
     return this.pathToKey(this.toFieldPath(fieldPath));
   }
 
   /**
-   * tuple path를 object key로 안전하게 사용할 문자열로 변환한다.
-   *
-   * @param fieldPath - 내부 tuple path.
-   * @returns root이면 `$`, 아니면 JSON 문자열 PathKey.
+   * @description Serialize a tuple as JSON, using $ for the empty root path.
+   * @param {FieldPath} fieldPath - Tuple path identifying the target field or value.
+   * @returns {string} $ for the root path, otherwise the JSON-serialized tuple.
+   * @example
+   * ```ts
+   * FormPath.pathToKey(["email"]);
+   * ```
    */
   public static pathToKey(fieldPath: FieldPath): PathKey {
     if (fieldPath.length === 0) {
@@ -67,11 +79,13 @@ export class FormPath {
   }
 
   /**
-   * pathToKey가 만든 key를 다시 FieldPath로 복원한다.
-   *
-   * @param key - FormState.fields 또는 arrayKeys의 key.
-   * @returns 복원된 tuple path.
-   * @throws key가 유효한 path key가 아니면 Error를 던진다.
+   * @description Parse a stored key back to tuple segments and throw for invalid keys or segment types.
+   * @param {string} key - Serialized path key produced by pathToKey.
+   * @returns {FieldPath} Decoded string and numeric path segments.
+   * @example
+   * ```ts
+   * FormPath.keyToPath(FormPath.pathToKey(["email"]));
+   * ```
    */
   public static keyToPath(key: PathKey): FieldPath {
     if (key === this.ROOT_PATH_KEY) {

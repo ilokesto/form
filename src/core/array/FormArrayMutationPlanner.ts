@@ -8,28 +8,37 @@ import { ArrayItemReorder, type IndexMapper } from './ArrayItemReorder';
  * 어느 새 index로 옮길지 FormArrayRebaser에 알려 준다.
  */
 export type FormArrayMutation = {
+  /** Replacement values; defined reference changes reset the form. */
   values: readonly unknown[];
+  /** Stable item keys in array order. */
   keys: readonly string[];
+  /** Map an old item index to its new position, or undefined if removed. */
   mapPreviousIndex: IndexMapper;
 };
 
 /**
- * 배열 명령을 실제 다음 배열 상태로 계산하는 planner다.
- *
- * @remarks
- * 이 클래스는 store를 전혀 모르며 순수하게 배열 값, key, index mapper만 만든다.
- * 덕분에 FormArrayController는 명령 흐름만 담당하고 계산 책임은 여기로 분리된다.
+ * @description Computes array values, stable keys, and index mappings without reading or writing a store.
+ * @example
+ * ```ts
+ * const next = FormArrayMutationPlanner.push([], [], "Ada", "item-1");
+ * ```
  */
 export class FormArrayMutationPlanner {
   /**
-   * insert 이후의 배열 값, key, index mapper를 계산한다.
-   *
-   * @param currentArray - 현재 배열 값.
-   * @param currentKeys - 현재 배열 item key 목록.
-   * @param index - 삽입 요청 index.
-   * @param value - 삽입할 item value.
-   * @param nextKey - 새 item에 부여할 key.
-   * @returns rebase에 필요한 mutation.
+   * @description Compute a bounded insertion using the supplied new item key and preserve old item mappings.
+   * @param {readonly unknown[]} currentArray - Array values before the mutation.
+   * @param {readonly string[]} currentKeys - Stable item keys before the mutation.
+   * @param {number} index - Zero-based item index.
+   * @param {unknown} value - Value to store or inspect.
+   * @param {string} nextKey - Stable key allocated for the new item.
+   * @returns {FormArrayMutation} Next values, stable keys, and old-to-new index mapper.
+   * - values `readonly unknown[]` - Array values after this mutation, in the same order as the stable keys.
+   * - keys `readonly string[]` - Stable item keys in array order.
+   * - mapPreviousIndex `IndexMapper` - Map an old item index to its new position, or undefined if removed.
+   * @example
+   * ```ts
+   * FormArrayMutationPlanner.insert(["Ada", "Lin"], ["item-1", "item-2"], 0, "Ada", "item-3");
+   * ```
    */
   public static insert(
     currentArray: readonly unknown[],
@@ -55,13 +64,19 @@ export class FormArrayMutationPlanner {
   }
 
   /**
-   * push 이후의 배열 값, key, index mapper를 계산한다.
-   *
-   * @param currentArray - 현재 배열 값.
-   * @param currentKeys - 현재 key 목록.
-   * @param value - 추가할 item value.
-   * @param nextKey - 새 item key.
-   * @returns rebase에 필요한 mutation.
+   * @description Compute an append using the supplied new item key and preserve old item mappings.
+   * @param {readonly unknown[]} currentArray - Array values before the mutation.
+   * @param {readonly string[]} currentKeys - Stable item keys before the mutation.
+   * @param {unknown} value - Value to store or inspect.
+   * @param {string} nextKey - Stable key allocated for the new item.
+   * @returns {FormArrayMutation} Next values, stable keys, and old-to-new index mapper.
+   * - values `readonly unknown[]` - Array values after this mutation, in the same order as the stable keys.
+   * - keys `readonly string[]` - Stable item keys in array order.
+   * - mapPreviousIndex `IndexMapper` - Map an old item index to its new position, or undefined if removed.
+   * @example
+   * ```ts
+   * FormArrayMutationPlanner.push(["Ada", "Lin"], ["item-1", "item-2"], "Ada", "item-3");
+   * ```
    */
   public static push(currentArray: readonly unknown[], currentKeys: readonly string[], value: unknown, nextKey: string): FormArrayMutation {
     return {
@@ -72,12 +87,18 @@ export class FormArrayMutationPlanner {
   }
 
   /**
-   * remove 이후의 배열 값, key, index mapper를 계산한다.
-   *
-   * @param currentArray - 현재 배열 값.
-   * @param currentKeys - 현재 key 목록.
-   * @param index - 제거할 index.
-   * @returns 유효하지 않은 index면 undefined, 아니면 mutation.
+   * @description Compute removal and remap surviving indexes; return undefined for an invalid index.
+   * @param {readonly unknown[]} currentArray - Array values before the mutation.
+   * @param {readonly string[]} currentKeys - Stable item keys before the mutation.
+   * @param {number} index - Zero-based item index.
+   * @returns {FormArrayMutation | undefined} Next array mutation, or undefined for invalid or unchanged indexes.
+   * - values `readonly unknown[]` - Array values after this mutation, in the same order as the stable keys.
+   * - keys `readonly string[]` - Stable item keys in array order.
+   * - mapPreviousIndex `IndexMapper` - Map an old item index to its new position, or undefined if removed.
+   * @example
+   * ```ts
+   * FormArrayMutationPlanner.remove(["Ada", "Lin"], ["item-1", "item-2"], 0);
+   * ```
    */
   public static remove(currentArray: readonly unknown[], currentKeys: readonly string[], index: number): FormArrayMutation | undefined {
     if (index < 0 || index >= currentArray.length) {
@@ -94,13 +115,19 @@ export class FormArrayMutationPlanner {
   }
 
   /**
-   * move 이후의 배열 값, key, index mapper를 계산한다.
-   *
-   * @param currentArray - 현재 배열 값.
-   * @param currentKeys - 현재 key 목록.
-   * @param fromIndex - 이동할 기존 index.
-   * @param toIndex - 이동 후 index.
-   * @returns 유효하지 않은 index거나 같은 위치면 undefined, 아니면 mutation.
+   * @description Compute reordered values, keys, and index mapping; return undefined for invalid or identical indexes.
+   * @param {readonly unknown[]} currentArray - Array values before the mutation.
+   * @param {readonly string[]} currentKeys - Stable item keys before the mutation.
+   * @param {number} fromIndex - Original index of the item to move.
+   * @param {number} toIndex - Destination index of the moved item.
+   * @returns {FormArrayMutation | undefined} Next array mutation, or undefined for invalid or unchanged indexes.
+   * - values `readonly unknown[]` - Array values after this mutation, in the same order as the stable keys.
+   * - keys `readonly string[]` - Stable item keys in array order.
+   * - mapPreviousIndex `IndexMapper` - Map an old item index to its new position, or undefined if removed.
+   * @example
+   * ```ts
+   * FormArrayMutationPlanner.move(["Ada", "Lin"], ["item-1", "item-2"], 0, 1);
+   * ```
    */
   public static move(currentArray: readonly unknown[], currentKeys: readonly string[], fromIndex: number, toIndex: number): FormArrayMutation | undefined {
     if (fromIndex < 0 || fromIndex >= currentArray.length || toIndex < 0 || toIndex >= currentArray.length || fromIndex === toIndex) {
@@ -117,13 +144,19 @@ export class FormArrayMutationPlanner {
   }
 
   /**
-   * swap 이후의 배열 값, key, index mapper를 계산한다.
-   *
-   * @param currentArray - 현재 배열 값.
-   * @param currentKeys - 현재 key 목록.
-   * @param leftIndex - 첫 번째 index.
-   * @param rightIndex - 두 번째 index.
-   * @returns 유효하지 않은 index거나 같은 위치면 undefined, 아니면 mutation.
+   * @description Compute exchanged values, keys, and index mapping; return undefined for invalid or identical indexes.
+   * @param {readonly unknown[]} currentArray - Array values before the mutation.
+   * @param {readonly string[]} currentKeys - Stable item keys before the mutation.
+   * @param {number} leftIndex - First item index.
+   * @param {number} rightIndex - Second item index.
+   * @returns {FormArrayMutation | undefined} Next array mutation, or undefined for invalid or unchanged indexes.
+   * - values `readonly unknown[]` - Array values after this mutation, in the same order as the stable keys.
+   * - keys `readonly string[]` - Stable item keys in array order.
+   * - mapPreviousIndex `IndexMapper` - Map an old item index to its new position, or undefined if removed.
+   * @example
+   * ```ts
+   * FormArrayMutationPlanner.swap(["Ada", "Lin"], ["item-1", "item-2"], 0, 1);
+   * ```
    */
   public static swap(currentArray: readonly unknown[], currentKeys: readonly string[], leftIndex: number, rightIndex: number): FormArrayMutation | undefined {
     if (
@@ -146,14 +179,17 @@ export class FormArrayMutationPlanner {
   }
 
   /**
-   * replace 이후의 배열 값, key, index mapper를 계산한다.
-   *
-   * @remarks
-   * replace는 기존 item과의 연결을 끊는 명령이므로 이전 index를 새 index로 매핑하지 않는다.
-   *
-   * @param values - 새 배열 값.
-   * @param nextKeys - 새 item key 목록.
-   * @returns rebase에 필요한 mutation.
+   * @description Copy replacement values and supplied keys, disconnecting every previous item mapping.
+   * @param {readonly unknown[]} values - Replacement or current form values.
+   * @param {readonly string[]} nextKeys - Stable keys for the replacement array.
+   * @returns {FormArrayMutation} Replacement values and keys with all previous item mappings removed.
+   * - values `readonly unknown[]` - Array values after this mutation, in the same order as the stable keys.
+   * - keys `readonly string[]` - Stable item keys in array order.
+   * - mapPreviousIndex `IndexMapper` - Map an old item index to its new position, or undefined if removed.
+   * @example
+   * ```ts
+   * FormArrayMutationPlanner.replace(["Ada"], ["item-1"]);
+   * ```
    */
   public static replace(values: readonly unknown[], nextKeys: readonly string[]): FormArrayMutation {
     return {
