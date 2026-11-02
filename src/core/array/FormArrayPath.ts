@@ -1,42 +1,51 @@
 import type { FieldPath } from '../types';
 
 /**
- * 배열 field path 판별과 변환을 담당하는 helper다.
- *
- * @remarks
- * FormArrayRebaser가 field path를 다룰 때 필요한 경로 계산만 분리했다.
- * 이 클래스는 상태를 전혀 다루지 않고 FieldPath 배열만 처리한다.
+ * @description Identifies array-child paths and replaces only their item-index segment.
+ * @example
+ * ```ts
+ * const child = FormArrayPath.isArrayChildPath(["users", 0, "email"], ["users"]);
+ * ```
  */
 export class FormArrayPath {
   /**
-   * fieldPath가 prefix로 시작하는지 확인한다.
-   *
-   * @param fieldPath - 검사할 path.
-   * @param prefix - 앞부분에 있어야 하는 path.
-   * @returns prefix가 모두 일치하면 true.
+   * @description Compare path segments with Object.is to check whether a tuple starts with the prefix.
+   * @param {FieldPath} fieldPath - Tuple path identifying the target field or value.
+   * @param {FieldPath} prefix - Path prefix to compare segment by segment.
+   * @returns {boolean} Whether every prefix segment matches by Object.is.
+   * @example
+   * ```ts
+   * FormArrayPath.hasPathPrefix(["email"], ["users"]);
+   * ```
    */
   public static hasPathPrefix(fieldPath: FieldPath, prefix: FieldPath): boolean {
     return prefix.every((segment, index) => Object.is(fieldPath[index], segment));
   }
 
   /**
-   * fieldPath가 arrayPath 아래의 item field인지 확인한다.
-   *
-   * @param fieldPath - 검사할 field path.
-   * @param arrayPath - 배열 field path.
-   * @returns arrayPath 뒤 segment가 number이면 배열 item child로 본다.
+   * @description Check that a path extends the array path with a numeric item-index segment.
+   * @param {FieldPath} fieldPath - Tuple path identifying the target field or value.
+   * @param {FieldPath} arrayPath - Tuple path of the array container.
+   * @returns {boolean} Whether the next segment below the array container is a numeric index.
+   * @example
+   * ```ts
+   * FormArrayPath.isArrayChildPath(["users", 0, "email"], ["users"]);
+   * ```
    */
   public static isArrayChildPath(fieldPath: FieldPath, arrayPath: FieldPath): boolean {
     return fieldPath.length > arrayPath.length && this.hasPathPrefix(fieldPath, arrayPath) && typeof fieldPath[arrayPath.length] === 'number';
   }
 
   /**
-   * 배열 child field path에서 item index segment만 교체한다.
-   *
-   * @param fieldPath - 기존 field path.
-   * @param arrayPath - 배열 field path.
-   * @param nextIndex - 교체할 새 index.
-   * @returns 새 index를 가진 field path.
+   * @description Replace the item index beneath an array path while retaining the remaining child segments.
+   * @param {FieldPath} fieldPath - Tuple path identifying the target field or value.
+   * @param {FieldPath} arrayPath - Tuple path of the array container.
+   * @param {number} nextIndex - Replacement item index.
+   * @returns {FieldPath} Copied child path containing the replacement array index.
+   * @example
+   * ```ts
+   * FormArrayPath.replaceArrayIndex(["users", 0, "email"], ["users"], 1);
+   * ```
    */
   public static replaceArrayIndex(fieldPath: FieldPath, arrayPath: FieldPath, nextIndex: number): FieldPath {
     return [...arrayPath, nextIndex, ...fieldPath.slice(arrayPath.length + 1)];

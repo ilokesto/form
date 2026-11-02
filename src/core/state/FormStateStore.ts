@@ -9,60 +9,148 @@ import { ValueHelper } from '../value/index';
 import type { FieldPath, FieldPathInput, FieldState, FormError, FormState, PathKey, ResetOptions, SetValueOptions } from '../types';
 
 /**
- * form 상태와 쓰기 작업의 소유자다.
- *
- * 각 명령은 기존 알림 경계를 유지하며 immer로 다음 snapshot을 만든다.
- * 읽기와 values 복원은 현재 snapshot을 순수한 FormStateReader 계산에 전달한다.
+ * @description Owns immutable form snapshots and writes; each command preserves the store notification boundary.
+ * @example
+ * ```ts
+ * const store = new FormStateStore({ email: "" });
+ * store.setValue(["email"], "Ada");
+ * ```
  */
 export class FormStateStore<TValues> {
   private readonly store: StoreApi<FormState<TValues>>;
 
-  /** nested defaultValues를 정규화하여 단일 store를 만든다. */
+  /**
+   * @description Create a store by normalizing the supplied default values.
+   * @param {TValues} defaultValues - Initial values and the baseline used for dirty checks and reset.
+   * @example
+   * ```ts
+   * const store = new FormStateStore({ email: "" });
+   * ```
+   */
   public constructor(defaultValues: TValues) {
     this.store = createStore<FormState<TValues>>(FormStateInitializer.initialize(defaultValues));
   }
 
-  /** 현재 FormState snapshot을 반환한다. 반환값은 읽기 전용으로 취급한다. */
+  /**
+   * @description Read the current immutable form snapshot without cloning it.
+   * @returns {Readonly<FormState<TValues>>} Current read-only snapshot; callers must not mutate it.
+   * - defaultValues `TValues` - Initial values and the baseline used for dirty checks and reset.
+   * - fields `Record<string, FieldState<unknown>>` - Field snapshots indexed by normalized path keys.
+   * - submitCount `number` - Number of submission attempts started by the form.
+   * - isSubmitting `boolean` - Whether queued validation or a submit callback is still pending.
+   * - isSubmitted `boolean` - Whether a submission has completed at least once.
+   * - isSubmitSuccessful `boolean` - Whether the latest completed submission reached a successful valid callback.
+   * - arrayKeys `ArrayKeys` - Stable rendering keys indexed by array path.
+   * @example
+   * ```ts
+   * store.getState();
+   * ```
+   */
   public getState(): Readonly<FormState<TValues>> {
     return this.store.getState();
   }
 
-  /** 상태 변경 시 호출될 listener를 등록하고 unsubscribe 함수를 반환한다. */
+  /**
+   * @description Subscribe to form state changes and return the callback that unsubscribes this listener.
+   * @param {() => void} listener - Callback invoked synchronously after a state change.
+   * @returns {() => void} Cleanup callback for this subscription or registration.
+   * @example
+   * ```ts
+   * store.subscribe(() => render());
+   * ```
+   */
   public subscribe(listener: () => void): () => void {
     return this.store.subscribe(listener);
   }
 
-  /** 이미 정규화된 key로 FieldState를 읽는다. validation처럼 key 기반으로 동작하는 곳에서 사용한다. */
+  /**
+   * @description Read a normalized field key, returning an independent default snapshot when absent.
+   * @param {string} fieldKey - Normalized path key of the target field.
+   * @returns {Readonly<FieldState>} Stored field snapshot, or an empty snapshot for an absent key.
+   * - value `unknown` - Current field value.
+   * - errors `FormError[]` - Current validation errors for the field.
+   * - touched `boolean` - Whether the field has blurred at least once.
+   * - dirty `boolean` - Whether the current value differs from its default by Object.is.
+   * - modified `boolean` - Whether a user-originated write has changed this field.
+   * - isFocused `boolean` - Whether focus has been recorded without a subsequent blur.
+   * @example
+   * ```ts
+   * store.getFieldStateByKey(FormPath.pathToKey(["email"]));
+   * ```
+   */
   public getFieldStateByKey(fieldKey: PathKey): Readonly<FieldState> {
     return FormStateReader.getFieldStateByKey(this.store.getState(), fieldKey);
   }
 
-  /** public path input을 받아 해당 FieldState를 읽는다. */
+  /**
+   * @description Read field metadata and use a default snapshot when the field is not present.
+   * @param {FieldPathInput} fieldPath - Literal field name or tuple path; strings are not split on dots.
+   * @returns {Readonly<FieldState>} Field snapshot, with a default shape when the leaf field is absent.
+   * - value `unknown` - Current field value.
+   * - errors `FormError[]` - Current validation errors for the field.
+   * - touched `boolean` - Whether the field has blurred at least once.
+   * - dirty `boolean` - Whether the current value differs from its default by Object.is.
+   * - modified `boolean` - Whether a user-originated write has changed this field.
+   * - isFocused `boolean` - Whether focus has been recorded without a subsequent blur.
+   * @example
+   * ```ts
+   * store.getFieldState(["email"]);
+   * ```
+   */
   public getFieldState(fieldPath: FieldPathInput): Readonly<FieldState> {
     return FormStateReader.getFieldState(this.store.getState(), fieldPath);
   }
 
-  /** public path input을 받아 해당 value만 읽는다. */
+  /**
+   * @description Read only the current value of the selected field.
+   * @param {FieldPathInput} fieldPath - Literal field name or tuple path; strings are not split on dots.
+   * @returns {unknown} Stored field value, or undefined when the field has no value.
+   * @example
+   * ```ts
+   * store.getValue(["email"]);
+   * ```
+   */
   public getValue(fieldPath: FieldPathInput): unknown {
     return FormStateReader.getValue(this.store.getState(), fieldPath);
   }
 
-  /** fields와 arrayKeys로부터 전체 values 객체를 복원한다. */
+  /**
+   * @description Reconstruct the nested values object from leaf fields and array containers.
+   * @returns {TValues} Nested values reconstructed in the shape of the supplied defaults.
+   * @example
+   * ```ts
+   * store.getValues();
+   * ```
+   */
   public getValues(): TValues {
     return FormStateReader.getValues(this.store.getState());
   }
 
-  /** 내부 FieldPath를 기준으로 최신 values에서 nested value를 읽는다. 배열 controller가 현재 배열 값을 얻을 때 사용한다. */
+  /**
+   * @description Read a nested tuple path, returning undefined when a traversed container is missing or primitive.
+   * @param {FieldPath} fieldPath - Tuple path identifying the target field or value.
+   * @returns {unknown} Value at the tuple path, or undefined for an unreachable path.
+   * @example
+   * ```ts
+   * store.getValueAtPath(["email"]);
+   * ```
+   */
   public getValueAtPath(fieldPath: FieldPath): unknown {
     return FormStateReader.getValueAtPath(this.store.getState(), fieldPath);
   }
 
   /**
-   * 한 field value를 갱신한다.
-   *
-   * dirty는 defaultValues의 같은 path 값과 Object.is로 비교해 계산한다.
-   * modified는 사용자가 만든 변경(source: 'user')일 때만 true로 바꾼다.
-   * 반환한 PathKey는 이후 validation 실행에 재사용된다.
+   * @description Write a field value, compare dirty state with its default, and mark user-originated changes as modified. Return the normalized key for subsequent validation.
+   * @param {FieldPath} fieldPath - Tuple path identifying the target field or value.
+   * @param {unknown} value - Value to store or inspect.
+   * @param {SetValueOptions} [options] - Write origin and optional immediate validation request.
+   * @param {"user" | "program" | undefined} [options.source] - Write origin; user writes mark the field as modified.
+   * @param {boolean | undefined} [options.validate] - Validation request for the controller; the state store itself does not run validation.
+   * @returns {string} Normalized field key for the updated value.
+   * @example
+   * ```ts
+   * store.setValue(["email"], "Ada", { source: "user" });
+   * ```
    */
   public setValue(fieldPath: FieldPath, value: unknown, options: SetValueOptions = {}): PathKey {
     const fieldKey = FormPath.pathToKey(fieldPath);
@@ -84,7 +172,14 @@ export class FormStateStore<TValues> {
     return fieldKey;
   }
 
-  /** blur된 field의 touched flag를 true로 바꾼다. 기존 field가 없으면 default state에서 시작한다. */
+  /**
+   * @description Mark a field touched, creating default metadata if the field does not yet exist.
+   * @param {string} fieldKey - Normalized path key of the target field.
+   * @example
+   * ```ts
+   * store.touchField(FormPath.pathToKey(["email"]));
+   * ```
+   */
   public touchField(fieldKey: PathKey): void {
     this.store.setState(prevState =>
       produce(prevState, draft => {
@@ -99,10 +194,12 @@ export class FormStateStore<TValues> {
   }
 
   /**
-   * field의 isFocused를 true로 바꾼다. focus 이벤트에서 호출된다.
-   *
-   * fieldKey에 해당하는 field가 없으면 default state를 생성해 기록한다. 이는 touchField와 동일한 패턴이지만,
-   * 존재하지 않는 path에 대해 의도치 않게 field가 생성되는 부수 효과에 유의해야 한다.
+   * @description Record focus, creating a default snapshot for an unknown field without clearing other fields.
+   * @param {string} fieldKey - Normalized path key of the target field.
+   * @example
+   * ```ts
+   * store.focusField(FormPath.pathToKey(["email"]));
+   * ```
    */
   public focusField(fieldKey: PathKey): void {
     this.store.setState(prevState =>
@@ -118,10 +215,12 @@ export class FormStateStore<TValues> {
   }
 
   /**
-   * field의 isFocused를 false로 바꾼다. blur 이벤트에서 호출된다.
-   *
-   * fieldKey에 해당하는 field가 없으면 default state를 생성해 기록한다. focusField와 동일한 fallback 패턴이며,
-   * 존재하지 않는 path에 대해 의도치 않게 field가 생성되는 부수 효과에 유의해야 한다.
+   * @description Clear focus, creating a default snapshot for an unknown field if necessary.
+   * @param {string} fieldKey - Normalized path key of the target field.
+   * @example
+   * ```ts
+   * store.unfocusField(FormPath.pathToKey(["email"]));
+   * ```
    */
   public unfocusField(fieldKey: PathKey): void {
     this.store.setState(prevState =>
@@ -136,7 +235,15 @@ export class FormStateStore<TValues> {
     );
   }
 
-  /** validation 또는 외부 명령 결과로 field의 errors를 통째로 교체한다. */
+  /**
+   * @description Replace the errors for a normalized field key, creating a default field if necessary.
+   * @param {string} fieldKey - Normalized path key of the target field.
+   * @param {readonly FormError[]} errors - Current validation errors for the field.
+   * @example
+   * ```ts
+   * store.setErrorsByKey(FormPath.pathToKey(["email"]), errors);
+   * ```
+   */
   public setErrorsByKey(fieldKey: PathKey, errors: readonly FormError[]): void {
     this.store.setState(prevState =>
       produce(prevState, draft => {
@@ -151,10 +258,12 @@ export class FormStateStore<TValues> {
   }
 
   /**
-   * errors를 비운다.
-   *
-   * fieldKeys가 있으면 해당 key들만 대상으로 하고, 없으면 현재 존재하는 모든 fields를 대상으로 한다.
-   * 존재하지 않는 key가 들어와도 default field를 만든 뒤 errors: [] 상태로 저장한다.
+   * @description Clear selected fields or all fields when no paths are provided.
+   * @param {readonly string[] | undefined} [fieldKeys] - Normalized path keys to target.
+   * @example
+   * ```ts
+   * store.clearErrors([FormPath.pathToKey(["email"])]);
+   * ```
    */
   public clearErrors(fieldKeys?: readonly PathKey[]): void {
     this.store.setState(prevState =>
@@ -173,7 +282,19 @@ export class FormStateStore<TValues> {
     );
   }
 
-  /** 새 values가 있으면 그것을 새 defaultValues로 삼고, 없으면 기존 defaultValues로 FormState를 재생성한다. */
+  /**
+   * @description Reinitialize values and metadata, optionally retaining dirty values, errors, touched flags, and submission state.
+   * @param {TValues | undefined} [values] - Replacement or current form values.
+   * @param {ResetOptions} [options] - State preservation flags for this reset.
+   * @param {boolean | undefined} [options.keepDirtyValues] - Preserve current values and modified flags of dirty fields.
+   * @param {boolean | undefined} [options.keepErrors] - Preserve errors on surviving field paths.
+   * @param {boolean | undefined} [options.keepTouched] - Preserve touched flags on surviving field paths.
+   * @param {boolean | undefined} [options.keepSubmitState] - Preserve submission counters and lifecycle flags.
+   * @example
+   * ```ts
+   * store.reset({ email: "Ada" }, { keepTouched: true });
+   * ```
+   */
   public reset(values?: TValues, options: ResetOptions = {}): void {
     const previousState = this.store.getState();
     const nextDefaultValues = values ?? previousState.defaultValues;
@@ -216,7 +337,13 @@ export class FormStateStore<TValues> {
     );
   }
 
-  /** submit 시도 횟수를 증가시키고 진행 중 상태를 기록한다. */
+  /**
+   * @description Increment the attempt counter, mark submission pending, and clear the previous success flag.
+   * @example
+   * ```ts
+   * store.beginSubmit();
+   * ```
+   */
   public beginSubmit(): void {
     this.store.setState(prevState =>
       produce(prevState, draft => {
@@ -227,7 +354,14 @@ export class FormStateStore<TValues> {
     );
   }
 
-  /** submit validation/callback 완료 후 성공 여부를 기록한다. */
+  /**
+   * @description Finish the submission lifecycle and record whether the valid callback succeeded.
+   * @param {boolean} successful - Whether the final submission callback completed successfully.
+   * @example
+   * ```ts
+   * store.completeSubmit(true);
+   * ```
+   */
   public completeSubmit(successful: boolean): void {
     this.store.setState(prevState =>
       produce(prevState, draft => {
@@ -238,7 +372,14 @@ export class FormStateStore<TValues> {
     );
   }
 
-  /** 이미 완성된 FormState updater를 store에 전달한다. 배열 리베이스처럼 여러 조각을 한 번에 바꿀 때 사용한다. */
+  /**
+   * @description Apply a complete normalized state updater through the underlying store.
+   * @param {(previousState: FormState<TValues>) => FormState<TValues>} updater - State updater that replaces the complete normalized snapshot.
+   * @example
+   * ```ts
+   * store.replaceState(previous => ({ ...previous, submitCount: 0 }));
+   * ```
+   */
   public replaceState(updater: (previousState: FormState<TValues>) => FormState<TValues>): void {
     this.store.setState(updater);
   }

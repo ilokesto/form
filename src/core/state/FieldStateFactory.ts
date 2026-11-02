@@ -1,10 +1,11 @@
 import type { FieldState } from '../types';
 
 /**
- * FieldState 생성 규칙을 한 곳에 모아 둔다.
- *
- * 초기화, 누락 field 읽기, 새 field 쓰기 모두 같은 기본 shape을 사용해야
- * public API가 항상 동일한 구조를 반환한다.
+ * @description Creates independent field snapshots with shared default metadata rules and fresh error arrays.
+ * @example
+ * ```ts
+ * const field = FieldStateFactory.create("");
+ * ```
  */
 export class FieldStateFactory {
   /** 모든 field가 공통으로 갖는 기본 메타데이터 값이다. errors는 매번 새 배열로 복사해서 공유 참조를 피한다. */
@@ -17,7 +18,21 @@ export class FieldStateFactory {
     isFocused: false,
   };
 
-  /** 특정 value를 가진 새 FieldState를 만든다. 초기 상태이므로 errors/touched/dirty/modified는 모두 비어 있거나 false다. */
+  /**
+   * @description Create a field snapshot with the supplied value, fresh errors, and false metadata flags.
+   * @param {unknown} value - Value to store or inspect.
+   * @returns {FieldState} Independent field snapshot with the supplied value and fresh errors.
+   * - value `unknown` - Current field value.
+   * - errors `FormError[]` - Current validation errors for the field.
+   * - touched `boolean` - Whether the field has blurred at least once.
+   * - dirty `boolean` - Whether the current value differs from its default by Object.is.
+   * - modified `boolean` - Whether a user-originated write has changed this field.
+   * - isFocused `boolean` - Whether focus has been recorded without a subsequent blur.
+   * @example
+   * ```ts
+   * FieldStateFactory.create("Ada");
+   * ```
+   */
   public static create(value: unknown): FieldState {
     return {
       ...this.DEFAULT_FIELD_STATE,
@@ -26,7 +41,20 @@ export class FieldStateFactory {
     };
   }
 
-  /** value가 아직 없는 field를 읽거나 만들 때 쓰는 기본 FieldState다. */
+  /**
+   * @description Create an empty field snapshot with undefined value and fresh errors.
+   * @returns {FieldState} Independent empty snapshot with undefined value and false metadata flags.
+   * - value `unknown` - Current field value.
+   * - errors `FormError[]` - Current validation errors for the field.
+   * - touched `boolean` - Whether the field has blurred at least once.
+   * - dirty `boolean` - Whether the current value differs from its default by Object.is.
+   * - modified `boolean` - Whether a user-originated write has changed this field.
+   * - isFocused `boolean` - Whether focus has been recorded without a subsequent blur.
+   * @example
+   * ```ts
+   * FieldStateFactory.createDefault();
+   * ```
+   */
   public static createDefault(): FieldState {
     return this.create(undefined);
   }

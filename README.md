@@ -80,6 +80,8 @@ pnpm test
 
 `typecheck` checks library code. `test` builds once and runs `test:unit` and `test:tooling`, `test:pack`, and all five example build/type checks. Runtime tests live in `tests/unit`, fixtures/setup in `tests/fixtures`, and Node tooling tests in `tests/tooling`. Run `pnpm build` before standalone `pnpm test:pack`.
 
+Follow [JSDOC.md](./JSDOC.md) when documenting exported runtime APIs. Run `pnpm lint:jsdoc` for the semantic documentation check, also included in `test:tooling`. Consumer-facing declaration docs require a patch Changeset.
+
 Build output goes to `dist/`. `test:pack` checks an isolated consumer using registry
 Store; the example commands check all five private examples.
 

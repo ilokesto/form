@@ -8,6 +8,14 @@ Use Node 24.22.1 and pnpm 10.17.1. Install with `pnpm install --frozen-lockfile`
 
 Run `pnpm typecheck` for library code and `pnpm test` for the full aggregate: build once, `test:unit`, `test:tooling`, `test:pack`, and all five example build/type checks. Runtime and adapter tests live in `tests/unit`; fixtures and helpers live in `tests/fixtures`; Node tooling tests live in `tests/tooling`. Run `pnpm build` before standalone `pnpm test:pack`. The packed consumer must resolve registry Store without local overrides.
 
+Follow [JSDOC.md](./JSDOC.md) for English runtime API documentation. Every
+src-exported callable, class, explicit public constructor, and own public
+method/accessor/callable property needs semantic parameter and return docs.
+Document finite project-owned fields without expanding generic form payloads or
+inherited framework and DOM surfaces. Run `pnpm lint:jsdoc`; `test:tooling` and
+the full CI gate include the checker and its regression fixtures. Keep emitted
+declaration comments and add a patch Changeset for consumer-facing API docs.
+
 ## Releases
 
 Add a root Changeset for consumer-facing changes. Pull requests run Verify CI. Main merges create or update a Changesets release PR; merging that PR publishes only the exact successful Verify artifact through GitHub Actions. Enable `Allow GitHub Actions to create and approve pull requests` and configure `NPM_TOKEN` in the `Production` environment before rollout. Never publish locally.

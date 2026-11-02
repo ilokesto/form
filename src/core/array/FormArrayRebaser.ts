@@ -8,30 +8,41 @@ import { ValueHelper } from '../value/index';
 import type { FieldPath, FormState } from '../types';
 
 /**
- * 배열 변경 이후 FormState 전체를 다시 맞추는 rebase 담당 클래스다.
- *
- * @remarks
- * 배열 item의 index가 바뀌면 `items[0].name` 같은 child field key도 함께 바뀌어야 한다.
- * 이 클래스는 새 values를 초기화한 뒤, 기존 child field의 errors/touched/dirty/modified 메타데이터를
- * 새 index 위치로 옮긴다.
+ * @description Rebases fields and nested array keys after item changes while preserving surviving metadata and submission state.
+ * @example
+ * ```ts
+ * const next = FormArrayRebaser.rebase(state, ["users"], mutation);
+ * ```
  */
 export class FormArrayRebaser {
   /**
-   * 배열 변경 결과를 FormState 전체에 반영한다.
-   *
-   * @remarks
-   * 처리 순서는 다음과 같다.
-   *
-   * 1. 현재 values에 nextArray를 써서 nextValues를 만든다.
-   * 2. nextValues를 기준으로 FormState를 새로 초기화한다.
-   * 3. 기존 fields를 순회하며 배열 밖 field는 그대로 보존한다.
-   * 4. 배열 child field는 mapPreviousIndex로 새 index를 찾아 메타데이터를 옮긴다.
-   * 5. 살아남은 arrayKeys를 보존하고 변경된 배열의 key와 submitCount를 새 state에 다시 반영한다.
-   *
-   * @param previousState - 변경 전 FormState snapshot.
-   * @param fieldPath - 변경된 배열 field path.
-   * @param mutation - 변경 후 배열 값, item key, 이전 index를 새 index로 바꾸는 mapper.
-   * @returns store에 넣을 새 FormState.
+   * @description Apply next array values and move surviving child metadata and nested array keys to their new indexes.
+   * @param {Readonly<FormState<TValues>>} previousState - Snapshot before the array mutation.
+   * @param {TValues} previousState.defaultValues - Initial values and the baseline used for dirty checks and reset.
+   * @param {Record<string, FieldState<unknown>>} previousState.fields - Field snapshots indexed by normalized path keys.
+   * @param {number} previousState.submitCount - Number of submission attempts started by the form.
+   * @param {boolean} previousState.isSubmitting - Whether queued validation or a submit callback is still pending.
+   * @param {boolean} previousState.isSubmitted - Whether a submission has completed at least once.
+   * @param {boolean} previousState.isSubmitSuccessful - Whether the latest completed submission reached a successful valid callback.
+   * @param {ArrayKeys} previousState.arrayKeys - Stable rendering keys indexed by array path.
+   * @param {FieldPath} fieldPath - Tuple path identifying the target field or value.
+   * @param {FormArrayMutation} mutation - Next array values, stable keys, and old-to-new index mapper.
+   * @param {readonly unknown[]} mutation.values - Array values after this mutation, in the same order as the stable keys.
+   * @param {readonly string[]} mutation.keys - Stable item keys in array order.
+   * @param {IndexMapper} mutation.mapPreviousIndex - Map an old item index to its new position, or undefined if removed.
+   * @returns {FormState<TValues>} Next form snapshot with surviving child metadata and submission state preserved.
+   * - defaultValues `TValues` - Initial values and the baseline used for dirty checks and reset.
+   * - fields `Record<string, FieldState<unknown>>` - Field snapshots indexed by normalized path keys.
+   * - submitCount `number` - Number of submission attempts started by the form.
+   * - isSubmitting `boolean` - Whether queued validation or a submit callback is still pending.
+   * - isSubmitted `boolean` - Whether a submission has completed at least once.
+   * - isSubmitSuccessful `boolean` - Whether the latest completed submission reached a successful valid callback.
+   * - arrayKeys `ArrayKeys` - Stable rendering keys indexed by array path.
+   * @example
+   * ```ts
+   * const mutation = FormArrayMutationPlanner.push([], [], "Ada", "item-1");
+   * const next = FormArrayRebaser.rebase(state, ["users"], mutation);
+   * ```
    */
   public static rebase<TValues>(
     previousState: Readonly<FormState<TValues>>,

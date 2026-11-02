@@ -2,18 +2,30 @@ import { FormPath } from '../path/index';
 import type { FieldPath, FieldPathSegment, FormError, PathKey, StandardSchemaV1 } from '../types';
 
 /**
- * Standard Schema v1 compatible schema를 core validation 결과로 변환한다.
- *
- * @remarks
- * 이 클래스는 Zod, Valibot 같은 특정 library를 알지 않는다.
- * 오직 Standard Schema의 `~standard.validate(value, options)` 계약만 사용한다.
+ * @description Adapts Standard Schema validation results into field errors without depending on a specific schema library.
+ * @example
+ * ```ts
+ * const validator = new StandardSchemaValidator(schema);
+ * const result = await validator.validate(values);
+ * ```
  */
 export class StandardSchemaValidator<TValues> {
   /**
-   * schema와 validate options를 보관한다.
-   *
-   * @param schema - Standard Schema v1 compatible schema.
-   * @param options - schema library에 전달할 표준 validate 옵션.
+   * @description Create a Standard Schema adapter with optional library validation settings.
+   * @param {StandardSchemaV1<unknown, TValues>} schema - Standard Schema validator to execute.
+   * @param {StandardSchemaV1.Props<unknown, TValues>} schema.~standard - Standard Schema version, vendor, type metadata, and validation entry point.
+   * @param {1} schema.~standard.version - Standard Schema major version, which must be 1.
+   * @param {string} schema.~standard.vendor - Name of the schema library implementation.
+   * @param {StandardSchemaV1.Types<unknown, TValues> | undefined} [schema.~standard.types] - Optional compile-time input and output metadata.
+   * @param {unknown} [schema.~standard.types.input] - Schema input type metadata.
+   * @param {TValues} [schema.~standard.types.output] - Schema output type metadata.
+   * @param {(value: unknown, options?: StandardSchemaV1.Options | undefined) => StandardSchemaV1.Result<TValues> | Promise<StandardSchemaV1.Result<TValues>>} schema.~standard.validate - Validate unknown input and return accepted values or issues, synchronously or asynchronously.
+   * @param {StandardSchemaV1.Options | undefined} [options] - Optional library-specific Standard Schema validation settings.
+   * @param {Record<string, unknown> | undefined} [options.libraryOptions] - Library-specific validation options; keys are defined by the schema library.
+   * @example
+   * ```ts
+   * const validator = new StandardSchemaValidator(schema);
+   * ```
    */
   public constructor(
     private readonly schema: StandardSchemaV1<unknown, TValues>,
@@ -21,10 +33,15 @@ export class StandardSchemaValidator<TValues> {
   ) {}
 
   /**
-   * 전체 form values를 schema로 검증하고 issue를 field errors로 묶는다.
-   *
-   * @param values - 현재 form values.
-   * @returns schema가 valid인지와 PathKey별 FormError 목록.
+   * @description Validate all values and group schema issues by normalized field key.
+   * @param {TValues} values - Replacement or current form values.
+   * @returns {Promise<StandardSchemaValidationResult>} Promise of schema validity and errors grouped by normalized path.
+   * - valid `boolean` - Whether the schema accepted the supplied values.
+   * - errorsByKey `Record<string, FormError[]>` - Validation errors grouped by normalized field path.
+   * @example
+   * ```ts
+   * await validator.validate({ email: "Ada" });
+   * ```
    */
   public async validate(values: TValues): Promise<StandardSchemaValidationResult> {
     const result = await this.schema['~standard'].validate(values, this.options);
@@ -53,10 +70,13 @@ export class StandardSchemaValidator<TValues> {
   }
 
   /**
-   * field-local schema처럼 하나의 field value만 검증할 때 사용한다.
-   *
-   * @param value - 검증할 field value.
-   * @returns path와 무관하게 해당 field에 붙일 error 목록.
+   * @description Validate one field value and flatten every issue into errors for that field.
+   * @param {unknown} value - Value to store or inspect.
+   * @returns {Promise<FormError[]>} Promise of the errors for this value, or an empty array on success.
+   * @example
+   * ```ts
+   * await validator.validateValue("Ada");
+   * ```
    */
   public async validateValue(value: unknown): Promise<FormError[]> {
     const result = await this.schema['~standard'].validate(value, this.options);

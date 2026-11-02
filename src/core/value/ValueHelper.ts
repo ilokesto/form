@@ -2,11 +2,11 @@ import { FormPath } from '../path/index';
 import type { FieldPath, FormState, PathKey } from '../types';
 
 /**
- * nested values를 읽고 쓰고 복원하는 helper다.
- *
- * @remarks
- * FormState는 leaf field 중심으로 저장되므로, 사용자에게 돌려줄 때는 다시 nested object/array로 조립해야 한다.
- * 이 클래스는 그 조립 과정에서 필요한 immutable set/get 로직을 제공한다.
+ * @description Reads, immutably updates, and reconstructs nested form values from normalized field snapshots.
+ * @example
+ * ```ts
+ * const next = ValueHelper.setValueAtPath({ email: "" }, ["email"], "Ada");
+ * ```
  */
 export class ValueHelper {
   /**
@@ -28,11 +28,14 @@ export class ValueHelper {
   }
 
   /**
-   * tuple path를 사용해 nested 값을 읽는다.
-   *
-   * @param source - 값을 읽을 root object/array.
-   * @param path - 읽을 위치를 나타내는 tuple path.
-   * @returns path가 존재하면 해당 값, 중간 값이 nullish 또는 primitive이면 undefined.
+   * @description Read a nested tuple path, returning undefined when a traversed container is missing or primitive.
+   * @param {unknown} source - Root object or array to read or immutably update.
+   * @param {FieldPath} path - Tuple path identifying the target field or value.
+   * @returns {unknown} Value at the tuple path, or undefined for an unreachable path.
+   * @example
+   * ```ts
+   * ValueHelper.getValueAtPath({ email: "Ada" }, ["email"]);
+   * ```
    */
   public static getValueAtPath(source: unknown, path: FieldPath): unknown {
     let current = source;
@@ -53,16 +56,15 @@ export class ValueHelper {
   }
 
   /**
-   * tuple path 위치에 값을 쓴 새 object/array 구조를 반환한다.
-   *
-   * @remarks
-   * 원본 객체를 직접 변경하지 않고, path를 따라 필요한 container만 얕게 복사한다.
-   * 다음 segment가 number이면 누락 container를 배열로 만들고, string이면 객체로 만든다.
-   *
-   * @param source - 원본 values.
-   * @param path - 값을 쓸 위치.
-   * @param value - 새로 쓸 값.
-   * @returns value가 반영된 새 values.
+   * @description Copy containers along a tuple path and write the value without mutating the original root.
+   * @param {TValues} source - Root object or array to read or immutably update.
+   * @param {FieldPath} path - Tuple path identifying the target field or value.
+   * @param {unknown} value - Value to store or inspect.
+   * @returns {TValues} New root with the path updated; untouched branches retain their references.
+   * @example
+   * ```ts
+   * ValueHelper.setValueAtPath({ email: "Ada" }, ["email"], "Ada");
+   * ```
    */
   public static setValueAtPath<TValues>(source: TValues, path: FieldPath, value: unknown): TValues {
     if (path.length === 0) {
@@ -100,15 +102,21 @@ export class ValueHelper {
   }
 
   /**
-   * FormState의 fields와 arrayKeys를 사용해 전체 values 객체를 복원한다.
-   *
-   * @remarks
-   * 먼저 arrayKeys를 기준으로 빈 배열 container를 만들고,
-   * 그 다음 fields의 leaf value를 각 path 위치에 쓴다.
-   *
-   * @param state - 현재 FormState.
-   * @param fieldPaths - PathKey를 FieldPath로 복원한 lookup map.
-   * @returns 사용자에게 반환할 TValues 형태의 values.
+   * @description Rebuild nested values from normalized fields and array keys, using the supplied path lookup.
+   * @param {FormState<TValues>} state - Form snapshot used as the source of this calculation.
+   * @param {TValues} state.defaultValues - Initial values and the baseline used for dirty checks and reset.
+   * @param {Record<string, FieldState<unknown>>} state.fields - Field snapshots indexed by normalized path keys.
+   * @param {number} state.submitCount - Number of submission attempts started by the form.
+   * @param {boolean} state.isSubmitting - Whether queued validation or a submit callback is still pending.
+   * @param {boolean} state.isSubmitted - Whether a submission has completed at least once.
+   * @param {boolean} state.isSubmitSuccessful - Whether the latest completed submission reached a successful valid callback.
+   * @param {ArrayKeys} state.arrayKeys - Stable rendering keys indexed by array path.
+   * @param {Readonly<Record<string, FieldPath>>} fieldPaths - Lookup from normalized keys to tuple paths.
+   * @returns {TValues} Nested values rebuilt from field values and array container lengths.
+   * @example
+   * ```ts
+   * ValueHelper.getValuesFromFields(state, FormStateReader.getKnownFieldPaths(state));
+   * ```
    */
   public static getValuesFromFields<TValues>(
     state: FormState<TValues>,
