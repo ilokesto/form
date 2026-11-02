@@ -1,5 +1,11 @@
 # @ilokesto/form
 
+## 2.0.3
+
+### Patch Changes
+
+- 2ae8bff: Document runtime APIs and finite owned option and return fields in emitted TypeScript declarations. Preserve all runtime behavior and signatures.
+
 ## 2.0.2
 
 ### Patch Changes
