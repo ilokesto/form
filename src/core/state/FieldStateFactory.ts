@@ -8,6 +8,8 @@ import type { FieldState } from '../types';
  * ```
  */
 export class FieldStateFactory {
+  private static readonly METADATA_ONLY = Symbol('metadata-only field');
+
   /** 모든 field가 공통으로 갖는 기본 메타데이터 값이다. errors는 매번 새 배열로 복사해서 공유 참조를 피한다. */
   private static readonly DEFAULT_FIELD_STATE: FieldState = {
     value: undefined,
@@ -42,7 +44,7 @@ export class FieldStateFactory {
   }
 
   /**
-   * @description Create an empty field snapshot with undefined value and fresh errors.
+   * @description Create a metadata-only snapshot with undefined value and fresh errors, without introducing a value into the form.
    * @returns {FieldState} Independent empty snapshot with undefined value and false metadata flags.
    * - value `unknown` - Current field value.
    * - errors `FormError[]` - Current validation errors for the field.
@@ -56,6 +58,31 @@ export class FieldStateFactory {
    * ```
    */
   public static createDefault(): FieldState {
-    return this.create(undefined);
+    const field = {
+      ...this.create(undefined),
+      [this.METADATA_ONLY]: true,
+    };
+
+    return field;
+  }
+
+  /**
+   * @description Identify value-owning snapshots, including explicit undefined values, separately from metadata-only snapshots.
+   * @param {Readonly<FieldState>} field - Field snapshot whose value ownership is inspected.
+   * @param {unknown} field.value - Current field value.
+   * @param {FormError[]} field.errors - Current validation errors for the field.
+   * @param {boolean} field.touched - Whether the field has blurred at least once.
+   * @param {boolean} field.dirty - Whether the current value differs from its default.
+   * @param {boolean} field.modified - Whether a user-originated write has changed this field.
+   * @param {boolean} field.isFocused - Whether focus has been recorded without a subsequent blur.
+   * @returns {boolean} Whether the snapshot contributes a value when reconstructing the form.
+   * @example
+   * ```ts
+   * FieldStateFactory.ownsValue(FieldStateFactory.create(undefined)); // true
+   * FieldStateFactory.ownsValue(FieldStateFactory.createDefault()); // false
+   * ```
+   */
+  public static ownsValue(field: Readonly<FieldState>): boolean {
+    return !(this.METADATA_ONLY in field);
   }
 }

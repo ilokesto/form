@@ -1,4 +1,5 @@
 import { FormPath } from '../path/index';
+import { FieldStateFactory } from '../state/FieldStateFactory';
 import type { FieldPath, FormState, PathKey } from '../types';
 
 /**
@@ -129,7 +130,7 @@ export class ValueHelper {
     return Object.entries(state.fields).reduce<TValues>((values, [key, field]) => {
       const fieldPath = fieldPaths[key];
 
-      if (!fieldPath) {
+      if (!fieldPath || !FieldStateFactory.ownsValue(field)) {
         return values;
       }
 
