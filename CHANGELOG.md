@@ -1,5 +1,27 @@
 # @ilokesto/form
 
+## 2.0.4
+
+### Patch Changes
+
+- bbb8629: Preserve configured default values during array insert, push, remove, move, swap,
+  and replace operations. Array changes no longer redefine the reset or dirty
+  baseline of unrelated edits, and reset restores the configured values and keys.
+- 6d34327: Keep React field schema registrations stable across ordinary rerenders, equivalent
+  tuple paths, and registration list changes that leave a field unchanged. Replace
+  registrations only when their schema or schema options change, and clean them up
+  when paths, forms, or mounted owners change.
+- 75df9db: Preserve current form values when recording focus, touched state, or errors for
+  container and root paths. Keep metadata-only snapshots separate from explicit
+  value writes, including undefined, and retain container bindings after focus.
+- 7e09922: Keep pending local-only field validation when unrelated values or array entries
+  change. Track the target's value dependencies and relevant stable array item keys,
+  while preserving whole-form dependencies for fallback and submission validation.
+  Reset now invalidates pending validation even when its values are unchanged.
+- 2cb6dc8: Pass reconstructed current values to local schemas for array, object, and root
+  paths. Reconstruct values once per local validation batch, preserving explicit
+  undefined values, missing paths, and metadata-only field ownership.
+
 ## 2.0.3
 
 ### Patch Changes
