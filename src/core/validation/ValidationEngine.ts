@@ -1,6 +1,8 @@
 import { StandardSchemaValidator, type StandardSchemaValidationResult } from './StandardSchemaValidator';
 import { ValidationSequencer, type ValidationToken } from './ValidationSequencer';
 import { ValidationSnapshot } from './ValidationSnapshot';
+import { FormPath } from '../path/index';
+import { ValueHelper } from '../value/index';
 import type { FormStateStore } from '../state/index';
 import type { CreateFormOptions, FieldSchemaOptions, FormError, PathKey, ValidationTrigger } from '../types';
 
@@ -252,27 +254,22 @@ export class ValidationEngine<TValues> {
     });
   }
 
-  /** field-local schema가 있으면 해당 field value를 검증한다. */
-  private async validateFieldSchema(fieldKey: PathKey): Promise<FormError[] | undefined> {
-    const fieldSchema = this.fieldSchemas.get(fieldKey);
-
-    if (!fieldSchema) {
-      return undefined;
-    }
-
-    return fieldSchema.validator.validateValue(this.store.getFieldStateByKey(fieldKey).value);
-  }
-
-  /** 지정된 field들 중 field-local schema가 등록된 field만 검증한다. */
+  /** 등록된 local schema는 한 번 복원한 현재 values에서 각 경로의 값을 검증한다. */
   private async validateFieldSchemas(fieldKeys: readonly PathKey[]): Promise<Record<PathKey, FormError[]>> {
     const errorsByKey: Record<PathKey, FormError[]> = {};
+    const registeredFields = fieldKeys.flatMap(fieldKey => {
+      const fieldSchema = this.fieldSchemas.get(fieldKey);
+      return fieldSchema ? [{ fieldKey, validator: fieldSchema.validator }] : [];
+    });
 
-    await Promise.all(fieldKeys.map(async fieldKey => {
-      const errors = await this.validateFieldSchema(fieldKey);
+    if (registeredFields.length === 0) {
+      return errorsByKey;
+    }
 
-      if (errors) {
-        errorsByKey[fieldKey] = errors;
-      }
+    const values = this.store.getValues();
+    await Promise.all(registeredFields.map(async ({ fieldKey, validator }) => {
+      const value = ValueHelper.getValueAtPath(values, FormPath.keyToPath(fieldKey));
+      errorsByKey[fieldKey] = await validator.validateValue(value);
     }));
 
     return errorsByKey;
