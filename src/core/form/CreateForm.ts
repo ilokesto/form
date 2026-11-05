@@ -267,7 +267,7 @@ export class CreateForm<TValues> implements Form<TValues> {
   }
 
   /**
-   * @description Reinitialize values and metadata, optionally retaining dirty values, errors, touched flags, and submission state.
+   * @description Invalidate pending validation and reinitialize values and metadata, optionally retaining dirty values, errors, touched flags, and submission state.
    * @param {TValues | undefined} [values] - Replacement or current form values.
    * @param {ResetOptions | undefined} [options] - State preservation flags for this reset.
    * @param {boolean | undefined} [options.keepDirtyValues] - Preserve current values and modified flags of dirty fields.
@@ -280,6 +280,7 @@ export class CreateForm<TValues> implements Form<TValues> {
    * ```
    */
   public reset(values?: TValues, options?: ResetOptions): void {
+    this.validation.invalidatePending();
     this.store.reset(values, options);
   }
 
