@@ -106,7 +106,17 @@ test('rebase with an earlier snapshot remains repeatable without changing its in
     email: 'snapshot@example.com',
     items: [{ name: 'B' }, { name: 'a' }],
   });
-  expect(nextState.defaultValues).toEqual(FormStateReader.getValues(nextState));
+  // Reordering current values must not redefine the configured reset/dirty baseline.
+  expect(nextState.defaultValues).toBe(previousState.defaultValues);
+  expect(nextState.defaultValues).toEqual({
+    email: 'initial@example.com',
+    items: [{ name: 'a' }, { name: 'b' }],
+  });
+  expect(nextState.arrayKeys[FormPath.pathToKey(['items'])]).toEqual(['initial-1', 'initial-0']);
+  expect(nextState.fields[FormPath.pathToKey(['email'])]).toMatchObject({
+    value: 'snapshot@example.com',
+    dirty: true,
+  });
   expect(nextState.fields[FormPath.pathToKey(['items', 0, 'name'])]).toMatchObject({
     value: 'B',
     errors: [{ message: 'Keep me' }],
