@@ -161,8 +161,10 @@ export class FormStateStore<TValues> {
         const previousField = draft.fields[fieldKey] ?? FieldStateFactory.createDefault();
 
         draft.fields[fieldKey] = {
-          ...previousField,
-          value,
+          ...FieldStateFactory.create(value),
+          errors: previousField.errors,
+          touched: previousField.touched,
+          isFocused: previousField.isFocused,
           dirty: !Object.is(value, defaultValue),
           modified: options.source === 'user' ? true : previousField.modified,
         };

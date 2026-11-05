@@ -1,4 +1,5 @@
 import type { FieldPathInput, FieldState, Form, FormState } from '../../core/index';
+import { FieldStateFactory } from '../../core/state/FieldStateFactory';
 
 /**
  * @description Read field metadata, reconstructing container values from current nested values when no leaf field exists.
@@ -59,7 +60,8 @@ function toFieldPath(name: FieldPathInput): readonly (string | number)[] {
 }
 
 function fieldPathExists<TValues>(state: Readonly<FormState<TValues>>, name: FieldPathInput): boolean {
-  return pathInputToKey(name) in state.fields;
+  const field = state.fields[pathInputToKey(name)];
+  return field !== undefined && FieldStateFactory.ownsValue(field);
 }
 
 function pathInputToKey(name: FieldPathInput): string {
