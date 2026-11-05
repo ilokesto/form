@@ -16,7 +16,7 @@ import type { FieldPath, FormState } from '../types';
  */
 export class FormArrayRebaser {
   /**
-   * @description Apply next array values and move surviving child metadata and nested array keys to their new indexes.
+   * @description Apply next array values and move surviving child metadata and nested array keys to their new indexes without changing the configured defaults.
    * @param {Readonly<FormState<TValues>>} previousState - Snapshot before the array mutation.
    * @param {TValues} previousState.defaultValues - Initial values and the baseline used for dirty checks and reset.
    * @param {Record<string, FieldState<unknown>>} previousState.fields - Field snapshots indexed by normalized path keys.
@@ -130,6 +130,7 @@ export class FormArrayRebaser {
 
     return {
       ...initializedState,
+      defaultValues: previousState.defaultValues,
       fields: rebasedFields,
       arrayKeys: rebasedArrayKeys,
       submitCount: previousState.submitCount,
