@@ -1,7 +1,7 @@
-import { useEffect } from 'react';
-import type { Form } from '../core/index';
+import { useEffect, useRef } from 'react';
+import type { FieldSchemaOptions, Form } from '../core/index';
+import { FormPath } from '../core/path/index';
 import type { RegisterOptions } from './types';
-import { fieldPathToDomName } from './RegisterBinding';
 
 /**
  * @description Register one field-local schema after the React commit and clean it up when options change or the component unmounts.
@@ -43,19 +43,11 @@ import { fieldPathToDomName } from './RegisterBinding';
  * ```
  */
 export function useFieldSchemaRegistration<TValues>(form: Form<TValues>, options: RegisterOptions): void {
-  const { name, schema, schemaOptions } = options;
-
-  useEffect(() => {
-    if (!schema) {
-      return undefined;
-    }
-
-    return form.registerFieldSchema(name, { schema, schemaOptions });
-  }, [form, name, schema, schemaOptions]);
+  useFieldSchemaRegistrations(form, [options]);
 }
 
 /**
- * @description Register field-local schemas together and release them with the framework lifecycle.
+ * @description Reconcile field-local schemas by normalized path and schema/options identity after each commit, preserving unchanged registrations until removal or unmount.
  * @param {Form<TValues>} form - Core form instance shared by all bound helpers.
  * @param {() => Readonly<FormState<TValues>>} form.getState - Read the current immutable form snapshot.
  * @param {(listener: () => void) => () => void} form.subscribe - Subscribe to state changes and return an unsubscribe callback.
@@ -79,19 +71,41 @@ export function useFieldSchemaRegistration<TValues>(form: Form<TValues>, options
  * ```
  */
 export function useFieldSchemaRegistrations<TValues>(form: Form<TValues>, options: readonly RegisterOptions[]): void {
-  const schemaSignature = options.map(option => `${fieldPathToDomName(option.name)}:${option.schema ? 'schema' : 'none'}`).join('|');
+  const registrations = useRef(new Map<string, FieldSchemaOptions & { cleanup: () => void }>());
 
   useEffect(() => {
-    const cleanups = options.flatMap(option => {
-      if (!option.schema) {
-        return [];
+    const next = new Map<string, FieldSchemaOptions>();
+    options.forEach(option => {
+      if (option.schema) {
+        next.set(FormPath.pathInputToKey(option.name), {
+          schema: option.schema,
+          schemaOptions: option.schemaOptions,
+        });
       }
-
-      return [form.registerFieldSchema(option.name, { schema: option.schema, schemaOptions: option.schemaOptions })];
     });
 
-    return () => {
-      cleanups.forEach(cleanup => cleanup());
-    };
-  }, [form, options, schemaSignature]);
+    registrations.current.forEach((registered, fieldKey) => {
+      const desired = next.get(fieldKey);
+      if (desired?.schema === registered.schema && desired.schemaOptions === registered.schemaOptions) {
+        return;
+      }
+
+      registered.cleanup();
+      registrations.current.delete(fieldKey);
+    });
+
+    next.forEach((desired, fieldKey) => {
+      if (!registrations.current.has(fieldKey)) {
+        registrations.current.set(fieldKey, {
+          ...desired,
+          cleanup: form.registerFieldSchema(FormPath.keyToPath(fieldKey), desired),
+        });
+      }
+    });
+  });
+
+  useEffect(() => () => {
+    registrations.current.forEach(registered => registered.cleanup());
+    registrations.current.clear();
+  }, [form]);
 }
