@@ -115,6 +115,17 @@ export class ValidationEngine<TValues> {
   }
 
   /**
+   * @description Invalidate pending field and whole-form validation without executing any schemas.
+   * @example
+   * ```ts
+   * validation.invalidatePending();
+   * ```
+   */
+  public invalidatePending(): void {
+    this.sequencer.startFull();
+  }
+
+  /**
    * @description Validate one field with local-schema precedence and reject stale results.
    * @param {string} fieldKey - Normalized path key of the target field.
    * @param {ValidationTrigger} _trigger - Reason validation was requested; not passed to the schema.
@@ -146,7 +157,11 @@ export class ValidationEngine<TValues> {
     }
 
     const token = this.sequencer.startFields(targetFieldKeys);
-    const snapshot = ValidationSnapshot.capture(this.store.getState());
+    const formSchemaFieldKeys = targetFieldKeys.filter(fieldKey => !this.fieldSchemas.has(fieldKey));
+    const snapshot = ValidationSnapshot.capture(
+      this.store.getState(),
+      formSchemaFieldKeys.length === 0 ? targetFieldKeys : undefined,
+    );
 
     // Field validation gives local schemas precedence before running the form fallback.
     const localErrorsByKey = await this.validateFieldSchemas(targetFieldKeys);
@@ -155,7 +170,6 @@ export class ValidationEngine<TValues> {
       return false;
     }
 
-    const formSchemaFieldKeys = targetFieldKeys.filter(fieldKey => !this.fieldSchemas.has(fieldKey));
     const schemaResult = formSchemaFieldKeys.length > 0
       ? await this.validateFormSchema()
       : ValidationEngine.createValidSchemaResult();
